@@ -36,7 +36,7 @@ jobs:
           $sha = "${{ github.sha }}"
           $ccx_ver = $sha.SubString(0,7)
           $release_name = "ccx-cli-win64-v$ccx_ver"
-          hyperfine --parameter-list build_type Release,Debug --parameter-list num_thread 2 "build.bat  {build_type} {num_thread}" --export-json results/benchmark.json --export-markdown results/benchmark.md
+          hyperfine --parameter-list build_type Release --parameter-list num_thread 4,3,2,1 "build.bat  {build_type} {num_thread}" --export-json results/benchmark.json --export-markdown results/benchmark.md
           echo "::set-output name=release_name::${release_name}.zip"
           echo "::set-output name=artifact_path::results"
 
