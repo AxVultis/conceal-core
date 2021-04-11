@@ -2441,7 +2441,7 @@ namespace CryptoNote
 
     auto longhashTimeStart = std::chrono::steady_clock::now();
     Crypto::Hash proof_of_work = NULL_HASH;
-    if (m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight()))
+    if (!m_testnet && m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight()))
     {
       if (!m_checkpoints.check_block(getCurrentBlockchainHeight(), blockHash))
       {
