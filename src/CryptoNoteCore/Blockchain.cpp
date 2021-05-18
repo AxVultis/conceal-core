@@ -995,6 +995,7 @@ namespace CryptoNote
 
   bool Blockchain::switch_to_alternative_blockchain(std::list<blocks_ext_by_hash::iterator> &alt_chain, bool discard_disconnected_chain)
   {
+    logger(INFO, BRIGHT_MAGENTA) << "~#~ discard_disconnected_chain: " << discard_disconnected_chain;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
     if (!(alt_chain.size()))
@@ -1081,9 +1082,6 @@ namespace CryptoNote
         return false;
       }
     }
-
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ discard_disconnected_chain: " << discard_disconnected_chain;
-
     if (!discard_disconnected_chain)
     {
       //pushing old chain as alternative chain
@@ -1110,7 +1108,13 @@ namespace CryptoNote
     for (auto ch_ent : alt_chain)
     {
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1111";
-      blocksFromCommonRoot.push_back(get_block_hash(ch_ent->second.bl));
+      logger(INFO, BRIGHT_MAGENTA) << "~+~ +++++ ch_ent +++++";
+      logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << ch_ent->first;
+      logger(INFO, BRIGHT_MAGENTA) << ch_ent->second.toString();
+      logger(INFO, BRIGHT_MAGENTA) << "~+~ getting hash";
+      Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
+      logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << hash;
+      blocksFromCommonRoot.push_back(hash);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1113";
       m_orthanBlocksIndex.remove(ch_ent->second.bl);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1115";
@@ -3162,6 +3166,8 @@ namespace CryptoNote
           logger(INFO, BRIGHT_WHITE) << "Rebuilding Indices for Height " << b << " of " << m_blocks.size();
         }
         const BlockEntry &block = m_blocks[b];
+        logger(INFO, BRIGHT_RED) << block.toString();
+        logger(INFO, BRIGHT_RED) << "hash " << get_tx_tree_hash(block.bl);
         m_timestampIndex.add(block.bl.timestamp, get_block_hash(block.bl));
         m_generatedTransactionsIndex.add(block.bl);
         for (uint16_t t = 0; t < block.transactions.size(); ++t)

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <atomic>
+#include <ostream>
 
 #include "google/sparse_hash_set"
 #include "google/sparse_hash_map"
@@ -241,6 +242,15 @@ namespace CryptoNote
         s(tx, "tx");
         s(m_global_output_indexes, "indexes");
       }
+
+      std::string toString() const
+      {
+        std::ostringstream os;
+        os << "~+~ +++++ TransactionEntry +++++" << std::endl;
+        os << "~+~ tx:\t" << tx.toString();
+        os << "~+~ ++++++++++++++++++++" << std::endl;
+        return os.str();
+      }
     };
 
     struct BlockEntry
@@ -260,6 +270,23 @@ namespace CryptoNote
         s(cumulative_difficulty, "cumulative_difficulty");
         s(already_generated_coins, "already_generated_coins");
         s(transactions, "transactions");
+      }
+
+      std::string toString() const
+      {
+        std::ostringstream os;
+        os << std::endl << "~+~ ##### BlockEntry #####" << std::endl;
+        os << "~+~ height:\t\t" << height << std::endl;
+        os << "~+~ block_cumulative_size:\t" << block_cumulative_size << std::endl;
+        os << "~+~ cumulative_difficulty:\t" << cumulative_difficulty << std::endl;
+        os << "~+~ already_generated_coins:\t" << already_generated_coins << std::endl;
+        os << "~+~ transactions:\t" << std::endl;
+        for (auto &transactionEntry : transactions)
+        {
+          os << "~+~ " << transactionEntry.toString();
+        }
+        os << "~+~ ####################" << std::endl;
+        return os.str();
       }
     };
 

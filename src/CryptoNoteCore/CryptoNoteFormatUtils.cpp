@@ -557,6 +557,25 @@ Hash get_tx_tree_hash(const std::vector<Hash>& tx_hashes) {
   return h;
 }
 
+Hash get_tx_tree_hash(const Block& b, Logging::ILogger& log)
+{
+  Logging::LoggerRef logger(log, "get_tx_tree_hash");
+  logger(INFO, BRIGHT_MAGENTA) << "get_tx_tree_hash";
+  std::vector<Hash> txs_ids;
+  Hash h = NULL_HASH;
+  getObjectHash(b.baseTransaction, h);
+  logger(INFO, BRIGHT_MAGENTA) << "~-~ b.baseTransaction" << b.baseTransaction.toString();
+  logger(INFO, BRIGHT_MAGENTA) << "~-~ hash" << h;
+  txs_ids.push_back(h);
+  logger(INFO, BRIGHT_MAGENTA) << "~-~ push_back txs_ids";
+  for (auto &th : b.transactionHashes)
+  {
+    logger(INFO, BRIGHT_MAGENTA) << "~-~ push_back th" << th;
+    txs_ids.push_back(th);
+  }
+  return get_tx_tree_hash(txs_ids);
+}
+
 Hash get_tx_tree_hash(const Block& b) {
   std::vector<Hash> txs_ids;
   Hash h = NULL_HASH;

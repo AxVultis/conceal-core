@@ -9,6 +9,7 @@
 #include <vector>
 #include <boost/variant.hpp>
 #include "CryptoTypes.h"
+#include <sstream>
 
 namespace CryptoNote {
 
@@ -60,6 +61,20 @@ struct TransactionPrefix {
 
 struct Transaction : public TransactionPrefix {
   std::vector<std::vector<Crypto::Signature>> signatures;
+
+  std::string toString() const
+  {
+    std::ostringstream os;
+    os << "~+~ ===== Transaction =====" << std::endl;
+    os << "~+~ version:\t'" << version << "'" << std::endl;
+    os << "~+~ unlockTime:\t" << unlockTime << std::endl;
+    os << "~+~ inputs:\t" << inputs.size() << std::endl;
+    os << "~+~ outputs:\t" << outputs.size() << std::endl;
+    os << "~+~ extra:\t" << extra.size() << std::endl;
+    os << "~+~ signatures:\t" << signatures.size() << std::endl;
+    os << "~+~ ====================" << std::endl;
+    return os.str();
+  }
 };
 
 struct BlockHeader {
