@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.0)
 
 include(CheckCXXCompilerFlag)
 set(VERSION "0.2")
