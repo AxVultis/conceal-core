@@ -138,7 +138,7 @@ namespace CryptoNote
   void serialize(Blockchain::TransactionIndex &value, ISerializer &s)
   {
     s(value.block, "block");
-    s(value.transaction, "tx");
+    s(value.transaction, "transaction");
   }
 
   class BlockCacheSerializer
@@ -1826,9 +1826,9 @@ namespace CryptoNote
 
     for (size_t i = start_index; i != m_blocks.size() && i != end_index; i++)
     {
-      ss << "height " << i << ", timestamp " << m_blocks[i].bl.timestamp << ", cumul_dif " << m_blocks[i].cumulative_difficulty << ", cumul_size " << m_blocks[i].block_cumulative_size
+      ss << "height " << i << ", timestamp " << m_blocks[i].bl.timestamp << ", cumul_dif " << m_blocks[i].cumulative_difficulty << ", cumulative_size " << m_blocks[i].block_cumulative_size
          << "\nid\t\t" << get_block_hash(m_blocks[i].bl)
-         << "\ndifficulty\t\t" << blockDifficulty(i) << ", nonce " << m_blocks[i].bl.nonce << ", tx_count " << m_blocks[i].bl.transactionHashes.size() << ENDL;
+         << "\ndifficulty\t\t" << blockDifficulty(i) << ", nonce " << m_blocks[i].bl.nonce << ", transactions_count " << m_blocks[i].bl.transactionHashes.size() << ENDL;
     }
     logger(DEBUGGING) << "Current blockchain:" << ENDL << ss.str();
     logger(INFO, BRIGHT_WHITE) << "Blockchain printed with log level 1";

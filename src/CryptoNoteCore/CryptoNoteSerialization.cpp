@@ -124,7 +124,7 @@ bool serializeVarintVector(std::vector<uint32_t>& vector, CryptoNote::ISerialize
   vector.resize(size);
 
   for (size_t i = 0; i < size; ++i) {
-    serializer(vector[i], "");
+    serializer(vector[i], "vector");
   }
 
   serializer.endArray();
@@ -180,8 +180,8 @@ void serialize(TransactionPrefix& txP, ISerializer& serializer) {
   }
 
   serializer(txP.unlockTime, "unlock_time");
-  serializer(txP.inputs, "vin");
-  serializer(txP.outputs, "vout");
+  serializer(txP.inputs, "inputs");
+  serializer(txP.outputs, "outputs");
   serializeAsBinary(txP.extra, "extra", serializer);
 }
 
@@ -217,13 +217,13 @@ void serialize(Transaction& tx, ISerializer& serializer) {
       }
 
       for (Crypto::Signature& sig : tx.signatures[i]) {
-        serializePod(sig, "", serializer);
+        serializePod(sig, "signature", serializer);
       }
 
     } else {
       std::vector<Crypto::Signature> signatures(signatureSize);
       for (Crypto::Signature& sig : signatures) {
-        serializePod(sig, "", serializer);
+        serializePod(sig, "signature", serializer);
       }
 
       tx.signatures[i] = std::move(signatures);
@@ -255,19 +255,19 @@ void serialize(BaseInput& gen, ISerializer& serializer) {
 void serialize(KeyInput& key, ISerializer& serializer) {
   serializer(key.amount, "amount");
   serializeVarintVector(key.outputIndexes, serializer, "key_offsets");
-  serializer(key.keyImage, "k_image");
+  serializer(key.keyImage, "key_image");
 }
 
 void serialize(MultisignatureInput& multisignature, ISerializer& serializer) {
   serializer(multisignature.amount, "amount");
   serializer(multisignature.signatureCount, "signatures");
-  serializer(multisignature.outputIndex, "outputIndex");
+  serializer(multisignature.outputIndex, "output_index");
   serializer(multisignature.term, "term");
 }
 
 
 void serialize(TransactionInputs & inputs, ISerializer & serializer) {
-  serializer(inputs, "vin");
+  serializer(inputs, "inputs");
 }
 
 
@@ -349,10 +349,10 @@ void serialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer) {
     StringOutputStream os(field);
     BinaryOutputStreamSerializer output(os);
     doSerialize(tag, output);
-    serializer(field, "");
+    serializer(field, "extramerge");
   } else {
     std::string field;
-    serializer(field, "");
+    serializer(field, "extramerge");
     MemoryInputStream stream(field.data(), field.size());
     BinaryInputStreamSerializer input(stream);
     doSerialize(tag, input);

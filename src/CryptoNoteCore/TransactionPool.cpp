@@ -587,7 +587,7 @@ namespace CryptoNote
     s(td.id, "id");
     s(td.blobSize, "blobSize");
     s(td.fee, "fee");
-    s(td.tx, "tx");
+    s(td.tx, "transaction");
     s(td.maxUsedBlock.height, "maxUsedBlock.height");
     s(td.maxUsedBlock.id, "maxUsedBlock.id");
     s(td.lastFailedBlock.height, "lastFailedBlock.height");

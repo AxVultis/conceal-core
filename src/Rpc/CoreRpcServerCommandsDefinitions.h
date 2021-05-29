@@ -300,7 +300,7 @@ struct COMMAND_RPC_GET_INFO {
     std::string top_block_hash;
     uint64_t height;
     uint64_t difficulty;
-    uint64_t tx_count;
+    uint64_t transactions_count;
     uint64_t tx_pool_size;
     uint64_t alt_blocks_count;
     uint64_t outgoing_connections_count;
@@ -322,7 +322,7 @@ struct COMMAND_RPC_GET_INFO {
       KV_MEMBER(version)
       KV_MEMBER(difficulty)
       KV_MEMBER(top_block_hash)
-      KV_MEMBER(tx_count)
+      KV_MEMBER(transactions_count)
       KV_MEMBER(tx_pool_size)
       KV_MEMBER(alt_blocks_count)
       KV_MEMBER(outgoing_connections_count)
@@ -452,7 +452,7 @@ struct block_header_response {
   uint8_t major_version;
   uint8_t minor_version;
   uint64_t timestamp;
-  std::string prev_hash;
+  std::string previous_hash;
   uint32_t nonce;
   bool orphan_status;
   uint64_t height;
@@ -466,7 +466,7 @@ struct block_header_response {
     KV_MEMBER(major_version)
     KV_MEMBER(minor_version)
     KV_MEMBER(timestamp)
-    KV_MEMBER(prev_hash)
+    KV_MEMBER(previous_hash)
     KV_MEMBER(nonce)
     KV_MEMBER(orphan_status)
     KV_MEMBER(height)
@@ -506,7 +506,7 @@ struct f_transaction_short_response {
 struct f_transaction_details_response {
   std::string hash;
   size_t size;
-  std::string paymentId;
+  std::string payment_id;
   uint64_t mixin;
   uint64_t fee;
   uint64_t amount_out;
@@ -514,7 +514,7 @@ struct f_transaction_details_response {
   void serialize(ISerializer &s) {
     KV_MEMBER(hash)
     KV_MEMBER(size)
-    KV_MEMBER(paymentId)
+    KV_MEMBER(payment_id)
     KV_MEMBER(mixin)
     KV_MEMBER(fee)
     KV_MEMBER(amount_out)
@@ -526,16 +526,16 @@ struct f_block_short_response {
   uint32_t height;
   difficulty_type difficulty;
   std::string hash;
-  uint64_t tx_count;
-  uint64_t cumul_size;
+  uint64_t transactions_count;
+  uint64_t cumulative_size;
 
   void serialize(ISerializer &s) {
     KV_MEMBER(timestamp)
     KV_MEMBER(height)
     KV_MEMBER(difficulty)
     KV_MEMBER(hash)
-    KV_MEMBER(cumul_size)
-    KV_MEMBER(tx_count)
+    KV_MEMBER(cumulative_size)
+    KV_MEMBER(transactions_count)
   }
 };
 
@@ -543,7 +543,7 @@ struct f_block_details_response {
   uint8_t major_version;
   uint8_t minor_version;
   uint64_t timestamp;
-  std::string prev_hash;
+  std::string previous_hash;
   uint32_t nonce;
   bool orphan_status;
   uint64_t height;
@@ -551,22 +551,22 @@ struct f_block_details_response {
   std::string hash;
   difficulty_type difficulty;
   uint64_t reward;
-  uint64_t blockSize;
-  size_t sizeMedian;
-  uint64_t effectiveSizeMedian;
-  uint64_t transactionsCumulativeSize;
-  std::string alreadyGeneratedCoins;
-  uint64_t alreadyGeneratedTransactions;
-  uint64_t baseReward;
+  uint64_t block_size;
+  size_t size_median;
+  uint64_t effective_size_median;
+  uint64_t transactions_cumulative_size;
+  uint64_t already_generated_coins;
+  uint64_t already_generated_transactions;
+  uint64_t base_reward;
   double penalty;
-  uint64_t totalFeeAmount;
+  uint64_t total_fee_amount;
   std::vector<f_transaction_short_response> transactions;
 
   void serialize(ISerializer &s) {
     KV_MEMBER(major_version)
     KV_MEMBER(minor_version)
     KV_MEMBER(timestamp)
-    KV_MEMBER(prev_hash)
+    KV_MEMBER(previous_hash)
     KV_MEMBER(nonce)
     KV_MEMBER(orphan_status)
     KV_MEMBER(height)
@@ -574,16 +574,16 @@ struct f_block_details_response {
     KV_MEMBER(hash)
     KV_MEMBER(difficulty)
     KV_MEMBER(reward)
-    KV_MEMBER(blockSize)
-    KV_MEMBER(sizeMedian)
-    KV_MEMBER(effectiveSizeMedian)
-    KV_MEMBER(transactionsCumulativeSize)
-    KV_MEMBER(alreadyGeneratedCoins)
-    KV_MEMBER(alreadyGeneratedTransactions)
-    KV_MEMBER(baseReward)
+    KV_MEMBER(block_size)
+    KV_MEMBER(size_median)
+    KV_MEMBER(effective_size_median)
+    KV_MEMBER(transactions_cumulative_size)
+    KV_MEMBER(already_generated_coins)
+    KV_MEMBER(already_generated_transactions)
+    KV_MEMBER(base_reward)
     KV_MEMBER(penalty)
     KV_MEMBER(transactions)
-    KV_MEMBER(totalFeeAmount)
+    KV_MEMBER(total_fee_amount)
   }
 };
 struct currency_base_coin {
@@ -733,14 +733,14 @@ struct F_COMMAND_RPC_GET_TRANSACTION_DETAILS {
   };
 
   struct response {
-    Transaction tx;
-    f_transaction_details_response txDetails;
+    Transaction transaction;
+    f_transaction_details_response transaction_details;
     f_block_short_response block;
     std::string status;
 
     void serialize(ISerializer &s) {
-      KV_MEMBER(tx)
-      KV_MEMBER(txDetails)
+      KV_MEMBER(transaction)
+      KV_MEMBER(transaction_details)
       KV_MEMBER(block)
       KV_MEMBER(status)
     }

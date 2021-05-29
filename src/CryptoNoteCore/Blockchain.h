@@ -209,7 +209,7 @@ namespace CryptoNote
       void serialize(ISerializer &s)
       {
         s(block, "block");
-        s(transaction, "tx");
+        s(transaction, "transaction");
       }
     };
 
@@ -238,7 +238,7 @@ namespace CryptoNote
 
       void serialize(ISerializer &s)
       {
-        s(tx, "tx");
+        s(tx, "transaction");
         s(m_global_output_indexes, "indexes");
       }
     };
