@@ -69,6 +69,10 @@ jobs:
       - name: Build
         id: build
         run: |
+          sudo fallocate -l 5G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
           sudo apt-get update
           sudo apt-get install -y libboost-all-dev
           build_folder="build/debug"
