@@ -65,8 +65,9 @@ struct Transaction : public TransactionPrefix {
   std::string toString() const
   {
     std::ostringstream os;
+    os << std::endl;
     os << "~+~ ===== Transaction =====" << std::endl;
-    os << "~+~ version:\t'" << version << "'" << std::endl;
+    os << "~+~ version:\t'" << unsigned(version) << "'" << std::endl;
     os << "~+~ unlockTime:\t" << unlockTime << std::endl;
     os << "~+~ inputs:\t" << inputs.size() << std::endl;
     os << "~+~ outputs:\t" << outputs.size() << std::endl;

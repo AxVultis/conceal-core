@@ -76,6 +76,20 @@
         "xthread": "cpp",
         "sparse_hash_map": "cpp",
         "sparse_hash_set": "cpp",
-        "sparsetable": "cpp"
+        "sparsetable": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "bit": "cpp",
+        "*.tcc": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "memory_resource": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp",
+        "shared_mutex": "cpp",
+        "cinttypes": "cpp",
+        "complex": "cpp"
     }
 }

@@ -1110,7 +1110,8 @@ namespace CryptoNote
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1111";
       logger(INFO, BRIGHT_MAGENTA) << "~+~ +++++ ch_ent +++++";
       logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << ch_ent->first;
-      logger(INFO, BRIGHT_MAGENTA) << ch_ent->second.toString();
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      ch_ent->second.log(loggerMessage);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ getting hash";
       Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << hash;
@@ -1612,6 +1613,11 @@ namespace CryptoNote
             << ENDL << "id:\t" << id
             << ENDL << "PoW:\t" << proof_of_work
             << ENDL << "difficulty:\t" << current_diff;
+        auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+        loggerMessage << "lastBlock: ";
+        m_blocks.back().log(loggerMessage);
+        loggerMessage << "bei: ";
+        bei.log(loggerMessage);
         logger(INFO, BRIGHT_MAGENTA) << "~~~ sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
         if (sendNewAlternativeBlockMessage)
         {
@@ -3166,7 +3172,8 @@ namespace CryptoNote
           logger(INFO, BRIGHT_WHITE) << "Rebuilding Indices for Height " << b << " of " << m_blocks.size();
         }
         const BlockEntry &block = m_blocks[b];
-        logger(INFO, BRIGHT_RED) << block.toString();
+        auto loggerMessage = logger(INFO, BRIGHT_RED);
+        block.log(loggerMessage);
         logger(INFO, BRIGHT_RED) << "hash " << get_tx_tree_hash(block.bl);
         m_timestampIndex.add(block.bl.timestamp, get_block_hash(block.bl));
         m_generatedTransactionsIndex.add(block.bl);

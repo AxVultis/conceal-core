@@ -248,8 +248,13 @@ namespace CryptoNote
         std::ostringstream os;
         os << "~+~ +++++ TransactionEntry +++++" << std::endl;
         os << "~+~ tx:\t" << tx.toString();
-        os << "~+~ ++++++++++++++++++++" << std::endl;
+        os << "~+~ +++ TransactionEntry end +++" << std::endl;
         return os.str();
+      }
+
+      void log(Logging::LoggerMessage& logger) const
+      {
+        logger << tx.toString();
       }
     };
 
@@ -271,22 +276,50 @@ namespace CryptoNote
         s(already_generated_coins, "already_generated_coins");
         s(transactions, "transactions");
       }
-
-      std::string toString() const
+      
+      void log(Logging::LoggerMessage &logger) const
       {
-        std::ostringstream os;
-        os << std::endl << "~+~ ##### BlockEntry #####" << std::endl;
-        os << "~+~ height:\t\t" << height << std::endl;
-        os << "~+~ block_cumulative_size:\t" << block_cumulative_size << std::endl;
-        os << "~+~ cumulative_difficulty:\t" << cumulative_difficulty << std::endl;
-        os << "~+~ already_generated_coins:\t" << already_generated_coins << std::endl;
-        os << "~+~ transactions:\t" << std::endl;
+        logger << "~+~ ***** BlockEntry *****" << std::endl;
+        logger << "~+~ height:\t\t" << height << std::endl;
+        logger << "~+~ block_cumulative_size:\t" << block_cumulative_size << std::endl;
+        logger << "~+~ cumulative_difficulty:\t" << cumulative_difficulty << std::endl;
+        logger << "~+~ already_generated_coins:\t" << already_generated_coins << std::endl;
+        logger << "~+~ transactions size:\t" << transactions.size() << std::endl;
+        logger << "~+~ transactions:\t" << std::endl;
         for (auto &transactionEntry : transactions)
         {
-          os << "~+~ " << transactionEntry.toString();
+          transactionEntry.log(logger);
         }
-        os << "~+~ ####################" << std::endl;
-        return os.str();
+        logger << "~+~ block:" << std::endl;
+        logBlock(bl, logger);
+
+        logger << "~+~ blockheader:" << std::endl;
+        logBlockHeader(bl, logger);
+        logger << "~+~ *** BlockEntry end ***" << std::endl;
+      }
+
+      void logBlock(Block block, Logging::LoggerMessage &logger) const
+      {
+        logger << "~+~ ##### Block #####" << std::endl;
+        logger << "~+~ baseTransaction:\t" << block.baseTransaction.toString() << std::endl;
+        logger << "~+~ transactionHashes size:\t" << block.transactionHashes.size() << std::endl;
+        logger << "~+~ transactionHashes:\t" << std::endl;
+        for (Crypto::Hash transactionHash : block.transactionHashes)
+        {
+          logger << "~+~ " << transactionHash;
+        }
+        logger << "~+~ ### Block end ###" << std::endl;
+      }
+
+      void logBlockHeader(BlockHeader blockHeader, Logging::LoggerMessage &logger) const
+      {
+        logger << "~+~ ##### BlockHeader #####" << std::endl;
+        logger << "~+~ majorVersion:\t" << unsigned(blockHeader.majorVersion) << std::endl;
+        logger << "~+~ minorVersion:\t" << unsigned(blockHeader.minorVersion) << std::endl;
+        logger << "~+~ nonce:\t\t" << blockHeader.nonce << std::endl;
+        logger << "~+~ timestamp:\t" << blockHeader.timestamp << std::endl;
+        logger << "~+~ previousBlockHash:\t" << blockHeader.previousBlockHash << std::endl;
+        logger << "~+~ ### BlockHeader end ###" << std::endl;
       }
     };
 
