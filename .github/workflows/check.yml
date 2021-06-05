@@ -61,7 +61,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-ubuntu20:
-    name: Ubuntu 20.04
+    name: Ubuntu 20.04 standard
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
@@ -86,7 +86,6 @@ jobs:
           mkdir -p "$release_name"
           exeFiles=()
           for f in src/*; do [[ -x $f && -f $f ]] && exeFiles+=( "$f" ); done
-          strip "${exeFiles[@]}"
           cp "${exeFiles[@]}" "$release_name/"
           echo "::set-output name=release_name::${release_name}.zip"
           echo "::set-output name=artifact_path::$build_folder/$release_name"
@@ -100,7 +99,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-ubuntu20-debug:
-    name: Ubuntu 20.04
+    name: Ubuntu 20.04 debug
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
@@ -121,7 +120,6 @@ jobs:
           mkdir -p "$release_name"
           exeFiles=()
           for f in src/*; do [[ -x $f && -f $f ]] && exeFiles+=( "$f" ); done
-          strip "${exeFiles[@]}"
           cp "${exeFiles[@]}" "$release_name/"
           echo "::set-output name=release_name::${release_name}.zip"
           echo "::set-output name=artifact_path::$build_folder/$release_name"
@@ -135,7 +133,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-ubuntu20-release:
-    name: Ubuntu 20.04
+    name: Ubuntu 20.04 release
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
@@ -156,7 +154,6 @@ jobs:
           mkdir -p "$release_name"
           exeFiles=()
           for f in src/*; do [[ -x $f && -f $f ]] && exeFiles+=( "$f" ); done
-          strip "${exeFiles[@]}"
           cp "${exeFiles[@]}" "$release_name/"
           echo "::set-output name=release_name::${release_name}.zip"
           echo "::set-output name=artifact_path::$build_folder/$release_name"
@@ -183,15 +180,14 @@ jobs:
           build_folder="build/debug"
           ccx_ver=${GITHUB_SHA::7}
           ccx_ver_folder=$(echo $ccx_ver | sed 's/\.//g')
-          release_name=ccx-cli-ubuntu-2004-clang-dev-"$ccx_ver"
+          release_name=ccx-cli-ubuntu-2004-dev-clang"$ccx_ver"
           mkdir -p "$build_folder"
           cd "$build_folder"
-          CC=clang CXX=clang++ cmake ../.. -DCMAKE_BUILD_TYPE=Debug
+          CC=clang CXX=clang++ cmake ../.. -DCMAKE_BUILD_TYPE=Release
           make -j2
           mkdir -p "$release_name"
           exeFiles=()
           for f in src/*; do [[ -x $f && -f $f ]] && exeFiles+=( "$f" ); done
-          strip "${exeFiles[@]}"
           cp "${exeFiles[@]}" "$release_name/"
           echo "::set-output name=release_name::${release_name}.zip"
           echo "::set-output name=artifact_path::$build_folder/$release_name"
