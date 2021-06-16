@@ -995,6 +995,7 @@ namespace CryptoNote
 
   bool Blockchain::switch_to_alternative_blockchain(std::list<blocks_ext_by_hash::iterator> &alt_chain, bool discard_disconnected_chain)
   {
+    logger(INFO, BRIGHT_MAGENTA) << "Blockchain::switch_to_alternative_blockchain";
     logger(INFO, BRIGHT_MAGENTA) << "~#~ discard_disconnected_chain: " << discard_disconnected_chain;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
@@ -1394,7 +1395,15 @@ namespace CryptoNote
 
   bool Blockchain::handle_alternative_block(const Block &b, const Crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage)
   {
+    logger(INFO, BRIGHT_MAGENTA) << "~~~ Blockchain::handle_alternative_block";
     logger(INFO, BRIGHT_MAGENTA) << "~~~ handle_alternative_block";
+    LoggerMessage loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+    loggerMessage << "~~~ block: ";
+    BlockEntry::logBlock(b, loggerMessage);
+    loggerMessage << "~~~ hash: " << id;
+    loggerMessage << "~~~ bvc: ";
+    bvc.log(loggerMessage);
+    loggerMessage << "sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
     auto block_height = get_block_height(b);
@@ -2352,6 +2361,16 @@ namespace CryptoNote
       if (!(bl.previousBlockHash == getTailId()))
       {
         //chain switching or wrong block
+        LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
+        loggerMessage << "~~~ Blockchain::addNewBlock" << std::endl;
+        loggerMessage << "~~~ bl: " << std::endl;
+        BlockEntry::logBlock(bl, loggerMessage);
+        loggerMessage << "~~~ bl_: " << std::endl;
+        BlockEntry::logBlock(bl_, loggerMessage);
+        loggerMessage << "~~~ bvc: " << std::endl;
+        bvc.log(loggerMessage);
+        loggerMessage << "==> !(bl.previousBlockHash == getTailId())" << std::endl;
+        loggerMessage << "==> tailId: " << getTailId();
         bvc.m_added_to_main_chain = false;
         add_result = handle_alternative_block(bl, id, bvc);
       }

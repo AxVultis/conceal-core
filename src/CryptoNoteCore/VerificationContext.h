@@ -5,6 +5,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
+#include "Logging/LoggerMessage.h"
 namespace CryptoNote
 {
   /************************************************************************/
@@ -26,5 +27,16 @@ namespace CryptoNote
     bool m_marked_as_orphaned;
     bool m_already_exists;
     bool m_switched_to_alt_chain;
+
+    void log(Logging::LoggerMessage& logger) const
+    {
+      logger << "~+~ ***** block_verification_context *****" << std::endl;
+      logger << "~+~ m_added_to_main_chain:\t\t" << m_added_to_main_chain << std::endl;
+      logger << "~+~ m_verification_failed:\t" << m_verification_failed << std::endl;
+      logger << "~+~ m_marked_as_orphaned:\t" << m_marked_as_orphaned << std::endl;
+      logger << "~+~ m_already_exists:\t" << m_already_exists << std::endl;
+      logger << "~+~ m_switched_to_alt_chain:\t" << m_switched_to_alt_chain << std::endl;
+      logger << "~+~ *** block_verification_context end ***" << std::endl;
+    }
   };
 }
