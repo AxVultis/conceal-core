@@ -298,7 +298,7 @@ namespace CryptoNote
         logger << "~+~ *** BlockEntry end ***" << std::endl;
       }
 
-      void logBlock(Block block, Logging::LoggerMessage &logger) const
+      static void logBlock(Block block, Logging::LoggerMessage &logger)
       {
         logger << "~+~ ##### Block #####" << std::endl;
         logger << "~+~ baseTransaction:\t" << block.baseTransaction.toString() << std::endl;
@@ -306,12 +306,12 @@ namespace CryptoNote
         logger << "~+~ transactionHashes:\t" << std::endl;
         for (Crypto::Hash transactionHash : block.transactionHashes)
         {
-          logger << "~+~ " << transactionHash;
+          logger << "~+~ " << transactionHash << std::endl;
         }
         logger << "~+~ ### Block end ###" << std::endl;
       }
 
-      void logBlockHeader(BlockHeader blockHeader, Logging::LoggerMessage &logger) const
+      static void logBlockHeader(BlockHeader blockHeader, Logging::LoggerMessage &logger)
       {
         logger << "~+~ ##### BlockHeader #####" << std::endl;
         logger << "~+~ majorVersion:\t" << unsigned(blockHeader.majorVersion) << std::endl;
