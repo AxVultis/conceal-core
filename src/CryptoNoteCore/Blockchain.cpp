@@ -738,6 +738,10 @@ namespace CryptoNote
 
   bool Blockchain::resetAndSetGenesisBlock(const Block &b)
   {
+    LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
+    loggerMessage << "&&& Blockchain::resetAndSetGenesisBlock" << std::endl;
+    loggerMessage << "&&& b: " << std::endl;
+    BlockEntry::logBlock(b, loggerMessage);
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
     m_blocks.clear();
     m_blockIndex.clear();
