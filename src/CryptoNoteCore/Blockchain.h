@@ -217,7 +217,6 @@ namespace CryptoNote
     bool rollbackBlockchainTo(uint32_t height);
     bool have_tx_keyimg_as_spent(const Crypto::KeyImage &key_im);
 
-  private:
     struct MultisignatureOutputUsage
     {
       TransactionIndex transactionIndex;
@@ -243,18 +242,24 @@ namespace CryptoNote
         s(m_global_output_indexes, "indexes");
       }
 
-      std::string toString() const
+      void log(Logging::LoggerMessage &logger) const
       {
-        std::ostringstream os;
-        os << "~+~ +++++ TransactionEntry +++++" << std::endl;
-        os << "~+~ tx:\t" << tx.toString();
-        os << "~+~ +++ TransactionEntry end +++" << std::endl;
-        return os.str();
+        logger << "~+~ +++++ TransactionEntry +++++" << std::endl;
+        logger << "~+~ tx:\t";
+        logTransaction(tx, logger);
+        logger << "~+~ +++ TransactionEntry end +++" << std::endl;
       }
 
-      void log(Logging::LoggerMessage& logger) const
+      static void logTransaction(Transaction tx, Logging::LoggerMessage &logger)
       {
-        logger << tx.toString();
+        logger << "~+~ ===== Transaction =====" << std::endl;
+        logger << "~+~ version:\t'" << unsigned(tx.version) << "'" << std::endl;
+        logger << "~+~ unlockTime:\t" << tx.unlockTime << std::endl;
+        logger << "~+~ inputs:\t" << tx.inputs.size() << std::endl;
+        logger << "~+~ outputs:\t" << tx.outputs.size() << std::endl;
+        logger << "~+~ extra:\t" << tx.extra.size() << std::endl;
+        logger << "~+~ signatures:\t" << tx.signatures.size() << std::endl;
+        logger << "~+~ ====================" << std::endl;
       }
     };
 
@@ -293,15 +298,17 @@ namespace CryptoNote
         logger << "~+~ block:" << std::endl;
         logBlock(bl, logger);
 
-        logger << "~+~ blockheader:" << std::endl;
-        logBlockHeader(bl, logger);
         logger << "~+~ *** BlockEntry end ***" << std::endl;
       }
 
       static void logBlock(Block block, Logging::LoggerMessage &logger)
       {
         logger << "~+~ ##### Block #####" << std::endl;
-        logger << "~+~ baseTransaction:\t" << block.baseTransaction.toString() << std::endl;
+        logger << "~+~ blockheader:" << std::endl;
+        logBlockHeader(block, logger);
+        logger << "~+~ *** BlockEntry end ***" << std::endl;
+        logger << "~+~ baseTransaction:\t" << std::endl;
+        TransactionEntry::logTransaction(block.baseTransaction, logger);
         logger << "~+~ transactionHashes size:\t" << block.transactionHashes.size() << std::endl;
         logger << "~+~ transactionHashes:\t" << std::endl;
         for (Crypto::Hash transactionHash : block.transactionHashes)

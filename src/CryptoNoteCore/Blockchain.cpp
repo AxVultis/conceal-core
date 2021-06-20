@@ -1396,7 +1396,6 @@ namespace CryptoNote
   bool Blockchain::handle_alternative_block(const Block &b, const Crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage)
   {
     logger(INFO, BRIGHT_MAGENTA) << "~~~ Blockchain::handle_alternative_block";
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ handle_alternative_block";
     LoggerMessage loggerMessage = logger(INFO, BRIGHT_MAGENTA);
     loggerMessage << "~~~ block: ";
     BlockEntry::logBlock(b, loggerMessage);
@@ -2330,6 +2329,10 @@ namespace CryptoNote
 
   bool Blockchain::addNewBlock(const Block &bl_, block_verification_context &bvc)
   {
+    LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
+    loggerMessage << "~~~ Blockchain::addNewBlock" << std::endl;
+    loggerMessage << "~~~ bl_: " << std::endl;
+    BlockEntry::logBlock(bl_, loggerMessage);
     //copy block here to let modify block.target
     Block bl = bl_;
     Crypto::Hash id;
@@ -2361,12 +2364,8 @@ namespace CryptoNote
       if (!(bl.previousBlockHash == getTailId()))
       {
         //chain switching or wrong block
-        LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
-        loggerMessage << "~~~ Blockchain::addNewBlock" << std::endl;
         loggerMessage << "~~~ bl: " << std::endl;
         BlockEntry::logBlock(bl, loggerMessage);
-        loggerMessage << "~~~ bl_: " << std::endl;
-        BlockEntry::logBlock(bl_, loggerMessage);
         loggerMessage << "~~~ bvc: " << std::endl;
         bvc.log(loggerMessage);
         loggerMessage << "==> !(bl.previousBlockHash == getTailId())" << std::endl;

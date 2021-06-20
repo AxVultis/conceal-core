@@ -22,6 +22,7 @@
 #include "TransactionExtra.h"
 #include "CryptoNoteTools.h"
 #include "Currency.h"
+#include "CryptoNoteCore/Blockchain.h"
 
 #include "CryptoNoteConfig.h"
 

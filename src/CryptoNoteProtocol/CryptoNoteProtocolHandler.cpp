@@ -19,6 +19,8 @@
 #include "CryptoNoteCore/Currency.h"
 #include "CryptoNoteCore/VerificationContext.h"
 #include "P2p/LevinProtocol.h"
+#include "CryptoNoteCore/Blockchain.h"
+#include "CryptoNote.h"
 
 using namespace Logging;
 using namespace Common;
@@ -535,21 +537,28 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
 }
 
 int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& context, const std::vector<parsed_block_entry>& blocks) {
-
+  logger(INFO, BRIGHT_GREEN) << "£££ CryptoNoteProtocolHandler::processObjects";
+  auto myLogger = logger(INFO, BRIGHT_GREEN);
+  myLogger << "£££ context: " << std::endl;
+  context.log(myLogger);
+  myLogger << "£££ blocks size : " << blocks.size() << std::endl;
   for (const parsed_block_entry& block_entry : blocks) {
     if (m_stop) {
       break;
     }
 
+    myLogger << "%%% block_entry (block): " << std::endl;
+    Blockchain::BlockEntry::logBlock(block_entry.block, myLogger);
+
     //process transactions
     for (size_t i = 0; i < block_entry.txs.size(); ++i) {
       auto transactionBinary = block_entry.txs[i];
       Crypto::Hash transactionHash = Crypto::cn_fast_hash(transactionBinary.data(), transactionBinary.size());
-      logger(DEBUGGING) << "transaction " << transactionHash << " came in processObjects";
+      logger(INFO) << "transaction " << transactionHash << " came in processObjects";
 
       // check if tx hashes match
       if (transactionHash != block_entry.block.transactionHashes[i]) {
-        logger(DEBUGGING) << context << "transaction mismatch on NOTIFY_RESPONSE_GET_OBJECTS, \r\ntx_id = "
+        logger(INFO) << context << "transaction mismatch on NOTIFY_RESPONSE_GET_OBJECTS, \r\ntx_id = "
           << Common::podToHex(transactionHash) << ", dropping connection";
         context.m_state = CryptoNoteConnectionContext::state_shutdown;
         return 1;
@@ -558,7 +567,7 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
       tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
       m_core.handle_incoming_tx(transactionBinary, tvc, true);
       if (tvc.m_verification_failed) {
-        logger(DEBUGGING) << context << "transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, \r\ntx_id = "
+        logger(INFO) << context << "transaction verification failed on NOTIFY_RESPONSE_GET_OBJECTS, \r\ntx_id = "
           << Common::podToHex(transactionHash) << ", dropping connection";
         context.m_state = CryptoNoteConnectionContext::state_shutdown;
         return 1;

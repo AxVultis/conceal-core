@@ -16,6 +16,7 @@
 #include "Common/StringTools.h"
 #include "P2p/PendingLiteBlock.h"
 #include "crypto/hash.h"
+#include "Logging/LoggerMessage.h"
 
 namespace CryptoNote {
 
@@ -43,6 +44,19 @@ struct CryptoNoteConnectionContext {
   std::unordered_set<Crypto::Hash> m_requested_objects;
   uint32_t m_remote_blockchain_height = 0;
   uint32_t m_last_response_height = 0;
+
+  void log(Logging::LoggerMessage &logger){
+    logger << "~+~ version:\t'" << unsigned(version) << "'" << std::endl;
+    logger << "~+~ m_remote_ip:\t'" << Common::ipAddressToString(m_remote_ip) << "'" << std::endl;
+    logger << "~+~ m_remote_port:\t'" << m_remote_port << "'" << std::endl;
+    logger << "~+~ m_is_income:\t'" << m_is_income << "'" << std::endl;
+    logger << "~+~ m_started:\t'" << m_started << "'" << std::endl;
+    logger << "~+~ m_state:\t'" << m_state << "'" << std::endl;
+    logger << "~+~ m_needed_objects size:\t'" << m_needed_objects.size() << "'" << std::endl;
+    logger << "~+~ m_requested_objects size:\t'" << m_requested_objects.size() << "'" << std::endl;
+    logger << "~+~ m_remote_blockchain_height:\t'" << m_remote_blockchain_height << "'" << std::endl;
+    logger << "~+~ m_last_response_height:\t'" << m_last_response_height << "'" << std::endl;
+  }
 };
 
 inline std::string get_protocol_state_string(CryptoNoteConnectionContext::state s) {
