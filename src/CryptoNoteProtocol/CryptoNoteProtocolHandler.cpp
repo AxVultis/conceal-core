@@ -507,7 +507,7 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
     uint64_t dismiss = 1;
     for (const auto &h : block_hashes) {
       if (top == h) {
-        logger(DEBUGGING) << "Found current top block in synced blocks, dismissing "
+        logger(INFO) << "Found current top block in synced blocks, dismissing "
           << dismiss << "/" << arg.blocks.size() << " blocks";
         while (dismiss--) {
           arg.blocks.erase(arg.blocks.begin());
@@ -527,7 +527,7 @@ int CryptoNoteProtocolHandler::handle_response_get_objects(int command, NOTIFY_R
   }
 
   m_core.get_blockchain_top(height, top);
-  logger(DEBUGGING, BRIGHT_GREEN) << "Local blockchain updated, new height = " << height;
+  logger(INFO, BRIGHT_GREEN) << "Local blockchain updated, new height = " << height;
 
   if (!m_stop && context.m_state == CryptoNoteConnectionContext::state_synchronizing) {
     request_missing_objects(context, true);
