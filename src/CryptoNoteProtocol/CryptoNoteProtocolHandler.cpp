@@ -547,9 +547,6 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
       break;
     }
 
-    myLogger << "%%% block_entry (block): " << std::endl;
-    Blockchain::BlockEntry::logBlock(block_entry.block, myLogger);
-
     //process transactions
     for (size_t i = 0; i < block_entry.txs.size(); ++i) {
       auto transactionBinary = block_entry.txs[i];

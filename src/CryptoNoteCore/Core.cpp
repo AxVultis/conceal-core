@@ -580,10 +580,6 @@ bool core::handle_incoming_block_blob(const BinaryArray& block_blob, block_verif
 bool core::handle_incoming_block(const Block& b, block_verification_context& bvc, bool control_miner, bool relay_block) {
   LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
   loggerMessage << "&&& core::handle_incoming_block" << std::endl;
-  loggerMessage << "&&& b: " << std::endl;
-  Blockchain::BlockEntry::logBlock(b, loggerMessage);
-  loggerMessage << "&&& bvc: " << std::endl;
-  bvc.log(loggerMessage);
   if (control_miner) {
     pause_mining();
   }

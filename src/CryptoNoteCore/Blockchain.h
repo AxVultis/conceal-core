@@ -289,15 +289,14 @@ namespace CryptoNote
         logger << "~+~ block_cumulative_size:\t" << block_cumulative_size << std::endl;
         logger << "~+~ cumulative_difficulty:\t" << cumulative_difficulty << std::endl;
         logger << "~+~ already_generated_coins:\t" << already_generated_coins << std::endl;
+        logger << "~+~ block:" << std::endl;
+        logBlock(bl, logger);
         logger << "~+~ transactions size:\t" << transactions.size() << std::endl;
         logger << "~+~ transactions:\t" << std::endl;
         for (auto &transactionEntry : transactions)
         {
           transactionEntry.log(logger);
         }
-        logger << "~+~ block:" << std::endl;
-        logBlock(bl, logger);
-
         logger << "~+~ *** BlockEntry end ***" << std::endl;
       }
 

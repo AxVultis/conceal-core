@@ -1090,15 +1090,24 @@ namespace CryptoNote
     if (!discard_disconnected_chain)
     {
       //pushing old chain as alternative chain
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "[[[[[ pushing old chain as alternative chain ]]]]]" << std::endl;
       for (auto &old_ch_ent : disconnected_chain)
       {
         block_verification_context bvc = boost::value_initialized<block_verification_context>();
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ disconnected_chain +++++";
+        BlockEntry::logBlock(old_ch_ent, loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ disconnected_chain end +++";
         bool r = handle_alternative_block(old_ch_ent, get_block_hash(old_ch_ent), bvc, false);
         if (!r)
         {
           logger(ERROR, BRIGHT_RED) << ("Failed to push ex-main chain blocks to alternative chain ");
           rollback_blockchain_switching(disconnected_chain, split_height);
           return false;
+        }
+        else
+        {
+          logger(INFO, BRIGHT_GREEN) << ("Successfully to push ex-main chain blocks to alternative chain ");
         }
       }
     }
@@ -1108,6 +1117,7 @@ namespace CryptoNote
     blocksFromCommonRoot.push_back(alt_chain.front()->second.bl.previousBlockHash);
 
     //removing all_chain entries from alternative chain
+    logger(INFO, BRIGHT_MAGENTA) << "ùùù removing all_chain entries from alternative chain";
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1108";
     logger(INFO, BRIGHT_MAGENTA) << "~~~ alt_chain size: " << alt_chain.size();
     for (auto ch_ent : alt_chain)
@@ -1399,12 +1409,12 @@ namespace CryptoNote
 
   bool Blockchain::handle_alternative_block(const Block &b, const Crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage)
   {
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ Blockchain::handle_alternative_block";
+    logger(INFO, BRIGHT_MAGENTA) << "$$$ Blockchain::handle_alternative_block";
     LoggerMessage loggerMessage = logger(INFO, BRIGHT_MAGENTA);
-    loggerMessage << "~~~ block: ";
+    loggerMessage << "$$$ block: " << std::endl;
     BlockEntry::logBlock(b, loggerMessage);
-    loggerMessage << "~~~ hash: " << id;
-    loggerMessage << "~~~ bvc: ";
+    loggerMessage << "$$$ hash: " << id << std::endl;
+    loggerMessage << "$$$ bvc: ";
     bvc.log(loggerMessage);
     loggerMessage << "sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
@@ -1423,7 +1433,7 @@ namespace CryptoNote
 
     if (!m_checkpoints.is_alternative_block_allowed(getCurrentBlockchainHeight(), block_height))
     {
-      logger(DEBUGGING) << "Block with id: " << id << std::endl
+      logger(INFO, BRIGHT_RED) << "Block with id: " << id << std::endl
                         << " can't be accepted for alternative chain, block height: " << block_height << std::endl
                         << " blockchain height: " << getCurrentBlockchainHeight();
 
@@ -1440,7 +1450,7 @@ namespace CryptoNote
     size_t cumulativeSize;
     if (!getBlockCumulativeSize(b, cumulativeSize))
     {
-      logger(DEBUGGING) << "Block with id: " << id << " has at least one unknown transaction. Cumulative size is calculated imprecisely";
+      logger(INFO, BRIGHT_RED) << "Block with id: " << id << " has at least one unknown transaction. Cumulative size is calculated imprecisely";
     }
 
     if (!checkCumulativeBlockSize(id, cumulativeSize, block_height))
@@ -1468,6 +1478,33 @@ namespace CryptoNote
         alt_chain.push_front(alt_it);
         timestamps.push_back(alt_it->second.bl.timestamp);
         alt_it = m_alternative_chains.find(alt_it->second.bl.previousBlockHash);
+      }
+
+      loggerMessage << "m_alternative_chains size: " << m_alternative_chains.size() << std::endl;
+      loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
+
+      loggerMessage << "[[[[[ m_alternative_chains ]]]]]" << std::endl;
+      for (auto ch_ent : m_alternative_chains)
+      {
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ m_alternative_chains +++++";
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ entry hash:\t" << ch_ent.first;
+        ch_ent.second.log(loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
+        Crypto::Hash hash = get_block_hash(ch_ent.second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ m_alternative_chains end +++";
+      }
+
+      loggerMessage << "[[[[[ alt_chain ]]]]]" << std::endl;
+      for (auto ch_ent : alt_chain)
+      {
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ entry hash:\t" << ch_ent->first;
+        ch_ent->second.log(loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
+        Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ alt_chain_entry end +++";
       }
 
       if (alt_chain.size())
@@ -1604,7 +1641,18 @@ namespace CryptoNote
         //do reorganize!
         logger(INFO, BRIGHT_GREEN) << "###### REORGANIZE on height: " << alt_chain.front()->second.height << " of " << m_blocks.size() - 1 << " with cum_difficulty " << m_blocks.back().cumulative_difficulty
                                    << ENDL << " alternative blockchain size: " << alt_chain.size() << " with cum_difficulty " << bei.cumulative_difficulty;
-
+        loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
+        loggerMessage << "[[[[[ alt_chain ]]]]]" << std::endl;
+        for (auto ch_ent : alt_chain)
+        {
+          logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
+          logger(INFO, BRIGHT_MAGENTA) << "µµµ entry hash:\t" << ch_ent->first;
+          ch_ent->second.log(loggerMessage);
+          logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
+          Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
+          logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+          logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ alt_chain_entry end +++";
+        }
         bool r = switch_to_alternative_blockchain(alt_chain, false);
         logger(INFO, BRIGHT_MAGENTA) << "~~~ switch_to_alternative_blockchain: " << r;
         if (r)
@@ -2335,8 +2383,6 @@ namespace CryptoNote
   {
     LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
     loggerMessage << "~~~ Blockchain::addNewBlock" << std::endl;
-    loggerMessage << "~~~ bl_: " << std::endl;
-    BlockEntry::logBlock(bl_, loggerMessage);
     //copy block here to let modify block.target
     Block bl = bl_;
     Crypto::Hash id;
@@ -2368,10 +2414,6 @@ namespace CryptoNote
       if (!(bl.previousBlockHash == getTailId()))
       {
         //chain switching or wrong block
-        loggerMessage << "~~~ bl: " << std::endl;
-        BlockEntry::logBlock(bl, loggerMessage);
-        loggerMessage << "~~~ bvc: " << std::endl;
-        bvc.log(loggerMessage);
         loggerMessage << "==> !(bl.previousBlockHash == getTailId())" << std::endl;
         loggerMessage << "==> tailId: " << getTailId();
         bvc.m_added_to_main_chain = false;
