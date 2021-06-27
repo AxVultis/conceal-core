@@ -665,7 +665,7 @@ void WalletSerializer::loadWallets(Common::IInputStream& source, CryptoContext& 
   deserializeEncrypted(count, "wallets_count", cryptoContext, source);
   cryptoContext.incIv();
 
-  bool isTrackingMode;
+  bool isTrackingMode = true;
 
   for (uint64_t i = 0; i < count; ++i) {
     WalletRecordDto dto;
@@ -760,7 +760,6 @@ void WalletSerializer::loadObsoleteSpentOutputs(Common::IInputStream& source, Cr
 void WalletSerializer::loadUnlockTransactionsJobs(Common::IInputStream& source, CryptoContext& cryptoContext) {
   auto& index = m_unlockTransactions.get<TransactionHashIndex>();
   auto& walletsIndex = m_walletsContainer.get<RandomAccessIndex>();
-  const uint64_t walletsSize = walletsIndex.size();
 
   uint64_t jobsCount = 0;
   deserializeEncrypted(jobsCount, "unlock_transactions_jobs_count", cryptoContext, source);

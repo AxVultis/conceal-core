@@ -312,9 +312,7 @@ namespace CryptoNote
     m_logger(DEBUGGING, BRIGHT_WHITE) << "New container initialized, public view key " << Common::podToHex(viewPublicKey);
   }
 
-  void WalletGreen::withdrawDeposit(
-      DepositId depositId,
-      std::string &transactionHash)
+  void WalletGreen::withdrawDeposit(DepositId depositId, std::string &transactionHash)
   {
 
     throwIfNotInitialized();
@@ -357,7 +355,7 @@ namespace CryptoNote
 
     container->getTransfer(deposit.transactionHash, deposit.outputInTransaction, transfer, state);
 
-    if (state != ITransfersContainer::TransferState::TransferAvailable) 
+    if (state != ITransfersContainer::TransferState::TransferAvailable)
     {
       throw std::system_error(make_error_code(CryptoNote::error::DEPOSIT_LOCKED));
     }
@@ -408,7 +406,7 @@ namespace CryptoNote
     }
 
     transactionHash = Common::podToHex(transaction->getTransactionHash());
-    size_t id = validateSaveAndSendTransaction(*transaction, {}, false, true);
+    validateSaveAndSendTransaction(*transaction, {}, false, true);
   }
 
   Crypto::SecretKey WalletGreen::getTransactionDeterministicSecretKey(Crypto::Hash &transactionHash) const
@@ -522,11 +520,7 @@ namespace CryptoNote
      which includes the term, and then after that the change outputs */
 
     /* Add the deposit outputs to the transaction */
-    auto depositIndex = transaction->addOutput(
-        neededMoney - fee,
-        {destAddr},
-        1,
-        term);
+    transaction->addOutput(neededMoney - fee, {destAddr}, 1, term);
 
     /* Let's add the change outputs to the transaction */
 
@@ -618,7 +612,7 @@ namespace CryptoNote
 
     /* Return the transaction hash */
     transactionHash = Common::podToHex(transaction->getTransactionHash());
-    size_t id = validateSaveAndSendTransaction(*transaction, {}, false, true);
+    validateSaveAndSendTransaction(*transaction, {}, false, true);
   }
 
   void WalletGreen::validateOrders(const std::vector<WalletOrder> &orders) const
@@ -943,8 +937,6 @@ namespace CryptoNote
       dst.setAutoFlush(true);
       dst.flush();
     });
-
-    size_t counter = 0;
 
     for (auto &encryptedSpendKeys : src)
     {
@@ -3970,7 +3962,6 @@ namespace CryptoNote
     std::unique_ptr<ITransaction> fusionTransaction;
     size_t transactionSize;
     int round = 0;
-    uint64_t transactionAmount;
     do
     {
       if (round != 0)
@@ -3982,8 +3973,6 @@ namespace CryptoNote
       uint64_t inputsAmount = std::accumulate(fusionInputs.begin(), fusionInputs.end(), static_cast<uint64_t>(0), [](uint64_t amount, const OutputToTransfer &input) {
         return amount + input.out.amount;
       });
-
-      transactionAmount = inputsAmount;
 
       ReceiverAmounts decomposedOutputs = decomposeFusionOutputs(destination, inputsAmount);
       assert(decomposedOutputs.amounts.size() <= MAX_FUSION_OUTPUT_COUNT);

@@ -478,9 +478,7 @@ bool wallet_rpc_server::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREAT
     CryptoNote::AccountPublicAddress addr;
 
     /* get the spend and view public keys from the address */
-    const bool valid = CryptoNote::parseAccountAddressString(prefix, 
-                                                            addr,
-                                                            address_str);
+    CryptoNote::parseAccountAddressString(prefix, addr, address_str);
 
     CryptoNote::BinaryArray ba;
     CryptoNote::toBinaryArray(addr, ba);
