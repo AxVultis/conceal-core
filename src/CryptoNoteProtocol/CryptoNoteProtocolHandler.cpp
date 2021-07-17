@@ -281,7 +281,7 @@ int CryptoNoteProtocolHandler::handleCommand(bool is_notify, int command, const 
 
 int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request &arg, CryptoNoteConnectionContext &context)
 {
-  logger(Logging::TRACE) << context << "NOTIFY_NEW_BLOCK (hop " << arg.hop << ")";
+  logger(Logging::INFO) << context << "NOTIFY_NEW_BLOCK (hop " << arg.hop << ")";
 
   updateObservedHeight(arg.current_blockchain_height, context);
 

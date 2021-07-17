@@ -1091,7 +1091,7 @@ namespace CryptoNote
     {
       //pushing old chain as alternative chain
       auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
-      loggerMessage << "[[[[[ pushing old chain as alternative chain ]]]]]" << std::endl;
+      loggerMessage << "[[[[[ pushing old chain as alternative chain ]]]]] size: " << disconnected_chain.size() << std::endl;
       for (auto &old_ch_ent : disconnected_chain)
       {
         block_verification_context bvc = boost::value_initialized<block_verification_context>();
@@ -1416,7 +1416,7 @@ namespace CryptoNote
     loggerMessage << "$$$ hash: " << id << std::endl;
     loggerMessage << "$$$ bvc: ";
     bvc.log(loggerMessage);
-    loggerMessage << "sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
+    loggerMessage << "sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage << std::endl;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
     auto block_height = get_block_height(b);
@@ -1483,7 +1483,7 @@ namespace CryptoNote
       loggerMessage << "m_alternative_chains size: " << m_alternative_chains.size() << std::endl;
       loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
 
-      loggerMessage << "[[[[[ m_alternative_chains ]]]]]" << std::endl;
+      loggerMessage << "[[[[[ handle_alternative m_alternative_chains ]]]]] size: " << m_alternative_chains.size() << std::endl;
       for (auto ch_ent : m_alternative_chains)
       {
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ m_alternative_chains +++++";
@@ -1495,7 +1495,7 @@ namespace CryptoNote
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ m_alternative_chains end +++";
       }
 
-      loggerMessage << "[[[[[ alt_chain ]]]]]" << std::endl;
+      loggerMessage << "[[[[[ handle_alternative alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
       for (auto ch_ent : alt_chain)
       {
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
@@ -1506,6 +1506,7 @@ namespace CryptoNote
         logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ alt_chain_entry end +++";
       }
+      logger(INFO, BRIGHT_MAGENTA) << "[[[[[ handle_alternative alt_chain ]]]]] end" << std::endl;
 
       if (alt_chain.size())
       {
@@ -1642,7 +1643,7 @@ namespace CryptoNote
         logger(INFO, BRIGHT_GREEN) << "###### REORGANIZE on height: " << alt_chain.front()->second.height << " of " << m_blocks.size() - 1 << " with cum_difficulty " << m_blocks.back().cumulative_difficulty
                                    << ENDL << " alternative blockchain size: " << alt_chain.size() << " with cum_difficulty " << bei.cumulative_difficulty;
         loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
-        loggerMessage << "[[[[[ alt_chain ]]]]]" << std::endl;
+        loggerMessage << "[[[[[ reorganize alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
         for (auto ch_ent : alt_chain)
         {
           logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
@@ -1678,12 +1679,12 @@ namespace CryptoNote
         m_blocks.back().log(loggerMessage);
         loggerMessage << "bei: ";
         bei.log(loggerMessage);
-        logger(INFO, BRIGHT_MAGENTA) << "~~~ sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
+        logger(INFO, BRIGHT_MAGENTA) << "~~~ sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage << std::endl;
         if (sendNewAlternativeBlockMessage)
         {
           sendMessage(BlockchainMessage(NewAlternativeBlockMessage(id)));
         }
-        return true;
+        return true; 
       }
     }
     else
@@ -2403,9 +2404,13 @@ namespace CryptoNote
 
       if (haveBlock(id))
       {
-        logger(TRACE) << "block with id = " << id << " already exists";
+        logger(INFO) << "block with id = " << id << " already exists";
         bvc.m_already_exists = true;
         return false;
+      }
+      else
+      {
+        logger(INFO) << "block with id = " << id << " does not exists";
       }
 
       uint32_t height = m_blocks.size();
