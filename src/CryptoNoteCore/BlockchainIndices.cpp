@@ -11,6 +11,7 @@
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"
 #include "BlockchainExplorer/BlockchainExplorerDataBuilder.h"
 #include "CryptoNoteBasicImpl.h"
+#include "Blockchain.h"
 
 namespace CryptoNote {
 
@@ -231,6 +232,34 @@ bool OrphanBlocksIndex::remove(const Block& block) {
     }
   }
 
+  return false;
+}
+
+bool OrphanBlocksIndex::remove(const Block &block, Logging::LoggerMessage &logger)
+{
+  logger << "rrr OrphanBlocksIndex::remove " << std::endl;
+  logger << "rrr block is: " << std::endl;
+  Blockchain::BlockEntry::logBlock(block, logger);
+  Crypto::Hash blockHash = get_block_hash(block);
+  logger << "rrr hash is: " << blockHash << std::endl;
+  uint32_t blockHeight = boost::get<BaseInput>(block.baseTransaction.inputs.front()).blockIndex;
+  logger << "rrr blockHeight is: " << blockHeight << std::endl;
+  auto range = index.equal_range(blockHeight);
+  logger << "rrr range.first->first: " << range.first->first << std::endl;
+  logger << "rrr range.first->second: " << range.first->second << std::endl;
+  logger << "rrr range.second->first: " << range.second->first << std::endl;
+  logger << "rrr range.second->second: " << range.second->second << std::endl;
+  for (auto iter = range.first; iter != range.second; ++iter)
+  {
+    logger << "rrr iter->first: " << iter->first << std::endl;
+    logger << "rrr iter->second: " << iter->second << std::endl;
+    if (iter->second == blockHash)
+    {
+      logger << "rrr iter->second == blockHash" << std::endl;
+      index.erase(iter);
+      return true;
+    }
+  }
   return false;
 }
 

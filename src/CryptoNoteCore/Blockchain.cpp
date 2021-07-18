@@ -1132,7 +1132,7 @@ namespace CryptoNote
       logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << hash;
       blocksFromCommonRoot.push_back(hash);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1113";
-      m_orthanBlocksIndex.remove(ch_ent->second.bl);
+      m_orthanBlocksIndex.remove(ch_ent->second.bl, loggerMessage);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1115";
       m_alternative_chains.erase(ch_ent);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1117";
@@ -1618,7 +1618,25 @@ namespace CryptoNote
 
       m_orthanBlocksIndex.add(bei.bl);
 
+      logger(INFO, BRIGHT_MAGENTA) << "alt_chain size before push: " << alt_chain.size();
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      for (auto entry : alt_chain)
+      {
+        logger(INFO, BRIGHT_MAGENTA) << "before_entry hash: " << entry->first;
+        TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
+      }
+      logger(INFO, BRIGHT_MAGENTA) << "before push end";
+
       alt_chain.push_back(i_res.first);
+
+      logger(INFO, BRIGHT_MAGENTA) << "alt_chain size after push: " << alt_chain.size();
+
+      for (auto entry : alt_chain)
+      {
+        logger(INFO, BRIGHT_MAGENTA) << "after_entry hash: " << entry->first;
+        TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
+      }
+      logger(INFO, BRIGHT_MAGENTA) << "after push end";
 
       if (is_a_checkpoint)
       {

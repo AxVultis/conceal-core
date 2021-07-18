@@ -13,6 +13,7 @@
 #include <parallel_hashmap/phmap.h>
 #include "crypto/hash.h"
 #include "CryptoNoteBasic.h"
+#include "Logging/LoggerMessage.h"
 using phmap::flat_hash_map;
 namespace CryptoNote {
 
@@ -102,6 +103,7 @@ public:
 
   bool add(const Block& block);
   bool remove(const Block& block);
+  bool remove(const Block& block, Logging::LoggerMessage &logger);
   bool find(uint32_t height, std::vector<Crypto::Hash>& blockHashes);
   void clear();
 private:
