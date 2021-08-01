@@ -101,10 +101,9 @@ class OrphanBlocksIndex {
 public:
   OrphanBlocksIndex() = default;
 
-  bool add(const Block& block);
-  bool remove(const Block& block);
+  bool add(const Block& block, Logging::LoggerMessage &logger);
   bool remove(const Block& block, Logging::LoggerMessage &logger);
-  bool find(uint32_t height, std::vector<Crypto::Hash>& blockHashes);
+  bool find(uint32_t height, std::vector<Crypto::Hash>& blockHashes, Logging::LoggerMessage &logger);
   void clear();
 private:
   std::unordered_multimap<uint32_t, Crypto::Hash> index;

@@ -1073,14 +1073,17 @@ namespace CryptoNote
         rollback_blockchain_switching(disconnected_chain, split_height);
         //add_block_as_invalid(ch_ent->second, get_block_hash(ch_ent->second.bl));
         logger(INFO, BRIGHT_WHITE) << "The block was inserted as invalid while connecting new alternative chain,  block_id: " << get_block_hash(ch_ent->second.bl);
-        m_orthanBlocksIndex.remove(ch_ent->second.bl);
+        auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+        m_orthanBlocksIndex.remove(ch_ent->second.bl, loggerMessage);
         m_alternative_chains.erase(ch_ent);
 
         for (auto alt_ch_to_orph_iter = ++alt_ch_iter; alt_ch_to_orph_iter != alt_chain.end(); alt_ch_to_orph_iter++)
         {
           //block_verification_context bvc = boost::value_initialized<block_verification_context>();
           //add_block_as_invalid((*alt_ch_iter)->second, (*alt_ch_iter)->first);
-          m_orthanBlocksIndex.remove((*alt_ch_to_orph_iter)->second.bl);
+          auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+          loggerMessage << "**************" << std::endl;
+          m_orthanBlocksIndex.remove((*alt_ch_to_orph_iter)->second.bl, loggerMessage);
           m_alternative_chains.erase(*alt_ch_to_orph_iter);
         }
 
@@ -1615,11 +1618,13 @@ namespace CryptoNote
         logger(ERROR, BRIGHT_RED) << "insertion of new alternative block returned as it already exist";
         return false;
       }
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "--- adding block to orphan block index " << std::endl;
 
-      m_orthanBlocksIndex.add(bei.bl);
+      m_orthanBlocksIndex.add(bei.bl, loggerMessage);
 
       logger(INFO, BRIGHT_MAGENTA) << "alt_chain size before push: " << alt_chain.size();
-      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      
       for (auto entry : alt_chain)
       {
         logger(INFO, BRIGHT_MAGENTA) << "before_entry hash: " << entry->first;
@@ -3286,7 +3291,9 @@ namespace CryptoNote
   bool Blockchain::getOrphanBlockIdsByHeight(uint32_t height, std::vector<Crypto::Hash> &blockHashes)
   {
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
-    return m_orthanBlocksIndex.find(height, blockHashes);
+    auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+    loggerMessage << "Blockchain::getOrphanBlockIdsByHeight" << std::endl;
+    return m_orthanBlocksIndex.find(height, blockHashes, loggerMessage);
   }
 
   bool Blockchain::getBlockIdsByTimestamp(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t blocksNumberLimit, std::vector<Crypto::Hash> &hashes, uint32_t &blocksNumberWithinTimestamps)

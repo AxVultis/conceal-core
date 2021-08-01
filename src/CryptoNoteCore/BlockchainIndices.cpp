@@ -214,65 +214,74 @@ void GeneratedTransactionsIndex::serialize(ISerializer& s) {
   s(lastGeneratedTxNumber, "lastGeneratedTxNumber");
 }
 
-bool OrphanBlocksIndex::add(const Block& block) {
+bool OrphanBlocksIndex::add(const Block &block, Logging::LoggerMessage &logger)
+{
+  logger << "obi OrphanBlocksIndex::add " << std::endl;
+  logger << "obi block is: " << std::endl;
+  Blockchain::BlockEntry::logBlock(block, logger);
   Crypto::Hash blockHash = get_block_hash(block);
+  logger << "obi hash is: " << blockHash << std::endl;
   uint32_t blockHeight = boost::get<BaseInput>(block.baseTransaction.inputs.front()).blockIndex;
+  logger << "obi blockHeight is: " << blockHeight << std::endl;
   index.emplace(blockHeight, blockHash);
+  logger << "obi OrphanBlocksIndex::add {{ END }}" << std::endl;
   return true;
-}
-
-bool OrphanBlocksIndex::remove(const Block& block) {
-  Crypto::Hash blockHash = get_block_hash(block);
-  uint32_t blockHeight = boost::get<BaseInput>(block.baseTransaction.inputs.front()).blockIndex;
-  auto range = index.equal_range(blockHeight);
-  for (auto iter = range.first; iter != range.second; ++iter) {
-    if (iter->second == blockHash) {
-      index.erase(iter);
-      return true;
-    }
-  }
-
-  return false;
 }
 
 bool OrphanBlocksIndex::remove(const Block &block, Logging::LoggerMessage &logger)
 {
-  logger << "rrr OrphanBlocksIndex::remove " << std::endl;
-  logger << "rrr block is: " << std::endl;
+  logger << "obi OrphanBlocksIndex::remove " << std::endl;
+  logger << "obi block is: " << std::endl;
   Blockchain::BlockEntry::logBlock(block, logger);
   Crypto::Hash blockHash = get_block_hash(block);
-  logger << "rrr hash is: " << blockHash << std::endl;
+  logger << "obi hash is: " << blockHash << std::endl;
   uint32_t blockHeight = boost::get<BaseInput>(block.baseTransaction.inputs.front()).blockIndex;
-  logger << "rrr blockHeight is: " << blockHeight << std::endl;
+  logger << "obi blockHeight is: " << blockHeight << std::endl;
   auto range = index.equal_range(blockHeight);
-  logger << "rrr range.first->first: " << range.first->first << std::endl;
-  logger << "rrr range.first->second: " << range.first->second << std::endl;
-  logger << "rrr range.second->first: " << range.second->first << std::endl;
-  logger << "rrr range.second->second: " << range.second->second << std::endl;
+  logger << "obi range.first->first: " << range.first->first << std::endl;
+  logger << "obi range.first->second: " << range.first->second << std::endl;
+  logger << "obi range.second->first: " << range.second->first << std::endl;
+  logger << "obi range.second->second: " << range.second->second << std::endl;
   for (auto iter = range.first; iter != range.second; ++iter)
   {
-    logger << "rrr iter->first: " << iter->first << std::endl;
-    logger << "rrr iter->second: " << iter->second << std::endl;
+    logger << "obi iter->first: " << iter->first << std::endl;
+    logger << "obi iter->second: " << iter->second << std::endl;
     if (iter->second == blockHash)
     {
-      logger << "rrr iter->second == blockHash" << std::endl;
+      logger << "obi iter->second == blockHash" << std::endl;
       index.erase(iter);
+      logger << "obi OrphanBlocksIndex::remove true {{ END }}" << std::endl;
       return true;
     }
   }
+  logger << "obi OrphanBlocksIndex::remove false {{ END }}" << std::endl;
   return false;
 }
 
-bool OrphanBlocksIndex::find(uint32_t height, std::vector<Crypto::Hash>& blockHashes) {
-  if (height > std::numeric_limits<uint32_t>::max()) {
+bool OrphanBlocksIndex::find(uint32_t height, std::vector<Crypto::Hash> &blockHashes, Logging::LoggerMessage &logger)
+{
+  logger << "obi OrphanBlocksIndex::find " << std::endl;
+  logger << "obi height: " << height << std::endl;
+  if (height > std::numeric_limits<uint32_t>::max())
+  {
+    logger << "obi height exceeds max" << std::endl;
+    logger << "obi OrphanBlocksIndex::find false {{ END }}" << std::endl;
     return false;
   }
   bool found = false;
   auto range = index.equal_range(height);
-  for (auto iter = range.first; iter != range.second; ++iter) {
+  logger << "obi range.first->first: " << range.first->first << std::endl;
+  logger << "obi range.first->second: " << range.first->second << std::endl;
+  logger << "obi range.second->first: " << range.second->first << std::endl;
+  logger << "obi range.second->second: " << range.second->second << std::endl;
+  for (auto iter = range.first; iter != range.second; ++iter)
+  {
     found = true;
+    logger << "obi found true" << std::endl;
     blockHashes.emplace_back(iter->second);
+    logger << "obi emplace_back" << std::endl;
   }
+  logger << "obi OrphanBlocksIndex::find last " << found << " {{ END }}" << std::endl;
   return found;
 }
 
