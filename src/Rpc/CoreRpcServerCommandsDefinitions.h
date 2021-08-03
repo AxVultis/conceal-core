@@ -539,6 +539,20 @@ struct f_block_short_response {
   }
 };
 
+struct f_transaction_block_response {
+    Transaction transaction;
+    f_transaction_details_response transaction_details;
+    f_block_short_response block;
+    std::string status;
+
+    void serialize(ISerializer &s) {
+      KV_MEMBER(transaction)
+      KV_MEMBER(transaction_details)
+      KV_MEMBER(block)
+      KV_MEMBER(status)
+    }
+  };
+
 struct f_block_details_response {
   uint8_t major_version;
   uint8_t minor_version;
@@ -548,6 +562,7 @@ struct f_block_details_response {
   bool orphan_status;
   uint64_t height;
   uint64_t depth;
+  uint64_t deposits;
   std::string hash;
   difficulty_type difficulty;
   uint64_t reward;
@@ -560,7 +575,7 @@ struct f_block_details_response {
   uint64_t base_reward;
   double penalty;
   uint64_t total_fee_amount;
-  std::vector<f_transaction_short_response> transactions;
+  std::vector<f_transaction_block_response> transactions;
 
   void serialize(ISerializer &s) {
     KV_MEMBER(major_version)
@@ -571,6 +586,7 @@ struct f_block_details_response {
     KV_MEMBER(orphan_status)
     KV_MEMBER(height)
     KV_MEMBER(depth)
+    KV_MEMBER(deposits)
     KV_MEMBER(hash)
     KV_MEMBER(difficulty)
     KV_MEMBER(reward)

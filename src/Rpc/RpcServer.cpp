@@ -810,13 +810,13 @@ bool RpcServer::f_on_blocks_list_json(const F_COMMAND_RPC_GET_BLOCKS_LIST::reque
       std::string("To big height: ") + std::to_string(req.height) + ", current blockchain height = " + std::to_string(m_core.get_current_blockchain_height()) };
   }
 
-  uint32_t print_blocks_count = 30;
+  uint32_t print_blocks_count = 500;
   uint32_t last_height = req.height - print_blocks_count;
   if (req.height <= print_blocks_count)  {
     last_height = 0;
   }
 
-  for (uint32_t i = req.height; i >= last_height; i--) {
+  for (uint32_t i = req.height; i > last_height; i--) {
     Hash block_hash = m_core.getBlockIdByHeight(static_cast<uint32_t>(i));
     Block blk;
     if (!m_core.getBlockByHash(block_hash, blk)) {
@@ -886,6 +886,7 @@ bool RpcServer::f_on_block_json(const F_COMMAND_RPC_GET_BLOCK_DETAILS::request& 
   res.block.hash = Common::podToHex(hash);
   res.block.orphan_status = is_orphaned;
   res.block.depth = m_core.get_current_blockchain_height() - res.block.height - 1;
+  res.block.deposits = block_header.deposits;
   m_core.getBlockDifficulty(static_cast<uint32_t>(res.block.height), res.block.difficulty);
 
   res.block.reward = block_header.reward;
@@ -928,6 +929,7 @@ bool RpcServer::f_on_block_json(const F_COMMAND_RPC_GET_BLOCK_DETAILS::request& 
   bool penalizeFee = blk.majorVersion >= 2;
   size_t blockGrantedFullRewardZone = penalizeFee ?
   m_core.currency().blockGrantedFullRewardZone() :
+  0;
   //m_core.currency().blockGrantedFullRewardZoneV1();
   res.block.effective_size_median = std::max(res.block.size_median, blockGrantedFullRewardZone);
 
@@ -958,13 +960,32 @@ bool RpcServer::f_on_block_json(const F_COMMAND_RPC_GET_BLOCK_DETAILS::request& 
     res.block.penalty = static_cast<double>(maxReward - currentReward) / static_cast<double>(maxReward);
   }
 
+  // block_short for transactions
+  f_block_short_response block_short;
+
+  block_short.timestamp = res.block.timestamp;
+  block_short.height = res.block.height;
+  block_short.hash = res.block.hash;
+  block_short.difficulty = res.block.difficulty;
+  block_short.transactions_count = blk.transactionHashes.size() + 1;
+  block_short.cumulative_size = res.block.block_size;
+
+
   // Base transaction adding
-  f_transaction_short_response transaction_short;
-  transaction_short.hash = Common::podToHex(getObjectHash(blk.baseTransaction));
-  transaction_short.fee = 0;
-  transaction_short.amount_out = get_outs_money_amount(blk.baseTransaction);
-  transaction_short.size = getObjectBinarySize(blk.baseTransaction);
-  res.block.transactions.push_back(transaction_short);
+  f_transaction_block_response transaction_response;
+  transaction_response.transaction = blk.baseTransaction;
+
+  transaction_response.transaction_details.hash = Common::podToHex(getObjectHash(blk.baseTransaction));
+  transaction_response.transaction_details.size = getObjectBinarySize(blk.baseTransaction);
+  transaction_response.transaction_details.payment_id = "";
+  transaction_response.transaction_details.mixin = 0;
+  transaction_response.transaction_details.fee = 0;
+  transaction_response.transaction_details.amount_out = get_outs_money_amount(blk.baseTransaction);
+
+  transaction_response.block = block_short;
+  transaction_response.status = CORE_RPC_STATUS_OK;
+
+  res.block.transactions.push_back(transaction_response);
 
 
   std::list<Crypto::Hash> missed_txs;
@@ -973,22 +994,47 @@ bool RpcServer::f_on_block_json(const F_COMMAND_RPC_GET_BLOCK_DETAILS::request& 
 
   res.block.total_fee_amount = 0;
 
-  for (const Transaction& tx : txs) {
-    f_transaction_short_response transaction_short;
+  for (const Transaction &tx : txs)
+  {
+    f_transaction_block_response transaction_response;
+    transaction_response.transaction = tx;
+
     uint64_t amount_in = 0;
     get_inputs_money_amount(tx, amount_in);
     uint64_t amount_out = get_outs_money_amount(tx);
 
-    transaction_short.hash = Common::podToHex(getObjectHash(tx));
-    transaction_short.fee =
-			amount_in < amount_out + parameters::MINIMUM_FEE //account for interest in output, it always has minimum fee
-			? parameters::MINIMUM_FEE
-			: amount_in - amount_out;
-    transaction_short.amount_out = amount_out;
-    transaction_short.size = getObjectBinarySize(tx);
-    res.block.transactions.push_back(transaction_short);
+    transaction_response.transaction_details.fee =
+        amount_in < amount_out + parameters::MINIMUM_FEE //account for interest in output, it always has minimum fee
+            ? parameters::MINIMUM_FEE
+            : amount_in - amount_out;
+    transaction_response.transaction_details.amount_out = amount_out;
 
-    res.block.total_fee_amount += transaction_short.fee;
+    transaction_response.transaction_details.hash = Common::podToHex(getObjectHash(tx));
+    transaction_response.transaction_details.size = getObjectBinarySize(tx);
+
+    Crypto::Hash paymentId;
+    if (CryptoNote::getPaymentIdFromTxExtra(tx.extra, paymentId))
+    {
+      transaction_response.transaction_details.payment_id = Common::podToHex(paymentId);
+    }
+    else
+    {
+      transaction_response.transaction_details.payment_id = "";
+    }
+
+    uint64_t mixin;
+    if (!f_getMixin(tx, mixin))
+    {
+      return false;
+    }
+    transaction_response.transaction_details.mixin = mixin;
+
+    transaction_response.block = block_short;
+    transaction_response.status = CORE_RPC_STATUS_OK;
+
+    res.block.transactions.push_back(transaction_response);
+
+    res.block.total_fee_amount += transaction_response.transaction_details.fee;
   }
 
   res.status = CORE_RPC_STATUS_OK;
