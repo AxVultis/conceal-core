@@ -1133,6 +1133,7 @@ namespace CryptoNote
       logger(INFO, BRIGHT_MAGENTA) << "~+~ getting hash";
       Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << hash;
+      logger(INFO, BRIGHT_MAGENTA) << "~+~ Hash:\t" << ch_ent->first;
       blocksFromCommonRoot.push_back(hash);
       logger(INFO, BRIGHT_MAGENTA) << "~+~ line 1113";
       m_orthanBlocksIndex.remove(ch_ent->second.bl, loggerMessage);
