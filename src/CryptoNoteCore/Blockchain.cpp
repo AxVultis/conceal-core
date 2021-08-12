@@ -1003,6 +1003,19 @@ namespace CryptoNote
     logger(INFO, BRIGHT_MAGENTA) << "~#~ discard_disconnected_chain: " << discard_disconnected_chain;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. end listing alt_chain" << std::endl;
+
     if (!(alt_chain.size()))
     {
       logger(ERROR, BRIGHT_RED) << "switch_to_alternative_blockchain: empty chain passed";
@@ -1118,6 +1131,20 @@ namespace CryptoNote
     std::vector<Crypto::Hash> blocksFromCommonRoot;
     blocksFromCommonRoot.reserve(alt_chain.size() + 1);
     blocksFromCommonRoot.push_back(alt_chain.front()->second.bl.previousBlockHash);
+
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. end listing alt_chain" << std::endl;
+
 
     //removing all_chain entries from alternative chain
     logger(INFO, BRIGHT_MAGENTA) << "ùùù removing all_chain entries from alternative chain";
@@ -1678,6 +1705,7 @@ namespace CryptoNote
           logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
           logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ alt_chain_entry end +++";
         }
+        logger(INFO, BRIGHT_MAGENTA) << "___ switch_to_alternative_blockchain ???";
         bool r = switch_to_alternative_blockchain(alt_chain, false);
         logger(INFO, BRIGHT_MAGENTA) << "~~~ switch_to_alternative_blockchain: " << r;
         if (r)
