@@ -2435,7 +2435,6 @@ namespace CryptoNote
   bool Blockchain::addNewBlock(const Block &bl_, block_verification_context &bvc)
   {
     LoggerMessage loggerMessage = logger(INFO, BRIGHT_CYAN);
-    loggerMessage << "~~~ Blockchain::addNewBlock" << std::endl;
     //copy block here to let modify block.target
     Block bl = bl_;
     Crypto::Hash id;
@@ -2456,13 +2455,13 @@ namespace CryptoNote
 
       if (haveBlock(id))
       {
-        logger(INFO) << "block with id = " << id << " already exists";
+        logger(TRACE) << "block with id = " << id << " already exists";
         bvc.m_already_exists = true;
         return false;
       }
       else
       {
-        logger(INFO) << "block with id = " << id << " does not exists";
+        logger(TRACE) << "block with id = " << id << " does not exists";
       }
 
       uint32_t height = m_blocks.size();

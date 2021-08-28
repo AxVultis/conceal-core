@@ -281,7 +281,7 @@ int CryptoNoteProtocolHandler::handleCommand(bool is_notify, int command, const 
 
 int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_BLOCK::request &arg, CryptoNoteConnectionContext &context)
 {
-  logger(Logging::INFO) << context << "NOTIFY_NEW_BLOCK (hop " << arg.hop << ")";
+  logger(Logging::TRACE) << context << "NOTIFY_NEW_BLOCK (hop " << arg.hop << ")";
 
   updateObservedHeight(arg.current_blockchain_height, context);
 
@@ -551,7 +551,7 @@ int CryptoNoteProtocolHandler::processObjects(CryptoNoteConnectionContext& conte
     for (size_t i = 0; i < block_entry.txs.size(); ++i) {
       auto transactionBinary = block_entry.txs[i];
       Crypto::Hash transactionHash = Crypto::cn_fast_hash(transactionBinary.data(), transactionBinary.size());
-      logger(INFO) << "transaction " << transactionHash << " came in processObjects";
+      logger(DEBUGGING) << "transaction " << transactionHash << " came in processObjects";
 
       // check if tx hashes match
       if (transactionHash != block_entry.block.transactionHashes[i]) {
