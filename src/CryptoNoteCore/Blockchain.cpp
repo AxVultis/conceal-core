@@ -1657,6 +1657,9 @@ namespace CryptoNote
       {
         logger(INFO, BRIGHT_MAGENTA) << "before_entry hash: " << entry->first;
         TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "getting hash";
+        Crypto::Hash hash = get_block_hash(entry->second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
       }
       logger(INFO, BRIGHT_MAGENTA) << "before push end";
 
@@ -1668,6 +1671,9 @@ namespace CryptoNote
       {
         logger(INFO, BRIGHT_MAGENTA) << "after_entry hash: " << entry->first;
         TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "getting hash";
+        Crypto::Hash hash = get_block_hash(entry->second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
       }
       logger(INFO, BRIGHT_MAGENTA) << "after push end";
 
