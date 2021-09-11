@@ -1015,21 +1015,18 @@ namespace CryptoNote
     }
 
     // Compare transactions in proposed alt chain vs current main chain and reject if some transaction is missing in the alt chain
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1015";
     std::vector<Crypto::Hash> mainChainTxHashes, altChainTxHashes;
     for (size_t i = m_blocks.size() - 1; i >= split_height; i--)
     {
       Block b = m_blocks[i].bl;
       std::copy(b.transactionHashes.begin(), b.transactionHashes.end(), std::inserter(mainChainTxHashes, mainChainTxHashes.end()));
     }
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1022";
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
       auto ch_ent = *alt_ch_iter;
       Block b = ch_ent->second.bl;
       std::copy(b.transactionHashes.begin(), b.transactionHashes.end(), std::inserter(altChainTxHashes, altChainTxHashes.end()));
     }
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1029";
     for (auto main_ch_it = mainChainTxHashes.begin(); main_ch_it != mainChainTxHashes.end(); main_ch_it++)
     {
       auto tx_hash = *main_ch_it;
@@ -1044,7 +1041,6 @@ namespace CryptoNote
       }
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1044";
     //disconnecting old chain
     std::list<Block> disconnected_chain;
     for (size_t i = m_blocks.size() - 1; i >= split_height; i--)
@@ -1058,7 +1054,6 @@ namespace CryptoNote
     uint32_t height = static_cast<uint32_t>(split_height - 1);
 
     //connecting new alternative chain
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1058";
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
       auto ch_ent = *alt_ch_iter;
@@ -1085,8 +1080,6 @@ namespace CryptoNote
       }
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ discard_disconnected_chain: " << discard_disconnected_chain;
-
     if (!discard_disconnected_chain)
     {
       //pushing old chain as alternative chain
@@ -1102,23 +1095,20 @@ namespace CryptoNote
         }
       }
     }
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1102";
+
     std::vector<Crypto::Hash> blocksFromCommonRoot;
     blocksFromCommonRoot.reserve(alt_chain.size() + 1);
     blocksFromCommonRoot.push_back(alt_chain.front()->second.bl.previousBlockHash);
 
     //removing all_chain entries from alternative chain
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1108";
     for (auto ch_ent : alt_chain)
     {
       blocksFromCommonRoot.push_back(get_block_hash(ch_ent->second.bl));
       m_orthanBlocksIndex.remove(ch_ent->second.bl);
       m_alternative_chains.erase(ch_ent);
     }
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1115";
 
     sendMessage(BlockchainMessage(ChainSwitchMessage(std::move(blocksFromCommonRoot))));
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1118";
 
     logger(INFO, BRIGHT_GREEN) << "Succesfully reorganized on height: " << split_height << ", new blockchain size: " << m_blocks.size();
     return true;
@@ -1387,7 +1377,6 @@ namespace CryptoNote
 
   bool Blockchain::handle_alternative_block(const Block &b, const Crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage)
   {
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ handle_alternative_block";
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
     auto block_height = get_block_height(b);
@@ -1587,7 +1576,6 @@ namespace CryptoNote
                                    << ENDL << " alternative blockchain size: " << alt_chain.size() << " with cum_difficulty " << bei.cumulative_difficulty;
 
         bool r = switch_to_alternative_blockchain(alt_chain, false);
-        logger(INFO, BRIGHT_MAGENTA) << "~~~ switch_to_alternative_blockchain: " << r;
         if (r)
         {
           bvc.m_added_to_main_chain = true;
@@ -1606,7 +1594,6 @@ namespace CryptoNote
             << ENDL << "id:\t" << id
             << ENDL << "PoW:\t" << proof_of_work
             << ENDL << "difficulty:\t" << current_diff;
-        logger(INFO, BRIGHT_MAGENTA) << "~~~ sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage;
         if (sendNewAlternativeBlockMessage)
         {
           sendMessage(BlockchainMessage(NewAlternativeBlockMessage(id)));
@@ -1621,7 +1608,6 @@ namespace CryptoNote
       logger(INFO, BRIGHT_RED) << "Block recognized as orphaned and rejected, id = " << id;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "~~~ handle_alternative_block: return true";    
     return true;
   }
 
@@ -3247,17 +3233,6 @@ namespace CryptoNote
 
   void Blockchain::sendMessage(const BlockchainMessage &message)
   {
-    switch (message.getType())
-    {
-    case BlockchainMessage::MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE:
-      logger(INFO, BRIGHT_MAGENTA) << "sendMessage: "
-                                   << "NEW_ALTERNATIVE_BLOCK_MESSAGE";
-      break;
-    case BlockchainMessage::MessageType::CHAIN_SWITCH_MESSAGE:
-      logger(INFO, BRIGHT_MAGENTA) << "sendMessage: "
-                                   << "CHAIN_SWITCH_MESSAGE";
-      break;
-    }
     for (IntrusiveLinkedList<MessageQueue<BlockchainMessage>>::iterator iter = m_messageQueueList.begin(); iter != m_messageQueueList.end(); ++iter)
     {
       iter->push(message);
