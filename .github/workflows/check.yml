@@ -98,7 +98,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: $RELEASE_NAME
+          name: ${{ $RELEASE_NAME }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,7 +141,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: $RELEASE_NAME
+          name: ${{ $RELEASE_NAME }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -184,7 +184,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: $RELEASE_NAME
+          name: ${{ $RELEASE_NAME }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -226,7 +226,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: $RELEASE_NAME
+          name: ${{ $RELEASE_NAME }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -268,7 +268,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: $RELEASE_NAME
+          name: ${{ $RELEASE_NAME }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
