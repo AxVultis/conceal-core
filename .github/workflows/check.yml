@@ -146,6 +146,49 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  build-ubuntu20-clang:
+    name: Ubuntu 20.04
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Prepare version
+        run: |
+          os=ubuntu-20.04
+          ccx_version=${GITHUB_SHA::7}
+          release_name=ccx-cli-"$os"-dev-"$ccx_version"
+          echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make cmake clang clang++ libboost-all-dev
+
+      - name: Build
+        id: build
+        run: |
+          mkdir build
+          cd build
+          CC=clang CXX=clang++ cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j2
+
+      - name: Prepare release
+        run: |
+          mkdir build/bin
+          mv build/src/conceald build/bin
+          mv build/src/concealwallet build/bin
+          mv build/src/optimizer build/bin
+          mv build/src/walletd build/bin
+
+      - name: Upload To GH Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: $RELEASE_NAME
+          path: build/bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build-macos10:
     name: macOS 10.15
     runs-on: macos-10.15
