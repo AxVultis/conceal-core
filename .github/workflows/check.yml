@@ -169,7 +169,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y make cmake clang clang++ libboost-all-dev
+          sudo apt-get install -y make cmake clang libboost-all-dev
 
       - name: Build
         id: build
