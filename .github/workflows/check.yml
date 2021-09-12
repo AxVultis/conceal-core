@@ -67,12 +67,14 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Prepare version
+        id: setup
         run: |
           os=ubuntu-18.04
           ccx_version=${GITHUB_SHA::7}
           release_name=ccx-cli-"$os"-dev-"$ccx_version"
           echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
           echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+          echo "::set-output name=release_name::release_name"
 
       - name: Install dependencies
         run: |
@@ -98,7 +100,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ $RELEASE_NAME }}
+          name: ${{ steps.setup.outputs.release_name }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,12 +112,14 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Prepare version
+        id: setup
         run: |
           os=ubuntu-20.04
           ccx_version=${GITHUB_SHA::7}
           release_name=ccx-cli-"$os"-dev-"$ccx_version"
           echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
           echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+          echo "::set-output name=release_name::release_name"
 
       - name: Install dependencies
         run: |
@@ -141,7 +145,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ $RELEASE_NAME }}
+          name: ${{ steps.setup.outputs.release_name }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -153,12 +157,14 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Prepare version
+        id: setup
         run: |
           os=ubuntu-20.04
           ccx_version=${GITHUB_SHA::7}
           release_name=ccx-cli-"$os"-dev-"$ccx_version"
           echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
           echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+          echo "::set-output name=release_name::release_name"
 
       - name: Install dependencies
         run: |
@@ -184,7 +190,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ $RELEASE_NAME }}
+          name: ${{ steps.setup.outputs.release_name }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -196,12 +202,14 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Prepare version
+        id: setup
         run: |
           os=macos-10.15
           ccx_version=${GITHUB_SHA::7}
           release_name=ccx-cli-"$os"-dev-"$ccx_version"
           echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
           echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+          echo "::set-output name=release_name::release_name"
 
       - name: Install dependencies
         run: |
@@ -226,7 +234,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ $RELEASE_NAME }}
+          name: ${{ steps.setup.outputs.release_name }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -238,12 +246,14 @@ jobs:
       - uses: actions/checkout@master
 
       - name: Prepare version
+        id: setup
         run: |
           os=macos-11
           ccx_version=${GITHUB_SHA::7}
           release_name=ccx-cli-"$os"-dev-"$ccx_version"
           echo "CCX_VERSION=$ccx_version" >> $GITHUB_ENV
           echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+          echo "::set-output name=release_name::release_name"
 
       - name: Install dependencies
         run: |
@@ -268,7 +278,7 @@ jobs:
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ $RELEASE_NAME }}
+          name: ${{ steps.setup.outputs.release_name }}
           path: build/bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
