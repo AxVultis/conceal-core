@@ -1061,6 +1061,19 @@ namespace CryptoNote
     }
 
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1044";
+
+    // Check block major version matches
+    for (auto alt_ch_iter2 = alt_chain.begin(); alt_ch_iter2 != alt_chain.end(); alt_ch_iter2++)
+    {
+      auto ch_ent = *alt_ch_iter2;
+      Block b = ch_ent->second.bl;
+      if (!checkBlockVersion(b, get_block_hash(ch_ent->second.bl)))
+      {
+        logger(ERROR, BRIGHT_RED) << "*** Block version mismatch";
+        // return false;
+      }
+    }
+
     //disconnecting old chain
     std::list<Block> disconnected_chain;
     for (size_t i = m_blocks.size() - 1; i >= split_height; i--)
