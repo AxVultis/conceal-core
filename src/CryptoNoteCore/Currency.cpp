@@ -83,16 +83,7 @@ namespace CryptoNote
       logger(ERROR, BRIGHT_RED) << "Failed to get genesis block hash";
       return false;
     }
-
-    if (isTestnet())
-    {
-      m_upgradeHeightV2 = 0;
-      m_upgradeHeightV3 = 1;
-      m_upgradeHeightV6 = 2;
-      m_upgradeHeightV7 = 3;
-      m_upgradeHeightV8 = 10;
-    }
-
+    
     return true;
   }
 
@@ -188,7 +179,7 @@ namespace CryptoNote
     uint64_t base_reward = 0;
 
     if (height > CryptoNote::parameters::UPGRADE_HEIGHT_V8 ||
-        (isTestnet() && height > m_upgradeHeightV8))
+        (isTestnet() && height > CryptoNote::parameters::TESTNET_UPGRADE_HEIGHT_V8))
     {
       base_reward = CryptoNote::MAX_BLOCK_REWARD_V1;
     }
@@ -264,7 +255,8 @@ namespace CryptoNote
   uint64_t Currency::calculateInterest(uint64_t amount, uint32_t term, uint32_t height) const
   {
     /* deposits 3.0 and investments 1.0 */
-    if ((term % 21900 == 0) && (height > parameters::DEPOSIT_HEIGHT_V3))
+    if (((term % 21900 == 0) && (height > parameters::DEPOSIT_HEIGHT_V3))
+    || (isTestnet() && (term % parameters::TESTNET_DEPOSIT_MIN_TERM_V3 == 0) && (height > parameters::TESTNET_DEPOSIT_HEIGHT_V3)))
     {
       return calculateInterestV3(amount, term);
     }
@@ -407,8 +399,16 @@ namespace CryptoNote
       baseInterest = static_cast<float>(0.049);
 
     /* Consensus 2019 - Monthly deposits */
+    float months = 0;
+    if (isTestnet())
+    {
+      months = term / parameters::TESTNET_DEPOSIT_MIN_TERM_V3;
+    }
+    else
+    {
+      months = term / parameters::DEPOSIT_MIN_TERM_V3;
+    }
 
-    float months = term / 21900;
     if (months > 12)
     {
       months = 12;

@@ -603,6 +603,14 @@ namespace CryptoNote
     CurrencyBuilder &testnet(bool val)
     {
       m_currency.m_testnet = val;
+      if (val)
+      {
+        upgradeHeightV2(parameters::TESTNET_UPGRADE_HEIGHT_V2);
+        upgradeHeightV3(parameters::TESTNET_UPGRADE_HEIGHT_V3);
+        upgradeHeightV6(parameters::TESTNET_UPGRADE_HEIGHT_V6);
+        upgradeHeightV7(parameters::TESTNET_UPGRADE_HEIGHT_V7);
+        upgradeHeightV8(parameters::TESTNET_UPGRADE_HEIGHT_V8);
+      }
       return *this;
     }
 

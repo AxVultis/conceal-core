@@ -112,6 +112,19 @@ namespace CryptoNote
 		const size_t UPGRADE_VOTING_WINDOW = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;
 		const size_t UPGRADE_WINDOW = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;
 
+		const uint64_t TESTNET_UPGRADE_HEIGHT = 1;
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V2 = 1;
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V3 = 12;	  /* Cryptonight-Fast */
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V4 = 24;	  /* MixIn 2 */
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V5 = 36;	  /* Deposits 2.0, Investments 1.0 */
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V6 = 48;	  /* LWMA3 */
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V7 = 60;	  /* Cryptoight Conceal */
+		const uint64_t TESTNET_UPGRADE_HEIGHT_V8 = 72;	  /* LWMA1, CN-GPU, Halving */
+
+		const uint32_t TESTNET_DEPOSIT_MIN_TERM_V3 = 30;		/* testnet deposits 1 month -> 1 hour */
+		const uint32_t TESTNET_DEPOSIT_MAX_TERM_V3 = 12 * 30;	/* testnet deposits 1 year -> 12 hour */
+		const uint32_t TESTNET_DEPOSIT_HEIGHT_V3 = 60;			/* testnet deposits block */
+
 		static_assert(0 < UPGRADE_VOTING_THRESHOLD && UPGRADE_VOTING_THRESHOLD <= 100, "Bad UPGRADE_VOTING_THRESHOLD");
 		static_assert(UPGRADE_VOTING_WINDOW > 1, "Bad UPGRADE_VOTING_WINDOW");
 

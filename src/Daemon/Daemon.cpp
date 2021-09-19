@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
 
     logger(INFO) << "Module folder: " << argv[0];
 
-    logger(INFO) << "Blockchain / configuration folder: " << coreConfig.configFolder;
+    logger(INFO) << "Blockchain and configuration folder: " << coreConfig.configFolder;
 
     if (coreConfig.testnet)
     {
