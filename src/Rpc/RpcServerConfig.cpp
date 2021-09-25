@@ -36,9 +36,15 @@ namespace CryptoNote {
   {
     bool testnet = vm[command_line::arg_testnet_on.name].as<bool>();
     bindIp = command_line::get_arg(vm, arg_rpc_bind_ip);
-    bindPort = testnet ? !vm[arg_rpc_bind_ip.name].defaulted()
-                             ? TESTNET_RPC_DEFAULT_PORT
-                             : command_line::get_arg(vm, arg_rpc_bind_port)
-                       : command_line::get_arg(vm, arg_rpc_bind_port);
+    int argPort = command_line::get_arg(vm, arg_rpc_bind_port);
+    bindPort = argPort;
+    if (testnet)
+    {
+      bindPort = TESTNET_RPC_DEFAULT_PORT;
+      if (!vm[arg_rpc_bind_port.name].defaulted())
+      {
+        bindPort = argPort;
+      }
+    }
   }
 }
