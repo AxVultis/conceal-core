@@ -656,16 +656,10 @@ bool simple_wallet::init(const boost::program_options::variables_map& vm) {
     return false;
   }
 
-  m_testnet = vm[command_line::arg_testnet_on.name].as<bool>();
-
   if (m_daemon_host.empty())
+  {
     m_daemon_host = "localhost";
-  if (!m_daemon_port)
-    m_daemon_port = vm[command_line::arg_testnet_on.name].as<bool>()
-                        ? !vm[arg_daemon_port.name].defaulted()
-                              ? TESTNET_RPC_DEFAULT_PORT
-                              : command_line::get_arg(vm, arg_daemon_port)
-                        : command_line::get_arg(vm, arg_daemon_port);
+  }
 
   if (!m_daemon_address.empty()) 
   {
@@ -963,16 +957,22 @@ bool simple_wallet::deinit() {
   return close_wallet();
 }
 //----------------------------------------------------------------------------------------------------
-void simple_wallet::handle_command_line(const boost::program_options::variables_map& vm) {
+void simple_wallet::handle_command_line(const boost::program_options::variables_map& vm)
+{
+  m_testnet = vm[arg_testnet.name].as<bool>();
   m_wallet_file_arg = command_line::get_arg(vm, arg_wallet_file);
   m_generate_new = command_line::get_arg(vm, arg_generate_new_wallet);
   m_daemon_address = command_line::get_arg(vm, arg_daemon_address);
   m_daemon_host = command_line::get_arg(vm, arg_daemon_host);
-  m_daemon_port = vm[command_line::arg_testnet_on.name].as<bool>()
-                      ? !vm[arg_daemon_port.name].defaulted()
-                            ? TESTNET_RPC_DEFAULT_PORT
-                            : command_line::get_arg(vm, arg_daemon_port)
-                      : command_line::get_arg(vm, arg_daemon_port);
+  m_daemon_port = command_line::get_arg(vm, arg_daemon_port);
+  if (m_daemon_port == 0)
+  {
+    m_daemon_port = RPC_DEFAULT_PORT;
+  }
+  if (m_testnet && vm[arg_daemon_port.name].defaulted())
+  {
+    m_daemon_port = TESTNET_RPC_DEFAULT_PORT;
+  }
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::new_wallet(const std::string &wallet_file, const std::string& password) {
