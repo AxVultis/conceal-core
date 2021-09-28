@@ -168,13 +168,14 @@ namespace
 
 namespace CryptoNote
 {
-  WalletTransactionSender::WalletTransactionSender(const Currency &currency, WalletUserTransactionsCache &transactionsCache, AccountKeys keys, ITransfersContainer &transfersContainer, INode &node) : m_currency(currency),
+  WalletTransactionSender::WalletTransactionSender(const Currency &currency, WalletUserTransactionsCache &transactionsCache, AccountKeys keys, ITransfersContainer &transfersContainer, INode &node, bool testnet) : m_currency(currency),
                                                                                                                                                                                                        m_transactionsCache(transactionsCache),
                                                                                                                                                                                                        m_isStoping(false),
                                                                                                                                                                                                        m_keys(keys),
                                                                                                                                                                                                        m_transferDetails(transfersContainer),
                                                                                                                                                                                                        m_upperTransactionSizeLimit(m_currency.transactionMaxSize()),
-                                                                                                                                                                                                       m_node(node)
+                                                                                                                                                                                                       m_node(node),
+                                                                                                                                                                                                       m_testnet(testnet)
   {
   }
 
@@ -385,7 +386,7 @@ namespace CryptoNote
       return;
     }
 
-    if (!checkIfEnoughMixins(context->outs, context->mixIn))
+    if (!m_testnet && !checkIfEnoughMixins(context->outs, context->mixIn))
     {
       events.push_back(makeCompleteEvent(m_transactionsCache, context->transactionId, make_error_code(error::MIXIN_COUNT_TOO_BIG)));
       return;
