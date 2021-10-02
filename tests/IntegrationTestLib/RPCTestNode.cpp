@@ -42,7 +42,7 @@ bool RPCTestNode::startMining(size_t threadsCount, const std::string& address) {
       throw std::runtime_error(resp.status);
     }
   } catch (std::exception& e) {
-    std::cout << "startMining() RPC call fail: " << e.what();
+    std::cout << "startMining() RPC call fail: " << e.what() << std::endl;
     return false;
   }
 
@@ -105,7 +105,7 @@ bool RPCTestNode::stopMining() {
       throw std::runtime_error(resp.status);
     }
   } catch (std::exception& e) {
-    std::cout << "stopMining() RPC call fail: " << e.what();
+    std::cout << "stopMining() RPC call fail: " << e.what() << std::endl;
     return false;
   }
 
@@ -158,7 +158,7 @@ bool RPCTestNode::stopDaemon() {
       throw std::runtime_error(resp.status);
     }
   } catch (std::exception& e) {
-    std::cout << "stopDaemon() RPC call fail: " << e.what();
+    std::cout << "stopDaemon() RPC call fail: " << e.what() << std::endl;
     return false;
   }
 
