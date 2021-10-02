@@ -432,7 +432,7 @@ bool BaseFunctionalTests::makeWallet(std::unique_ptr<CryptoNote::IWalletLegacy> 
 {
   if (!node)
     return false;
-  wallet = std::unique_ptr<CryptoNote::IWalletLegacy>(new CryptoNote::WalletLegacy(m_currency, *node, m_logger));
+  wallet = std::unique_ptr<CryptoNote::IWalletLegacy>(new CryptoNote::WalletLegacy(m_currency, *node, m_logger, true));
   wallet->initAndGenerate(password);
   return true;
 }
