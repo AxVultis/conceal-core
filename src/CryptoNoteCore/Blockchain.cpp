@@ -1039,6 +1039,19 @@ namespace CryptoNote
       std::copy(b.transactionHashes.begin(), b.transactionHashes.end(), std::inserter(mainChainTxHashes, mainChainTxHashes.end()));
     }
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1022";
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. end listing alt_chain" << std::endl;
+
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
       auto ch_ent = *alt_ch_iter;
@@ -1046,6 +1059,19 @@ namespace CryptoNote
       std::copy(b.transactionHashes.begin(), b.transactionHashes.end(), std::inserter(altChainTxHashes, altChainTxHashes.end()));
     }
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1029";
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. end listing alt_chain" << std::endl;
+
     for (auto main_ch_it = mainChainTxHashes.begin(); main_ch_it != mainChainTxHashes.end(); main_ch_it++)
     {
       auto tx_hash = *main_ch_it;
@@ -1088,6 +1114,19 @@ namespace CryptoNote
 
     //connecting new alternative chain
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1058";
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. end listing alt_chain" << std::endl;
+
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
       auto ch_ent = *alt_ch_iter;
@@ -1116,6 +1155,20 @@ namespace CryptoNote
         return false;
       }
     }
+
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. listing alt_chain" << std::endl;
+
+    for (auto ch_ent : alt_chain)
+    {
+      auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
+      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
+      ch_ent->second.log(loggerMessage);
+      loggerMessage << "=+= next" << std::endl;
+    }
+
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. end listing alt_chain" << std::endl;
+
     if (!discard_disconnected_chain)
     {
       //pushing old chain as alternative chain
