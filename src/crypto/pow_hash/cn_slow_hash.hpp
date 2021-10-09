@@ -223,7 +223,7 @@ class cn_slow_hash
 	void software_hash(const void* in, size_t len, void* out);
 	void software_hash_3(const void* in, size_t len, void* pout);
 
-#if !defined(HAS_INTEL_HW) && !defined(HAS_ARM_HW)
+#if !defined(HAS_INTEL_HW) && !defined(HAS_ARM_HW) && !defined(__aarch64__)
 	inline void hardware_hash(const void* in, size_t len, void* out)
 	{
 		assert(false);

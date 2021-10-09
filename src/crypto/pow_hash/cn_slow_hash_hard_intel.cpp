@@ -554,6 +554,7 @@ void cn_slow_hash<MEMORY, ITER, CN_SLOW_HASH_VERSION>::inner_hash_3()
 	}
 }
 
+#if !defined(__aarch64__)
 template <size_t MEMORY, size_t ITER, size_t CN_SLOW_HASH_VERSION>
 void cn_slow_hash<MEMORY, ITER, CN_SLOW_HASH_VERSION>::hardware_hash_3(const void* in, size_t len, void* pout)
 {
@@ -569,6 +570,7 @@ void cn_slow_hash<MEMORY, ITER, CN_SLOW_HASH_VERSION>::hardware_hash_3(const voi
     keccakf(spad.as_uqword(), 24);
 	memcpy(pout, spad.as_byte(), 32);
 }
+#endif
 
 template <size_t MEMORY, size_t ITER, size_t CN_SLOW_HASH_VERSION>
 void cn_slow_hash<MEMORY, ITER, CN_SLOW_HASH_VERSION>::software_hash_3(const void* in, size_t len, void* pout)

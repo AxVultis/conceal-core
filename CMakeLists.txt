@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.0)
 
 include(CheckCXXCompilerFlag)
 set(VERSION "0.2")
@@ -97,13 +97,13 @@ endif()
 
 # Manual ARCH options for ARM
 if(ARM7) # ARMv7 Pi 3/4 32Bit
-	CHECK_CXX_ACCEPTS_FLAG("-march=armv7-a" TRY_ARCH)
+	check_cxx_compiler_flag("-march=armv7-a" TRY_ARCH)
 	if(TRY_ARCH)
 		message(STATUS "Setting march=armv7-a for ARMv7")
 		set(ARCH_FLAG "-march=armv7-a")
 	endif()
 elseif(ARM8) # ARMv8 Pi 3/4 64Bit
-	CHECK_CXX_ACCEPTS_FLAG("-march=armv8-a+fp+simd" TRY_ARCH)
+	check_cxx_compiler_flag("-march=armv8-a+fp+simd" TRY_ARCH)
 	if(TRY_ARCH)
 		message(STATUS "Setting -march=armv8-a+fp+simd for ARMv8")
 		set(ARCH_FLAG "-march=armv8-a+fp+simd")
@@ -112,6 +112,8 @@ endif()
 
 # Check support for AES
 option(NO_AES "Explicitly disable AES support" ${NO_AES})
+message(STATUS "AES support explicitly disabled ${ARM_ID}")
+
 
 if(NO_AES) # No AES
 	message(STATUS "AES support explicitly disabled")
@@ -137,12 +139,12 @@ message(STATUS "Setting FPU Flags for ARM Processors")
 		CHECK_CXX_COMPILER_FLAG(-mfpu=neon-vfpv4 CXX_ACCEPTS_NEON_1)
 		CHECK_CXX_COMPILER_FLAG(-mfpu=neon-fp-armv8 CXX_ACCEPTS_NEON_2)
 		# FLOAT
-		CHECK_CXX_ACCEPTS_FLAG(-mfloat-abi=hard CXX_ACCEPTS_MFLOAT_HARD)
+		check_cxx_compiler_flag(-mfloat-abi=hard CXX_ACCEPTS_MFLOAT_HARD)
 	endif()
 
 	if(ARM8)
-		CHECK_CXX_ACCEPTS_FLAG(-mfix-cortex-a53-835769 CXX_ACCEPTS_MFIX_CORTEX_A53_835769)
-		CHECK_CXX_ACCEPTS_FLAG(-mfix-cortex-a53-843419 CXX_ACCEPTS_MFIX_CORTEX_A53_843419)
+		check_cxx_compiler_flag(-mfix-cortex-a53-835769 CXX_ACCEPTS_MFIX_CORTEX_A53_835769)
+		check_cxx_compiler_flag(-mfix-cortex-a53-843419 CXX_ACCEPTS_MFIX_CORTEX_A53_843419)
 	endif()
 
 	if(ARM7)

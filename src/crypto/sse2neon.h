@@ -2604,13 +2604,36 @@ FORCE_INLINE __m128i _mm_unpackhi_epi64(__m128i a, __m128i b)
     return vreinterpretq_m128i_s64(vcombine_s64(a_h, b_h));
 }
 
-// shift to right
-// https://msdn.microsoft.com/en-us/library/bb514041(v=vs.120).aspx
-// http://blog.csdn.net/hemmingway/article/details/44828303
-FORCE_INLINE __m128i _mm_alignr_epi8(__m128i a, __m128i b, const int c)
-{
-    return (__m128i) vextq_s8((int8x16_t) a, (int8x16_t) b, c);
-}
+// Concatenate 16-byte blocks in a and b into a 32-byte temporary result, shift
+// the result right by imm8 bytes, and store the low 16 bytes in dst.
+//
+//   tmp[255:0] := ((a[127:0] << 128)[255:0] OR b[127:0]) >> (imm8*8)
+//   dst[127:0] := tmp[127:0]
+//
+// https://software.intel.com/sites/landingpage/IntrinsicsGuide/#text=_mm_alignr_epi8
+#define _mm_alignr_epi8(a, b, imm)                                            \
+    __extension__({                                                           \
+        __m128i ret;                                                          \
+        if (unlikely((imm) >= 32)) {                                          \
+            ret = _mm_setzero_si128();                                        \
+        } else {                                                              \
+            uint8x16_t tmp_low, tmp_high;                                     \
+            if (imm >= 16) {                                                  \
+                const int idx = imm - 16;                                     \
+                tmp_low = vreinterpretq_u8_m128i(a);                          \
+                tmp_high = vdupq_n_u8(0);                                     \
+                ret =                                                         \
+                    vreinterpretq_m128i_u8(vextq_u8(tmp_low, tmp_high, idx)); \
+            } else {                                                          \
+                const int idx = imm;                                          \
+                tmp_low = vreinterpretq_u8_m128i(b);                          \
+                tmp_high = vreinterpretq_u8_m128i(a);                         \
+                ret =                                                         \
+                    vreinterpretq_m128i_u8(vextq_u8(tmp_low, tmp_high, idx)); \
+            }                                                                 \
+        }                                                                     \
+        ret;                                                                  \
+    })
 
 // Extracts the selected signed or unsigned 16-bit integer from a and zero
 // extends.  https://msdn.microsoft.com/en-us/library/6dceta0c(v=vs.100).aspx
