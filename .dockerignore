@@ -1,0 +1,7 @@
+.conceal
+.git
+.vscode
+.dockerignore
+build
+docker-compose.yml
+Dockerfile
