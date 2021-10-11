@@ -299,7 +299,7 @@ bool RpcServer::on_get_block_details_by_height(const COMMAND_RPC_GET_BLOCK_DETAI
     res.block.major_version = block_header.major_version;
     res.block.minor_version = block_header.minor_version;
     res.block.timestamp = block_header.timestamp;
-    res.block.prev_hash = block_header.prev_hash;
+    res.block.previous_hash = block_header.previous_hash;
     res.block.nonce = block_header.nonce;
     res.block.hash = Common::podToHex(hash);
     res.block.orphan_status = is_orphaned;
@@ -313,27 +313,27 @@ bool RpcServer::on_get_block_details_by_height(const COMMAND_RPC_GET_BLOCK_DETAI
     {
       return false;
     }
-    res.block.sizeMedian = Common::medianValue(blocksSizes);
+    res.block.size_median = Common::medianValue(blocksSizes);
 
     size_t blockSize = 0;
     if (!m_core.getBlockSize(hash, blockSize))
     {
       return false;
     }
-    res.block.transactionsCumulativeSize = blockSize;
+    res.block.transactions_cumulative_size = blockSize;
 
     size_t blokBlobSize = getObjectBinarySize(blk);
     size_t minerTxBlobSize = getObjectBinarySize(blk.baseTransaction);
-    res.block.blockSize = blokBlobSize + res.block.transactionsCumulativeSize - minerTxBlobSize;
+    res.block.block_size = blokBlobSize + res.block.transactions_cumulative_size - minerTxBlobSize;
 
     uint64_t alreadyGeneratedCoins;
     if (!m_core.getAlreadyGeneratedCoins(hash, alreadyGeneratedCoins))
     {
       return false;
     }
-    res.block.alreadyGeneratedCoins = std::to_string(alreadyGeneratedCoins);
+    res.block.already_generated_coins = alreadyGeneratedCoins;
 
-    if (!m_core.getGeneratedTransactionsNumber(res.block.height, res.block.alreadyGeneratedTransactions))
+    if (!m_core.getGeneratedTransactionsNumber(res.block.height, res.block.already_generated_coins))
     {
       return false;
     }
@@ -350,18 +350,18 @@ bool RpcServer::on_get_block_details_by_height(const COMMAND_RPC_GET_BLOCK_DETAI
     uint64_t currentReward = 0;
     int64_t emissionChange = 0;
     bool penalizeFee = blk.majorVersion >= 2;
-    size_t blockGrantedFullRewardZone = penalizeFee ? m_core.currency().blockGrantedFullRewardZone() : res.block.effectiveSizeMedian = std::max(res.block.sizeMedian, blockGrantedFullRewardZone);
+    size_t blockGrantedFullRewardZone = penalizeFee ? m_core.currency().blockGrantedFullRewardZone() : res.block.effective_size_median = std::max(res.block.size_median, blockGrantedFullRewardZone);
 
-    if (!m_core.getBlockReward(res.block.sizeMedian, 0, prevBlockGeneratedCoins, 0, res.block.height, maxReward, emissionChange))
+    if (!m_core.getBlockReward(res.block.size_median, 0, prevBlockGeneratedCoins, 0, res.block.height, maxReward, emissionChange))
     {
       return false;
     }
-    if (!m_core.getBlockReward(res.block.sizeMedian, res.block.transactionsCumulativeSize, prevBlockGeneratedCoins, 0, res.block.height, currentReward, emissionChange))
+    if (!m_core.getBlockReward(res.block.size_median, res.block.transactions_cumulative_size, prevBlockGeneratedCoins, 0, res.block.height, currentReward, emissionChange))
     {
       return false;
     }
 
-    res.block.baseReward = maxReward;
+    res.block.base_reward = maxReward;
     if (maxReward == 0 && currentReward == 0)
     {
       res.block.penalty = static_cast<double>(0);
@@ -381,13 +381,13 @@ bool RpcServer::on_get_block_details_by_height(const COMMAND_RPC_GET_BLOCK_DETAI
     transaction_short.fee = 0;
     transaction_short.amount_out = get_outs_money_amount(blk.baseTransaction);
     transaction_short.size = getObjectBinarySize(blk.baseTransaction);
-    res.block.transactions.push_back(transaction_short);
+    // res.block.transactions.push_back(transaction_short);
 
     std::list<Crypto::Hash> missed_txs;
     std::list<Transaction> txs;
     m_core.getTransactions(blk.transactionHashes, txs, missed_txs);
 
-    res.block.totalFeeAmount = 0;
+    res.block.total_fee_amount = 0;
 
     for (const Transaction &tx : txs)
     {
@@ -403,9 +403,9 @@ bool RpcServer::on_get_block_details_by_height(const COMMAND_RPC_GET_BLOCK_DETAI
               : amount_in - amount_out;
       transaction_short.amount_out = amount_out;
       transaction_short.size = getObjectBinarySize(tx);
-      res.block.transactions.push_back(transaction_short);
+      // res.block.transactions.push_back(transaction_short);
 
-      res.block.totalFeeAmount += transaction_short.fee;
+      res.block.total_fee_amount += transaction_short.fee;
     }
 
     res.block = blockDetails;

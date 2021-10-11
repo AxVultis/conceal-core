@@ -1,5 +1,4 @@
 .conceal
-.git
 .vscode
 .dockerignore
 build
