@@ -538,7 +538,7 @@ namespace CryptoNote
       logger(INFO) <<  "External port defined as " << m_external_port;
     }
 
-    addPortMapping(logger, m_listeningPort);
+    // addPortMapping(logger, m_listeningPort);
 
     return true;
   }

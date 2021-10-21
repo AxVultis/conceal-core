@@ -531,8 +531,8 @@ namespace CryptoNote
 
       m_checkpoints.load_checkpoints();
       logger(Logging::INFO) << "Loading checkpoints";
-      m_checkpoints.load_checkpoints_from_dns();
-      logger(Logging::INFO) << "Loading DNS checkpoints";
+      // m_checkpoints.load_checkpoints_from_dns();
+      // logger(Logging::INFO) << "Loading DNS checkpoints";
     }
     else
     {
@@ -1004,7 +1004,7 @@ namespace CryptoNote
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. listing sw alt_chain" << std::endl;
 
     for (auto ch_ent : alt_chain)
     {
@@ -1014,7 +1014,7 @@ namespace CryptoNote
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 1. end listing sw alt_chain" << std::endl;
 
     if (!(alt_chain.size()))
     {
@@ -1040,7 +1040,7 @@ namespace CryptoNote
     }
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1022";
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. listing sw alt_chain" << std::endl;
 
     for (auto ch_ent : alt_chain)
     {
@@ -1050,7 +1050,7 @@ namespace CryptoNote
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 3. end listing sw alt_chain" << std::endl;
 
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
@@ -1060,7 +1060,7 @@ namespace CryptoNote
     }
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1029";
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. listing sw alt_chain" << std::endl;
 
     for (auto ch_ent : alt_chain)
     {
@@ -1070,7 +1070,7 @@ namespace CryptoNote
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 4. end listing sw alt_chain" << std::endl;
 
     for (auto main_ch_it = mainChainTxHashes.begin(); main_ch_it != mainChainTxHashes.end(); main_ch_it++)
     {
@@ -1115,7 +1115,7 @@ namespace CryptoNote
     //connecting new alternative chain
     logger(INFO, BRIGHT_MAGENTA) << "~~~ line 1058";
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. listing sw alt_chain" << std::endl;
 
     for (auto ch_ent : alt_chain)
     {
@@ -1125,7 +1125,7 @@ namespace CryptoNote
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 5. end sw listing alt_chain" << std::endl;
 
     for (auto alt_ch_iter = alt_chain.begin(); alt_ch_iter != alt_chain.end(); alt_ch_iter++)
     {
@@ -1157,17 +1157,18 @@ namespace CryptoNote
     }
 
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. listing disconnected_chain" << std::endl;
 
-    for (auto ch_ent : alt_chain)
+    for (auto block : disconnected_chain)
     {
       auto loggerMessage = logger(INFO, BRIGHT_MAGENTA);
-      loggerMessage << "=+= alt_chain entry hash: " << ch_ent->first << std::endl;
-      ch_ent->second.log(loggerMessage);
+      Crypto::Hash hash = get_block_hash(block);
+      loggerMessage << "=+= disconnected_chain entry hash: " << hash << std::endl;
+      BlockEntry::logBlock(block, loggerMessage);
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 6. end listing disconnected_chain" << std::endl;
 
     if (!discard_disconnected_chain)
     {
@@ -1181,6 +1182,9 @@ namespace CryptoNote
         BlockEntry::logBlock(old_ch_ent, loggerMessage);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ disconnected_chain end +++";
         bool r = handle_alternative_block(old_ch_ent, get_block_hash(old_ch_ent), bvc, false);
+        logger(INFO, BRIGHT_MAGENTA) << "aaa handle_alternative_block result aaa";
+        BlockEntry::logBlock(old_ch_ent, loggerMessage);
+        logger(INFO, BRIGHT_MAGENTA) << "aaa handle_alternative_block result end  aaa";
         if (!r)
         {
           logger(ERROR, BRIGHT_RED) << ("Failed to push ex-main chain blocks to alternative chain ");
@@ -1199,7 +1203,7 @@ namespace CryptoNote
     blocksFromCommonRoot.push_back(alt_chain.front()->second.bl.previousBlockHash);
 
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. listing sw alt_chain" << std::endl;
 
     for (auto ch_ent : alt_chain)
     {
@@ -1209,7 +1213,7 @@ namespace CryptoNote
       loggerMessage << "=+= next" << std::endl;
     }
 
-    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. end listing alt_chain" << std::endl;
+    logger(INFO, BRIGHT_MAGENTA) << "=+= 2. end listing sw alt_chain" << std::endl;
 
 
     //removing all_chain entries from alternative chain
@@ -1511,7 +1515,7 @@ namespace CryptoNote
     loggerMessage << "$$$ block: " << std::endl;
     BlockEntry::logBlock(b, loggerMessage);
     loggerMessage << "$$$ hash: " << id << std::endl;
-    loggerMessage << "$$$ bvc: ";
+    loggerMessage << "$$$ bvc: " << std::endl;
     bvc.log(loggerMessage);
     loggerMessage << "sendNewAlternativeBlockMessage: " << sendNewAlternativeBlockMessage << std::endl;
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
@@ -1526,7 +1530,7 @@ namespace CryptoNote
     }
 
     /* in the absence of a better solution, we fetch checkpoints from dns records */
-    m_checkpoints.load_checkpoints_from_dns();
+    // m_checkpoints.load_checkpoints_from_dns();
 
     if (!m_checkpoints.is_alternative_block_allowed(getCurrentBlockchainHeight(), block_height))
     {
@@ -1572,38 +1576,37 @@ namespace CryptoNote
       std::vector<uint64_t> timestamps;
       while (alt_it != m_alternative_chains.end())
       {
+        loggerMessage << "ha alt push" << std::endl;
         alt_chain.push_front(alt_it);
         timestamps.push_back(alt_it->second.bl.timestamp);
         alt_it = m_alternative_chains.find(alt_it->second.bl.previousBlockHash);
       }
 
       loggerMessage << "m_alternative_chains size: " << m_alternative_chains.size() << std::endl;
-      loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
+      loggerMessage << "ha alt_chain size: " << alt_chain.size() << std::endl;
 
       loggerMessage << "[[[[[ handle_alternative m_alternative_chains ]]]]] size: " << m_alternative_chains.size() << std::endl;
       for (auto ch_ent : m_alternative_chains)
       {
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ m_alternative_chains +++++";
         logger(INFO, BRIGHT_MAGENTA) << "µµµ entry hash:\t" << ch_ent.first;
-        ch_ent.second.log(loggerMessage);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
         Crypto::Hash hash = get_block_hash(ch_ent.second.bl);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ m_alternative_chains end +++";
       }
 
-      loggerMessage << "[[[[[ handle_alternative alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
+      loggerMessage << "[[[[[ handle_alternative ha alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
       for (auto ch_ent : alt_chain)
       {
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ entry hash:\t" << ch_ent->first;
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ ha alt_chain entry hash: " << ch_ent->first << std::endl;
         ch_ent->second.log(loggerMessage);
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
         Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ alt_chain_entry end +++";
+        logger(INFO, BRIGHT_MAGENTA) << "µµµ ha alt_chain entry next";
       }
-      logger(INFO, BRIGHT_MAGENTA) << "[[[[[ handle_alternative alt_chain ]]]]] end" << std::endl;
+
+      logger(INFO, BRIGHT_MAGENTA) << "[[[[[ handle_alternative ha alt_chain ]]]]] end" << std::endl;
 
       if (alt_chain.size())
       {
@@ -1717,31 +1720,34 @@ namespace CryptoNote
 
       m_orthanBlocksIndex.add(bei.bl, loggerMessage);
 
-      logger(INFO, BRIGHT_MAGENTA) << "alt_chain size before push: " << alt_chain.size();
-      
-      for (auto entry : alt_chain)
+      logger(INFO, BRIGHT_MAGENTA) << "alt_chain size before push: " << alt_chain.size() << std::endl;
+      logger(INFO, BRIGHT_MAGENTA) << "10. listing ha alt_chain" << std::endl;
+
+      for (auto ch_ent : alt_chain)
       {
-        logger(INFO, BRIGHT_MAGENTA) << "before_entry hash: " << entry->first;
-        TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
-        logger(INFO, BRIGHT_MAGENTA) << "getting hash";
-        Crypto::Hash hash = get_block_hash(entry->second.bl);
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "ha alt_chain entry hash: " << ch_ent->first << std::endl;
+        ch_ent->second.log(loggerMessage);
+        Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "ha Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "ha alt_chain entry next";
       }
+      logger(INFO, BRIGHT_MAGENTA) << "10. end listing ha alt_chain" << std::endl;
       logger(INFO, BRIGHT_MAGENTA) << "before push end";
 
       alt_chain.push_back(i_res.first);
 
-      logger(INFO, BRIGHT_MAGENTA) << "alt_chain size after push: " << alt_chain.size();
-
-      for (auto entry : alt_chain)
+      logger(INFO, BRIGHT_MAGENTA) << "ha alt_chain size after push: " << alt_chain.size();
+      logger(INFO, BRIGHT_MAGENTA) << "11. listing ha alt_chain" << std::endl;
+      for (auto ch_ent : alt_chain)
       {
-        logger(INFO, BRIGHT_MAGENTA) << "after_entry hash: " << entry->first;
-        TransactionEntry::logTransaction(entry->second.bl.baseTransaction, loggerMessage);
-        logger(INFO, BRIGHT_MAGENTA) << "getting hash";
-        Crypto::Hash hash = get_block_hash(entry->second.bl);
-        logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "ha alt_chain entry hash: " << ch_ent->first << std::endl;
+        ch_ent->second.log(loggerMessage);
+        Crypto::Hash hash = get_block_hash(ch_ent->second.bl);
+        logger(INFO, BRIGHT_MAGENTA) << "ha Hash:\t" << hash;
+        logger(INFO, BRIGHT_MAGENTA) << "ha alt_chain entry next";
       }
       logger(INFO, BRIGHT_MAGENTA) << "after push end";
+      logger(INFO, BRIGHT_MAGENTA) << "11. end listing ha alt_chain" << std::endl;
 
       if (is_a_checkpoint)
       {
@@ -1765,8 +1771,8 @@ namespace CryptoNote
         //do reorganize!
         logger(INFO, BRIGHT_GREEN) << "###### REORGANIZE on height: " << alt_chain.front()->second.height << " of " << m_blocks.size() - 1 << " with cum_difficulty " << m_blocks.back().cumulative_difficulty
                                    << ENDL << " alternative blockchain size: " << alt_chain.size() << " with cum_difficulty " << bei.cumulative_difficulty;
-        loggerMessage << "alt_chain size: " << alt_chain.size() << std::endl;
-        loggerMessage << "[[[[[ reorganize alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
+        loggerMessage << "ha alt_chain size: " << alt_chain.size() << std::endl;
+        loggerMessage << "[[[[[ reorganize ha alt_chain ]]]]] size: " << alt_chain.size() << std::endl;
         for (auto ch_ent : alt_chain)
         {
           logger(INFO, BRIGHT_MAGENTA) << "µµµ +++++ alt_chain_entry +++++";
@@ -2543,7 +2549,7 @@ namespace CryptoNote
       {
         //chain switching or wrong block
         loggerMessage << "==> !(bl.previousBlockHash == getTailId())" << std::endl;
-        loggerMessage << "==> tailId: " << getTailId();
+        loggerMessage << "==> tailId: " << getTailId() << std::endl;
         bvc.m_added_to_main_chain = false;
         add_result = handle_alternative_block(bl, id, bvc);
       }
