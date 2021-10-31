@@ -1577,6 +1577,7 @@ namespace CryptoNote
       while (alt_it != m_alternative_chains.end())
       {
         loggerMessage << "ha alt push" << std::endl;
+        alt_it->second.log(loggerMessage);
         alt_chain.push_front(alt_it);
         timestamps.push_back(alt_it->second.bl.timestamp);
         alt_it = m_alternative_chains.find(alt_it->second.bl.previousBlockHash);
@@ -1593,6 +1594,7 @@ namespace CryptoNote
         logger(INFO, BRIGHT_MAGENTA) << "µµµ getting hash";
         Crypto::Hash hash = get_block_hash(ch_ent.second.bl);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ Hash:\t" << hash;
+        ch_ent.second.log(loggerMessage);
         logger(INFO, BRIGHT_MAGENTA) << "µµµ +++ m_alternative_chains end +++";
       }
 
