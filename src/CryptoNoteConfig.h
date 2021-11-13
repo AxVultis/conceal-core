@@ -316,5 +316,16 @@ namespace CryptoNote
 			{890000, "092b29ab3369d0227239f0604d57ab91a3e1794ca3abe0c75fd5e69acb611a66"}
 			};
 
+        const std::initializer_list<CheckpointData> TESTNET_CHECKPOINTS = {
+          { 0, "850ac16022f4dddab624fad3f9049dba80592c8ea51a5dff19fefeb386e536b1" },
+          { 5000, "e232d411f2264e185bba87cad56053bd35596d629faf9d6e6cddc410d3fdf3de" },
+          { 10000, "ad40d09ed6194709da7aabc893a71a7d28745386b765ff29cbab34fc1df83696" },
+          { 15000, "a5874d60032c365150acaf528e06b403471560a7bee1faea2b8ac3d09b4e06c5" },
+          { 20000, "41b738d741339a9609eceade3c5adffd54b89a5c70274d7edeade1ebdfd483a7" },
+          { 25000, "bdde29c10211c911947e1e0d602309e95fb915372f3317690c7860ef451a78e7" },
+          { 30000, "2bfd5dcd511b836755e413db911301a7e0bbb324c43fe38c4e2ec696996cb557" },
+          { 35000, "dc0f5be53085ffe347c92ff551a4e8757759ef30bdd4589a636d976c580ce4c3" }
+        };
+
 } // namespace CryptoNote
 

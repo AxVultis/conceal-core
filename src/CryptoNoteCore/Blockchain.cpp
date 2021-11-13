@@ -498,6 +498,7 @@ namespace CryptoNote
   bool Blockchain::init(const std::string &config_folder, bool load_existing, bool testnet)
   {
     m_testnet = testnet;
+    m_checkpoints.set_testnet(m_testnet);
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
     if (!config_folder.empty() && !Tools::createDirectoriesIfNecessary(config_folder))
     {
@@ -569,7 +570,7 @@ namespace CryptoNote
     /* If the currrent checkpoint is invalid, then rollback the chain to the last 
      valid checkpoint and try again. */
     uint32_t lastValidCheckpointHeight = 0;
-    if (!m_testnet && !checkCheckpoints(lastValidCheckpointHeight))
+    if (!checkCheckpoints(lastValidCheckpointHeight))
     {
       logger(WARNING, BRIGHT_YELLOW)
           << "Invalid checkpoint. Rollback blockchain to last valid checkpoint at height "
@@ -2452,7 +2453,7 @@ namespace CryptoNote
 
     auto longhashTimeStart = std::chrono::steady_clock::now();
     Crypto::Hash proof_of_work = NULL_HASH;
-    if (!m_testnet && m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight()))
+    if (m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight()))
     {
       if (!m_checkpoints.check_block(getCurrentBlockchainHeight(), blockHash))
       {

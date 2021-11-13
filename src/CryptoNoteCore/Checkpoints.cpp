@@ -1,27 +1,29 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
-// Copyright (c) 2018-2021 Conceal Network & Conceal Devs
 // Copyright (c) 2016-2019, The Karbo developers
-
+// Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+//
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <cstdlib>
-#include <fstream>
+#include "Checkpoints.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
-#include <cstring>
-#include <string>
 #include <string.h>
-#include <sstream>
-#include <vector>
-#include <iterator>
 
-#include "Checkpoints.h"
-#include "../CryptoNoteConfig.h"
-#include "Common/StringTools.h"
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "Common/DnsTools.h"
+#include "Common/StringTools.h"
+#include "CryptoNoteConfig.h"
 
 using namespace Logging;
 
@@ -105,6 +107,11 @@ std::vector<uint32_t> Checkpoints::getCheckpointHeights() const {
 bool Checkpoints::load_checkpoints_from_dns()
 {
   std::string domain("checkpoints.conceal.id");
+  if (testnet)
+  {
+    domain = "testpoints.conceal.gq";
+  }
+
   std::vector<std::string>records;
 
   logger(Logging::DEBUGGING) << "<< Checkpoints.cpp << " << "Fetching DNS checkpoint records from " << domain;
@@ -141,9 +148,19 @@ bool Checkpoints::load_checkpoints_from_dns()
 
 bool Checkpoints::load_checkpoints()
 {
-  for (const auto& cp : CryptoNote::CHECKPOINTS) 
+  if (testnet)
   {
-    add_checkpoint(cp.height, cp.blockId);    
+    for (const auto &cp : CryptoNote::TESTNET_CHECKPOINTS)
+    {
+      add_checkpoint(cp.height, cp.blockId);
+    }
+  }
+  else
+  {
+    for (const auto &cp : CryptoNote::CHECKPOINTS)
+    {
+      add_checkpoint(cp.height, cp.blockId);
+    }
   }
   return true;
 }
@@ -173,4 +190,5 @@ bool Checkpoints::load_checkpoints_from_file(const std::string& fileName) {
 	return true;
 }
 
+void Checkpoints::set_testnet(bool _testnet) { testnet = _testnet; }
 }
