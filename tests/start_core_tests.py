@@ -3,7 +3,7 @@ import subprocess
 
 test_count = 100
 out_folder = "analysis/test/"
-test_name = "test-multisig_double_spend_alt_true-2"
+test_name = "test"
 
 success = []
 fail = []
@@ -12,6 +12,7 @@ segmentation_fault = []
 subprocess.run(f"mkdir -p {out_folder}/{test_name}", shell=True)
 
 for test in range(test_count):
+    print(f"test #{test}")
     process = subprocess.run(f"./core_tests --generate_and_play_test_data > {out_folder}/{test_name}/{test}.log",
                              shell=True)
     if process.returncode == 0:
@@ -35,4 +36,4 @@ results = {
 }
 
 with open(f"{out_folder}/{test_name}/results.json", "w") as json_file:
-    json.dump(results, json_file)
+    json.dump(results, json_file, indent=4)
