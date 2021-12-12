@@ -138,23 +138,6 @@ struct COMMAND_RPC_GET_POOL_CHANGES {
   };
 };
 
-struct COMMAND_RPC_GET_ALT_BLOCKS_LIST
-{
-  typedef EMPTY_STRUCT request;
-
-  struct response
-  {
-    std::vector<block_short_response> alt_blocks;
-    std::string status;
-
-    void serialize(ISerializer &s)
-    {
-      KV_MEMBER(alt_blocks)
-      KV_MEMBER(status)
-    }
-  };
-};
-
 struct COMMAND_RPC_GET_POOL_CHANGES_LITE {
   struct request {
     Crypto::Hash tailBlockId;
@@ -668,7 +651,22 @@ struct currency_core {
 
 
 
+struct COMMAND_RPC_GET_ALT_BLOCKS_LIST
+{
+  typedef EMPTY_STRUCT request;
 
+  struct response
+  {
+    std::vector<f_block_details_response> alt_blocks;
+    std::string status;
+
+    void serialize(ISerializer &s)
+    {
+      KV_MEMBER(alt_blocks)
+      KV_MEMBER(status)
+    }
+  };
+};
 
 struct COMMAND_RPC_GET_LAST_BLOCK_HEADER {
   typedef EMPTY_STRUCT request;

@@ -1349,24 +1349,14 @@ bool RpcServer::on_alt_blocks_list_json(const COMMAND_RPC_GET_ALT_BLOCKS_LIST::r
   {
     for (const auto &b : alt_blocks)
     {
-      Crypto::Hash block_hash = get_block_hash(b);
-      uint32_t block_height = boost::get<BaseInput>(b.baseTransaction.inputs.front()).blockIndex;
-      size_t tx_cumulative_block_size;
-      m_core.getBlockSize(block_hash, tx_cumulative_block_size);
-      size_t blokBlobSize = getObjectBinarySize(b);
-      size_t minerTxBlobSize = getObjectBinarySize(b.baseTransaction);
-      difficulty_type blockDiff;
-      m_core.getBlockDifficulty(static_cast<uint32_t>(block_height), blockDiff);
-
-      block_short_response block_short;
-      block_short.timestamp = b.timestamp;
-      block_short.height = block_height;
-      block_short.hash = Common::podToHex(block_hash);
-      block_short.cumulative_size = blokBlobSize + tx_cumulative_block_size - minerTxBlobSize;
-      block_short.transactions_count = b.transactionHashes.size() + 1;
-      block_short.difficulty = blockDiff;
-
-      res.alt_blocks.push_back(block_short);
+      Crypto::Hash hash = get_block_hash(b);
+      f_block_details_response blockDetails;
+      if (!fill_f_block_details_response(hash, blockDetails))
+      {
+        throw JsonRpc::JsonRpcError{CORE_RPC_ERROR_CODE_INTERNAL_ERROR,
+                                    std::string("Unable to fill block details.")};
+      }
+      res.alt_blocks.push_back(blockDetails);
     }
   }
 
@@ -1453,7 +1443,7 @@ bool RpcServer::on_get_block_header_by_height(const COMMAND_RPC_GET_BLOCK_HEADER
 
   Crypto::Hash tmp_hash = m_core.getBlockIdByHeight(req.height);
   bool is_orphaned = block_hash != tmp_hash;
-  fill_block_header_response(blk, false, req.height, block_hash, res.block_header);
+  fill_block_header_response(blk, is_orphaned, req.height, block_hash, res.block_header);
   res.status = CORE_RPC_STATUS_OK;
   return true;
 }
