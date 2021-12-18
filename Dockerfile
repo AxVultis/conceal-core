@@ -37,14 +37,10 @@ RUN apt-get update && \
 
 COPY --from=build /conceal-core/build/src/conceald /opt/conceal-core/
 
-RUN useradd -m -d /home/conceal -s /bin/bash conceal
-
-USER conceal
-
 EXPOSE 15000
 
 EXPOSE 16000
 
 ENTRYPOINT ["/opt/conceal-core/conceald"]
 
-CMD ["-i", "--rpc-bind-ip", "0.0.0.0", "--log-file", "/home/conceal/conceald.log"]
+CMD ["-i", "--rpc-bind-ip", "0.0.0.0", "--log-file", "/root/conceald.log"]

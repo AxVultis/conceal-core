@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  conceal-core:
-    image: conceal-core
-    container_name: conceal-core
+  conceald-elastic:
+    image: conceald-elastic
+    container_name: conceald-elastic
     restart: unless-stopped
     stop_grace_period: 2m
     build:
@@ -12,4 +12,7 @@ services:
     ports:
       - 127.0.0.1:16000:16000
     volumes:
-      - .conceal:/home/conceal/.conceal
+      - conceald-elastic:/root/.conceal
+
+volumes:
+  conceald-elastic:
