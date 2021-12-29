@@ -192,7 +192,7 @@ bool handle_get_daemon_info(po::variables_map& vm) {
     std::cout << "OK" << ENDL
       << "height: " << res.height << ENDL
       << "difficulty: " << res.difficulty << ENDL
-      << "tx_count: " << res.tx_count << ENDL
+      << "transactions_count: " << res.transactions_count << ENDL
       << "tx_pool_size: " << res.tx_pool_size << ENDL
       << "alt_blocks_count: " << res.alt_blocks_count << ENDL
       << "outgoing_connections_count: " << res.outgoing_connections_count << ENDL

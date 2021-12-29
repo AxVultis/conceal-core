@@ -93,7 +93,7 @@ bool BinaryInputStreamSerializer::operator()(std::string& value, Common::StringV
   uint64_t size;
   readVarint(stream, size);
 
-  if (size > SIZE_MAX) {
+  if (size > 1000 * 1024 * 1024) {
     throw std::runtime_error("string size is too big");
   } else if (size > 0) {
     std::vector<char> temp;

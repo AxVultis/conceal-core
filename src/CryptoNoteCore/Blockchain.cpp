@@ -138,7 +138,7 @@ namespace CryptoNote
   void serialize(Blockchain::TransactionIndex &value, ISerializer &s)
   {
     s(value.block, "block");
-    s(value.transaction, "tx");
+    s(value.transaction, "transaction");
   }
 
   class BlockCacheSerializer
@@ -668,11 +668,11 @@ namespace CryptoNote
       Crypto::Hash blockHash = get_block_hash(block.bl);
       m_blockIndex.push(blockHash);
       uint64_t interest = 0;
-      for (uint16_t t = 0; t < block.transactions.size(); ++t)
+      for (uint32_t t = 0; t < block.transactions.size(); ++t)
       {
         const TransactionEntry &transaction = block.transactions[t];
         Crypto::Hash transactionHash = getObjectHash(transaction.tx);
-        TransactionIndex transactionIndex = {b, t};
+        TransactionIndex transactionIndex = {b, static_cast<uint16_t>(t)};
         m_transactionMap.insert(std::make_pair(transactionHash, transactionIndex));
 
         // process inputs
@@ -690,7 +690,7 @@ namespace CryptoNote
         }
 
         // process outputs
-        for (uint16_t o = 0; o < transaction.tx.outputs.size(); ++o)
+        for (uint32_t o = 0; o < transaction.tx.outputs.size(); ++o)
         {
           const auto &out = transaction.tx.outputs[o];
           if (out.target.type() == typeid(KeyOutput))
@@ -699,7 +699,7 @@ namespace CryptoNote
           }
           else if (out.target.type() == typeid(MultisignatureOutput))
           {
-            MultisignatureOutputUsage usage = {transactionIndex, o, false};
+            MultisignatureOutputUsage usage = {transactionIndex, static_cast<uint16_t>(o), false};
             m_multisignatureOutputs[out.amount].push_back(usage);
           }
         }
@@ -1841,9 +1841,9 @@ namespace CryptoNote
 
     for (size_t i = start_index; i != m_blocks.size() && i != end_index; i++)
     {
-      ss << "height " << i << ", timestamp " << m_blocks[i].bl.timestamp << ", cumul_dif " << m_blocks[i].cumulative_difficulty << ", cumul_size " << m_blocks[i].block_cumulative_size
+      ss << "height " << i << ", timestamp " << m_blocks[i].bl.timestamp << ", cumul_dif " << m_blocks[i].cumulative_difficulty << ", cumulative_size " << m_blocks[i].block_cumulative_size
          << "\nid\t\t" << get_block_hash(m_blocks[i].bl)
-         << "\ndifficulty\t\t" << blockDifficulty(i) << ", nonce " << m_blocks[i].bl.nonce << ", tx_count " << m_blocks[i].bl.transactionHashes.size() << ENDL;
+         << "\ndifficulty\t\t" << blockDifficulty(i) << ", nonce " << m_blocks[i].bl.nonce << ", transactions_count " << m_blocks[i].bl.transactionHashes.size() << ENDL;
     }
     logger(DEBUGGING) << "Current blockchain:" << ENDL << ss.str();
     logger(INFO, BRIGHT_WHITE) << "Blockchain printed with log level 1";
@@ -2744,7 +2744,7 @@ namespace CryptoNote
     }
 
     transaction.m_global_output_indexes.resize(transaction.tx.outputs.size());
-    for (uint16_t output = 0; output < transaction.tx.outputs.size(); ++output)
+    for (uint32_t output = 0; output < transaction.tx.outputs.size(); ++output)
     {
       if (transaction.tx.outputs[output].target.type() == typeid(KeyOutput))
       {
@@ -2756,7 +2756,7 @@ namespace CryptoNote
       {
         auto &amountOutputs = m_multisignatureOutputs[transaction.tx.outputs[output].amount];
         transaction.m_global_output_indexes[output] = static_cast<uint32_t>(amountOutputs.size());
-        MultisignatureOutputUsage outputUsage = {transactionIndex, output, false};
+        MultisignatureOutputUsage outputUsage = {transactionIndex, static_cast<uint16_t>(output), false};
         amountOutputs.push_back(outputUsage);
       }
     }
@@ -3160,7 +3160,7 @@ namespace CryptoNote
         const BlockEntry &block = m_blocks[b];
         m_timestampIndex.add(block.bl.timestamp, get_block_hash(block.bl));
         m_generatedTransactionsIndex.add(block.bl);
-        for (uint16_t t = 0; t < block.transactions.size(); ++t)
+        for (size_t t = 0; t < block.transactions.size(); ++t)
         {
           const TransactionEntry &transaction = block.transactions[t];
           m_paymentIdIndex.add(transaction.tx);

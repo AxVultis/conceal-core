@@ -236,7 +236,7 @@ void GetTransactionHashes::Request::serialize(CryptoNote::ISerializer &serialize
     throw RequestSerializationError();
   }
 
-  serializer(paymentId, "paymentId");
+  serializer(paymentId, "payment_id");
 }
 
 void GetTransactionHashes::Response::serialize(CryptoNote::ISerializer &serializer)
@@ -289,7 +289,7 @@ void TransactionRpcInfo::serialize(CryptoNote::ISerializer &serializer)
   serializer(extra, "extra");
   serializer(firstDepositId, "firstDepositId");
   serializer(depositCount, "depositCount");
-  serializer(paymentId, "paymentId");
+  serializer(paymentId, "payment_id");
 }
 
 void GetTransaction::Request::serialize(CryptoNote::ISerializer &serializer)
@@ -325,7 +325,7 @@ void GetTransactions::Request::serialize(CryptoNote::ISerializer &serializer)
     throw RequestSerializationError();
   }
 
-  serializer(paymentId, "paymentId");
+  serializer(paymentId, "payment_id");
 }
 
 void GetTransactions::Response::serialize(CryptoNote::ISerializer &serializer)
@@ -388,7 +388,7 @@ void SendTransaction::Request::serialize(CryptoNote::ISerializer &serializer)
   }
 
   bool hasExtra = serializer(extra, "extra");
-  bool hasPaymentId = serializer(paymentId, "paymentId");
+  bool hasPaymentId = serializer(paymentId, "payment_id");
 
   if (hasExtra && hasPaymentId)
   {
@@ -426,7 +426,7 @@ void CreateDelayedTransaction::Request::serialize(CryptoNote::ISerializer &seria
   }
 
   bool hasExtra = serializer(extra, "extra");
-  bool hasPaymentId = serializer(paymentId, "paymentId");
+  bool hasPaymentId = serializer(paymentId, "payment_id");
 
   if (hasExtra && hasPaymentId)
   {

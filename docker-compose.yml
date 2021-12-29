@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  conceald-elastic:
+    image: conceald-elastic
+    container_name: conceald-elastic
+    restart: unless-stopped
+    stop_grace_period: 2m
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 127.0.0.1:16000:16000
+    volumes:
+      - conceald-elastic:/root/.conceal
+
+volumes:
+  conceald-elastic:
