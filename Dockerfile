@@ -43,4 +43,4 @@ EXPOSE 16000
 
 ENTRYPOINT ["/opt/conceal-core/conceald"]
 
-CMD ["-i", "--rpc-bind-ip", "0.0.0.0", "--log-file", "/root/conceald.log"]
+CMD ["--testnet", "-i", "--rpc-bind-ip", "0.0.0.0", "--log-file", "/root/conceald.log"]
