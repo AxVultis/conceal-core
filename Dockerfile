@@ -37,9 +37,9 @@ RUN apt-get update && \
 
 COPY --from=build /conceal-core/build/src/conceald /opt/conceal-core/
 
-EXPOSE 15000
+EXPOSE 15500
 
-EXPOSE 16000
+EXPOSE 16600
 
 ENTRYPOINT ["/opt/conceal-core/conceald"]
 
