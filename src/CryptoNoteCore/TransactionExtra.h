@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <boost/variant.hpp>
 
 #include <CryptoNote.h>

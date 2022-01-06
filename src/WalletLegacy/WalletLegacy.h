@@ -39,7 +39,7 @@ class WalletLegacy :
   ITransfersObserver {
 
 public:
-  WalletLegacy(const cn::Currency& currency, INode& node, logging::ILogger& loggerGroup);
+  WalletLegacy(const cn::Currency& currency, INode& node, logging::ILogger& loggerGroup, bool testnet);
   virtual ~WalletLegacy();
 
   virtual void addObserver(IWalletLegacyObserver* observer) override;
@@ -193,6 +193,7 @@ private:
   tools::ObserverManager<cn::IWalletLegacyObserver> m_observerManager;
 
   std::unique_ptr<SyncStarter> m_onInitSyncStarter;
+  bool m_testnet;
 };
 
 } //namespace cn

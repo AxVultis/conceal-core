@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <limits>
 #include <random>
 #include <limits>
 namespace Randomize

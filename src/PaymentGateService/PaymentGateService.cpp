@@ -54,7 +54,7 @@ bool PaymentGateService::init(int argc, char** argv) {
   logging::LoggerRef log(logger, "main");
 
   if (config.gateConfiguration.testnet) {
-    log(logging::INFO) << "Starting in testnet mode";
+    log(logging::INFO, logging::MAGENTA) << "/!\\ Starting in testnet mode /!\\";
     currencyBuilder.testnet(true);
   }
 
@@ -130,7 +130,7 @@ void PaymentGateService::runInProcess(logging::LoggerRef& log) {
       throw std::runtime_error("Directory does not exist: " + config.coreConfig.configFolder);
     }
   } else {
-    if (!tools::create_directories_if_necessary(config.coreConfig.configFolder)) {
+    if (!tools::createDirectoriesIfNecessary(config.coreConfig.configFolder)) {
       throw std::runtime_error("Can't create directory: " + config.coreConfig.configFolder);
     }
   }

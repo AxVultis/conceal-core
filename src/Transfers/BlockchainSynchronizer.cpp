@@ -11,6 +11,7 @@
 #include <sstream>
 #include <thread>
 #include <unordered_set>
+#include <thread>
 
 #include "CryptoNoteCore/TransactionApi.h"
 #include "CryptoNoteCore/CryptoNoteFormatUtils.h"

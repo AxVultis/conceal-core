@@ -6,16 +6,17 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "Currency.h"
-#include <cctype>
+
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
-#include "../Common/Base58.h"
-#include "../Common/int-util.h"
-#include "../Common/StringTools.h"
+#include <cctype>
 
-#include "CryptoNoteConfig.h"
+#include "../Common/Base58.h"
+#include "../Common/StringTools.h"
+#include "../Common/int-util.h"
 #include "Account.h"
 #include "CryptoNoteBasicImpl.h"
+#include "CryptoNoteConfig.h"
 #include "CryptoNoteFormatUtils.h"
 #include "CryptoNoteTools.h"
 #include "TransactionExtra.h"
@@ -28,7 +29,7 @@ using namespace common;
 
 namespace cn
 {
-
+  // clang-format off
   const std::vector<uint64_t> Currency::PRETTY_AMOUNTS = {
       1, 2, 3, 4, 5, 6, 7, 8, 9,
       10, 20, 30, 40, 50, 60, 70, 80, 90,
@@ -65,6 +66,7 @@ namespace cn
       10000000, 10250000, 10500000, 10750000,
       11000000, 11250000, 11500000, 11750000,
       12000000};
+  // clang-format on
 
   bool Currency::init()
   {
@@ -79,34 +81,23 @@ namespace cn
       logger(ERROR, BRIGHT_RED) << "Failed to get genesis block hash";
       return false;
     }
-
-    if (isTestnet())
-    {
-      m_upgradeHeightV2 = 0;
-      m_upgradeHeightV3 = static_cast<uint32_t>(-1);
-      m_blocksFileName = "testnet_" + m_blocksFileName;
-      m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
-      m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
-      m_txPoolFileName = "testnet_" + m_txPoolFileName;
-      m_blockchinIndicesFileName = "testnet_" + m_blockchinIndicesFileName;
-    }
-
+    
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::generateGenesisBlock()
   {
     m_genesisBlock = boost::value_initialized<Block>();
 
-    // Hard code coinbase tx in genesis block, because "tru" generating tx use random, but genesis should be always the same
+    // Hard code coinbase tx in genesis block, because "tru" generating tx use random, but genesis
+    // should be always the same
     std::string genesisCoinbaseTxHex = GENESIS_COINBASE_TX_HEX;
     BinaryArray minerTxBlob;
 
-    bool r =
-        fromHex(genesisCoinbaseTxHex, minerTxBlob) &&
-        fromBinaryArray(m_genesisBlock.baseTransaction, minerTxBlob);
+    bool r = fromHex(genesisCoinbaseTxHex, minerTxBlob) &&
+             fromBinaryArray(m_genesisBlock.baseTransaction, minerTxBlob);
 
     if (!r)
     {
@@ -124,11 +115,10 @@ namespace cn
       ++m_genesisBlock.nonce;
     }
 
-    //Miner::find_nonce_for_given_block(bl, 1, 0);
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   size_t Currency::difficultyWindowByBlockVersion(uint8_t blockMajorVersion) const
   {
@@ -154,7 +144,7 @@ namespace cn
     }
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   size_t Currency::difficultyCutByBlockVersion(uint8_t blockMajorVersion) const
   {
@@ -172,11 +162,10 @@ namespace cn
     }
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::baseRewardFunction(uint64_t alreadyGeneratedCoins, uint32_t height) const
   {
-
     uint64_t incrIntervals = static_cast<uint64_t>(height) / REWARD_INCREASE_INTERVAL;
     assert(incrIntervals < REWARD_INCREASING_FACTOR.size());
 
@@ -187,7 +176,8 @@ namespace cn
 
     uint64_t base_reward = 0;
 
-    if (height > cn::parameters::UPGRADE_HEIGHT_V8)
+    if (height > cn::parameters::UPGRADE_HEIGHT_V8 ||
+        (isTestnet() && height > cn::parameters::TESTNET_UPGRADE_HEIGHT_V8))
     {
       base_reward = cn::MAX_BLOCK_REWARD_V1;
     }
@@ -202,7 +192,7 @@ namespace cn
     return base_reward;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint32_t Currency::upgradeHeight(uint8_t majorVersion) const
   {
@@ -232,19 +222,20 @@ namespace cn
     }
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::getBlockReward(size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins,
-                                uint64_t fee, uint32_t height, uint64_t &reward, int64_t &emissionChange) const
+  bool Currency::getBlockReward(size_t medianSize, size_t currentBlockSize,
+                                uint64_t alreadyGeneratedCoins, uint64_t fee, uint32_t height,
+                                uint64_t &reward, int64_t &emissionChange) const
   {
-
     assert(alreadyGeneratedCoins <= m_moneySupply);
     uint64_t baseReward = baseRewardFunction(alreadyGeneratedCoins, height);
 
     medianSize = std::max(medianSize, m_blockGrantedFullRewardZone);
     if (currentBlockSize > UINT64_C(2) * medianSize)
     {
-      logger(TRACE) << "Block cumulative size is too big: " << currentBlockSize << ", expected less than " << 2 * medianSize;
+      logger(TRACE) << "Block cumulative size is too big: " << currentBlockSize
+                    << ", expected less than " << 2 * medianSize;
       return false;
     }
 
@@ -257,13 +248,13 @@ namespace cn
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::calculateInterest(uint64_t amount, uint32_t term, uint32_t height) const
   {
-
     /* deposits 3.0 and investments 1.0 */
-    if ((term % 21900 == 0) && (height > parameters::DEPOSIT_HEIGHT_V3))
+    if (((term % 21900 == 0) && (height > parameters::DEPOSIT_HEIGHT_V3))
+    || (isTestnet() && (term % parameters::TESTNET_DEPOSIT_MIN_TERM_V3 == 0) && (height > parameters::TESTNET_DEPOSIT_HEIGHT_V3)))
     {
       return calculateInterestV3(amount, term);
     }
@@ -304,17 +295,15 @@ namespace cn
     return interestLo;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::calculateInterestV2(uint64_t amount, uint32_t term) const
   {
-
     uint64_t returnVal = 0;
 
     /* investments */
     if (term % 64800 == 0)
     {
-
       /* minimum 50000 for investments */
       uint64_t amount4Humans = amount / 1000000;
       // assert(amount4Humans >= 50000); //fails at block 166342
@@ -396,7 +385,6 @@ namespace cn
 
   uint64_t Currency::calculateInterestV3(uint64_t amount, uint32_t term) const
   {
-
     uint64_t returnVal = 0;
     uint64_t amount4Humans = amount / 1000000;
 
@@ -409,8 +397,16 @@ namespace cn
       baseInterest = static_cast<float>(0.049);
 
     /* Consensus 2019 - Monthly deposits */
+    float months = 0;
+    if (isTestnet())
+    {
+      months = term / parameters::TESTNET_DEPOSIT_MIN_TERM_V3;
+    }
+    else
+    {
+      months = term / parameters::DEPOSIT_MIN_TERM_V3;
+    }
 
-    float months = term / 21900;
     if (months > 12)
     {
       months = 12;
@@ -424,7 +420,7 @@ namespace cn
     return returnVal;
   } /* Currency::calculateInterestV3 */
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::calculateTotalTransactionInterest(const Transaction &tx, uint32_t height) const
   {
@@ -436,7 +432,8 @@ namespace cn
         const MultisignatureInput &multisignatureInput = boost::get<MultisignatureInput>(input);
         if (multisignatureInput.term != 0)
         {
-          interest += calculateInterest(multisignatureInput.amount, multisignatureInput.term, height);
+          interest +=
+              calculateInterest(multisignatureInput.amount, multisignatureInput.term, height);
         }
       }
     }
@@ -444,7 +441,7 @@ namespace cn
     return interest;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::getTransactionInputAmount(const TransactionInput &in, uint32_t height) const
   {
@@ -461,7 +458,8 @@ namespace cn
       }
       else
       {
-        return multisignatureInput.amount + calculateInterest(multisignatureInput.amount, multisignatureInput.term, height);
+        return multisignatureInput.amount +
+               calculateInterest(multisignatureInput.amount, multisignatureInput.term, height);
       }
     }
     else if (in.type() == typeid(BaseInput))
@@ -475,7 +473,7 @@ namespace cn
     }
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::getTransactionAllInputsAmount(const Transaction &tx, uint32_t height) const
   {
@@ -488,15 +486,15 @@ namespace cn
     return amount;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::getTransactionFee(const Transaction &tx, uint64_t &fee, uint32_t height) const
   {
     uint64_t amount_in = 0;
     uint64_t amount_out = 0;
 
-    //if (tx.inputs.size() == 0)// || tx.outputs.size() == 0) //0 outputs needed in TestGenerator::constructBlock
-    //	  return false;
+    // if (tx.inputs.size() == 0)// || tx.outputs.size() == 0) //0 outputs needed in
+    // TestGenerator::constructBlock 	  return false;
 
     for (const auto &in : tx.inputs)
     {
@@ -511,7 +509,8 @@ namespace cn
     if (amount_out > amount_in)
     {
       // interest shows up in the output of the W/D transactions and W/Ds always have min fee
-      if (tx.inputs.size() > 0 && tx.outputs.size() > 0 && amount_out > amount_in + parameters::MINIMUM_FEE)
+      if (tx.inputs.size() > 0 && tx.outputs.size() > 0 &&
+          amount_out > amount_in + parameters::MINIMUM_FEE)
       {
         fee = parameters::MINIMUM_FEE;
         logger(INFO) << "TRIGGERED: Currency.cpp getTransactionFee";
@@ -529,7 +528,7 @@ namespace cn
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   uint64_t Currency::getTransactionFee(const Transaction &tx, uint32_t height) const
   {
@@ -542,23 +541,27 @@ namespace cn
     return r;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   size_t Currency::maxBlockCumulativeSize(uint64_t height) const
   {
     assert(height <= std::numeric_limits<uint64_t>::max() / m_maxBlockSizeGrowthSpeedNumerator);
-    size_t maxSize = static_cast<size_t>(m_maxBlockSizeInitial +
-                                         (height * m_maxBlockSizeGrowthSpeedNumerator) / m_maxBlockSizeGrowthSpeedDenominator);
+    size_t maxSize =
+        static_cast<size_t>(m_maxBlockSizeInitial + (height * m_maxBlockSizeGrowthSpeedNumerator) /
+                                                        m_maxBlockSizeGrowthSpeedDenominator);
 
     assert(maxSize >= m_maxBlockSizeInitial);
     return maxSize;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::constructMinerTx(uint32_t height, size_t medianSize, uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
-                                  uint64_t fee, const AccountPublicAddress &minerAddress, Transaction &tx,
-                                  const BinaryArray &extraNonce /* = BinaryArray()*/, size_t maxOuts /* = 1*/) const
+  bool Currency::constructMinerTx(uint32_t height, size_t medianSize,
+                                  uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
+                                  uint64_t fee, const AccountPublicAddress &minerAddress,
+                                  Transaction &tx,
+                                  const BinaryArray &extraNonce /* = BinaryArray()*/,
+                                  size_t maxOuts /* = 1*/) const
   {
     tx.inputs.clear();
     tx.outputs.clear();
@@ -579,7 +582,8 @@ namespace cn
 
     uint64_t blockReward;
     int64_t emissionChange;
-    if (!getBlockReward(medianSize, currentBlockSize, alreadyGeneratedCoins, fee, height, blockReward, emissionChange))
+    if (!getBlockReward(medianSize, currentBlockSize, alreadyGeneratedCoins, fee, height,
+                        blockReward, emissionChange))
     {
       logger(INFO) << "Block is too big";
       return false;
@@ -609,25 +613,25 @@ namespace cn
       crypto::KeyDerivation derivation = boost::value_initialized<crypto::KeyDerivation>();
       crypto::PublicKey outEphemeralPubKey = boost::value_initialized<crypto::PublicKey>();
 
-      bool r = crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+      bool r =
+          crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
 
       if (!(r))
       {
-        logger(ERROR, BRIGHT_RED)
-            << "while creating outs: failed to generate_key_derivation("
-            << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+        logger(ERROR, BRIGHT_RED) << "while creating outs: failed to generate_key_derivation("
+                                  << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
 
         return false;
       }
 
-      r = crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
+      r = crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey,
+                                    outEphemeralPubKey);
 
       if (!(r))
       {
-        logger(ERROR, BRIGHT_RED)
-            << "while creating outs: failed to derive_public_key("
-            << derivation << ", " << no << ", "
-            << minerAddress.spendPublicKey << ")";
+        logger(ERROR, BRIGHT_RED) << "while creating outs: failed to derive_public_key("
+                                  << derivation << ", " << no << ", " << minerAddress.spendPublicKey
+                                  << ")";
 
         return false;
       }
@@ -643,7 +647,8 @@ namespace cn
 
     if (!(summaryAmounts == blockReward))
     {
-      logger(ERROR, BRIGHT_RED) << "Failed to construct miner tx, summaryAmounts = " << summaryAmounts << " not equal blockReward = " << blockReward;
+      logger(ERROR, BRIGHT_RED) << "Failed to construct miner tx, summaryAmounts = "
+                                << summaryAmounts << " not equal blockReward = " << blockReward;
       return false;
     }
 
@@ -654,9 +659,10 @@ namespace cn
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::isFusionTransaction(const std::vector<uint64_t> &inputsAmounts, const std::vector<uint64_t> &outputsAmounts, size_t size) const
+  bool Currency::isFusionTransaction(const std::vector<uint64_t> &inputsAmounts,
+                                     const std::vector<uint64_t> &outputsAmounts, size_t size) const
   {
     if (size > fusionTxMaxSize())
     {
@@ -692,7 +698,7 @@ namespace cn
     return expectedOutputsAmounts == outputsAmounts;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::isFusionTransaction(const Transaction &transaction, size_t size) const
   {
@@ -708,22 +714,25 @@ namespace cn
     return isFusionTransaction(getInputsAmounts(transaction), outputsAmounts, size);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::isFusionTransaction(const Transaction &transaction) const
   {
     return isFusionTransaction(transaction, getObjectBinarySize(transaction));
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::isAmountApplicableInFusionTransactionInput(uint64_t amount, uint64_t threshold, uint32_t height) const
+  bool Currency::isAmountApplicableInFusionTransactionInput(uint64_t amount, uint64_t threshold,
+                                                            uint32_t height) const
   {
     uint8_t ignore;
     return isAmountApplicableInFusionTransactionInput(amount, threshold, ignore, height);
   }
 
-  bool Currency::isAmountApplicableInFusionTransactionInput(uint64_t amount, uint64_t threshold, uint8_t &amountPowerOfTen, uint32_t height) const
+  bool Currency::isAmountApplicableInFusionTransactionInput(uint64_t amount, uint64_t threshold,
+                                                            uint8_t &amountPowerOfTen,
+                                                            uint32_t height) const
   {
     if (amount >= threshold)
     {
@@ -745,21 +754,22 @@ namespace cn
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   std::string Currency::accountAddressAsString(const AccountBase &account) const
   {
     return getAccountAddressAsStr(m_publicAddressBase58Prefix, account.getAccountKeys().address);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  std::string Currency::accountAddressAsString(const AccountPublicAddress &accountPublicAddress) const
+  std::string Currency::accountAddressAsString(
+      const AccountPublicAddress &accountPublicAddress) const
   {
     return getAccountAddressAsStr(m_publicAddressBase58Prefix, accountPublicAddress);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::parseAccountAddressString(const std::string &str, AccountPublicAddress &addr) const
   {
@@ -771,14 +781,15 @@ namespace cn
 
     if (prefix != m_publicAddressBase58Prefix)
     {
-      logger(DEBUGGING) << "Wrong address prefix: " << prefix << ", expected " << m_publicAddressBase58Prefix;
+      logger(DEBUGGING) << "Wrong address prefix: " << prefix << ", expected "
+                        << m_publicAddressBase58Prefix;
       return false;
     }
 
     return true;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   std::string Currency::formatAmount(uint64_t amount) const
   {
@@ -792,7 +803,7 @@ namespace cn
     return s;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   std::string Currency::formatAmount(int64_t amount) const
   {
@@ -806,7 +817,7 @@ namespace cn
     return s;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   bool Currency::parseAmount(const std::string &str, uint64_t &amount) const
   {
@@ -855,9 +866,10 @@ namespace cn
     return common::fromString(strAmount, amount);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  difficulty_type Currency::nextDifficulty(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const
+  difficulty_type Currency::nextDifficulty(
+      std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const
   {
     assert(m_difficultyWindow >= 2);
 
@@ -897,7 +909,8 @@ namespace cn
       timeSpan = 1;
     }
 
-    difficulty_type totalWork = cumulativeDifficulties[cutEnd - 1] - cumulativeDifficulties[cutBegin];
+    difficulty_type totalWork =
+        cumulativeDifficulties[cutEnd - 1] - cumulativeDifficulties[cutBegin];
     assert(totalWork > 0);
 
     uint64_t low, high;
@@ -910,11 +923,12 @@ namespace cn
     return (low + timeSpan - 1) / timeSpan;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  difficulty_type Currency::nextDifficulty(uint8_t version, uint32_t blockIndex, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const
+  difficulty_type Currency::nextDifficulty(
+      uint8_t version, uint32_t blockIndex, std::vector<uint64_t> timestamps,
+      std::vector<difficulty_type> cumulativeDifficulties) const
   {
-
     // manual diff set hack
     if (blockIndex >= 12750 && blockIndex < 13500)
     {
@@ -964,7 +978,8 @@ namespace cn
       timeSpan = 1;
     }
 
-    difficulty_type totalWork = cumulativeDifficulties[cutEnd - 1] - cumulativeDifficulties[cutBegin];
+    difficulty_type totalWork =
+        cumulativeDifficulties[cutEnd - 1] - cumulativeDifficulties[cutBegin];
     assert(totalWork > 0);
 
     uint64_t low, high;
@@ -1015,8 +1030,10 @@ namespace cn
         t_difficultyWindow = timestamps.size();
       }
 
-      std::vector<uint64_t> timestamps_tmp(timestamps_o.end() - t_difficultyWindow, timestamps_o.end());
-      std::vector<uint64_t> cumulativeDifficulties_tmp(cumulativeDifficulties_o.end() - t_difficultyWindow, cumulativeDifficulties_o.end());
+      std::vector<uint64_t> timestamps_tmp(timestamps_o.end() - t_difficultyWindow,
+                                           timestamps_o.end());
+      std::vector<uint64_t> cumulativeDifficulties_tmp(
+          cumulativeDifficulties_o.end() - t_difficultyWindow, cumulativeDifficulties_o.end());
 
       length = timestamps_tmp.size();
       assert(length == cumulativeDifficulties_tmp.size());
@@ -1068,7 +1085,7 @@ namespace cn
     return (low + timeSpan - 1) / timeSpan;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   // LWMA-3 difficulty algorithm (commented version)
   // Copyright (c) 2017-2018 Zawy, MIT License
@@ -1087,7 +1104,9 @@ namespace cn
   // https://github.com/graft-project/GraftNetwork/pull/118/files
 
   // difficulty_type should be uint64_t
-  difficulty_type Currency::nextDifficultyLWMA3(std::vector<std::uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties) const
+  difficulty_type Currency::nextDifficultyLWMA3(
+      std::vector<std::uint64_t> timestamps,
+      std::vector<difficulty_type> cumulative_difficulties) const
   {
 
     uint64_t T = 120; // target solvetime seconds
@@ -1116,9 +1135,9 @@ namespace cn
       N = timestamps.size() - 1;
     }
 
-    // If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks after fork.
-    // difficulty_guess = 100; //  Dev may change.  Guess low.
-    // if (height <= UPGRADE_HEIGHT + N+1 ) { return difficulty_guess;  }
+    // If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks
+    // after fork. difficulty_guess = 100; //  Dev may change.  Guess low. if (height <=
+    // UPGRADE_HEIGHT + N+1 ) { return difficulty_guess;  }
 
     // N is most recently solved block.
     previous_timestamp = timestamps[0];
@@ -1137,16 +1156,17 @@ namespace cn
       // Limit solvetime ST to 6*T to prevent large drop in difficulty that could cause oscillations.
       uint64_t ST = std::min(6 * T, this_timestamp - previous_timestamp);
       previous_timestamp = this_timestamp;
-      L += ST * i; // give linearly higher weight to more recent solvetimes
-                   // delete the following line if you do not want the "jump rule"
+      L += ST * i;  // give linearly higher weight to more recent solvetimes
+                    // delete the following line if you do not want the "jump rule"
       if (i > N - 3)
       {
         sum_3_ST += ST;
-      } // used below to check for hashrate jumps
+      }  // used below to check for hashrate jumps
     }
     // Calculate next_D = avgD * T / LWMA(STs) using integer math
 
-    next_D = ((cumulative_difficulties[N] - cumulative_difficulties[0]) * T * (N + 1) * 99) / (100 * 2 * L);
+    next_D = ((cumulative_difficulties[N] - cumulative_difficulties[0]) * T * (N + 1) * 99) /
+             (100 * 2 * L);
 
     prev_D = cumulative_difficulties[N] - cumulative_difficulties[N - 1];
     // The following is only for safety to limit unexpected extreme events.
@@ -1183,19 +1203,26 @@ namespace cn
   // https://github.com/zcash/zcash/issues/4021
 
   difficulty_type Currency::nextDifficultyLWMA1(
-      std::vector<std::uint64_t> timestamps,
-      std::vector<difficulty_type> cumulative_difficulties,
+      std::vector<std::uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties,
       uint64_t height) const
   {
     uint64_t T = 120;
     uint64_t N = 60;
     uint64_t difficulty_guess = 7200000;
 
+    if (isTestnet() && m_upgradeHeightV8 <= height && height < m_upgradeHeightV8 + N)
+    {
+      difficulty_guess = 10;
+      logger(DEBUGGING, YELLOW) << "guess applied";
+      return difficulty_guess;
+    }
+
     // Genesis should be the only time sizes are < N+1.
     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N + 1);
 
     // Hard code D if there are not at least N+1 BLOCKS after fork (or genesis)
-    // This helps a lot in preventing a very common problem in CN forks from conflicting difficulties.
+    // This helps a lot in preventing a very common problem in CN forks from conflicting
+    // difficulties.
 
     assert(timestamps.size() == N + 1);
 
@@ -1254,12 +1281,12 @@ namespace cn
     return next_D;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::checkProofOfWork(crypto::cn_context &context, const Block &block, difficulty_type currentDifficulty,
+  bool Currency::checkProofOfWork(crypto::cn_context &context, const Block &block,
+                                  difficulty_type currentDifficulty,
                                   crypto::Hash &proofOfWork) const
   {
-
     if (!get_block_longhash(context, block, proofOfWork))
     {
       return false;
@@ -1268,16 +1295,17 @@ namespace cn
     return check_hash(proofOfWork, currentDifficulty);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
-  size_t Currency::getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount, size_t mixinCount) const
+  size_t Currency::getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount,
+                                                   size_t mixinCount) const
   {
     const size_t KEY_IMAGE_SIZE = sizeof(crypto::KeyImage);
     const size_t OUTPUT_KEY_SIZE = sizeof(decltype(KeyOutput::key));
-    const size_t AMOUNT_SIZE = sizeof(uint64_t) + 2;                   // varint
-    const size_t GLOBAL_INDEXES_VECTOR_SIZE_SIZE = sizeof(uint8_t);    // varint
-    const size_t GLOBAL_INDEXES_INITIAL_VALUE_SIZE = sizeof(uint32_t); // varint
-    const size_t GLOBAL_INDEXES_DIFFERENCE_SIZE = sizeof(uint32_t);    // varint
+    const size_t AMOUNT_SIZE = sizeof(uint64_t) + 2;                    // varint
+    const size_t GLOBAL_INDEXES_VECTOR_SIZE_SIZE = sizeof(uint8_t);     // varint
+    const size_t GLOBAL_INDEXES_INITIAL_VALUE_SIZE = sizeof(uint32_t);  // varint
+    const size_t GLOBAL_INDEXES_DIFFERENCE_SIZE = sizeof(uint32_t);     // varint
     const size_t SIGNATURE_SIZE = sizeof(crypto::Signature);
     const size_t EXTRA_TAG_SIZE = sizeof(uint8_t);
     const size_t INPUT_TAG_SIZE = sizeof(uint8_t);
@@ -1287,14 +1315,16 @@ namespace cn
     const size_t TRANSACTION_UNLOCK_TIME_SIZE = sizeof(uint64_t);
 
     const size_t outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
-    const size_t headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
-    const size_t inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE + GLOBAL_INDEXES_VECTOR_SIZE_SIZE +
-                             GLOBAL_INDEXES_INITIAL_VALUE_SIZE + mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
+    const size_t headerSize =
+        TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
+    const size_t inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE +
+                             GLOBAL_INDEXES_VECTOR_SIZE_SIZE + GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
+                             mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
 
     return (transactionSize - headerSize - outputsSize) / inputSize;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   CurrencyBuilder::CurrencyBuilder(logging::ILogger &log) : m_currency(log)
   {
@@ -1310,7 +1340,7 @@ namespace cn
     blockFutureTimeLimit_v1(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V1);
 
     moneySupply(parameters::MONEY_SUPPLY);
-    //genesisBlockReward(parameters::GENESIS_BLOCK_REWARD);
+    // genesisBlockReward(parameters::GENESIS_BLOCK_REWARD);
 
     rewardBlocksWindow(parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
 
@@ -1350,7 +1380,8 @@ namespace cn
 
     mempoolTxLiveTime(parameters::CRYPTONOTE_MEMPOOL_TX_LIVETIME);
     mempoolTxFromAltBlockLiveTime(parameters::CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME);
-    numberOfPeriodsToForgetTxDeletedFromPool(parameters::CRYPTONOTE_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL);
+    numberOfPeriodsToForgetTxDeletedFromPool(
+        parameters::CRYPTONOTE_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL);
 
     upgradeHeightV2(parameters::UPGRADE_HEIGHT_V2);
     upgradeHeightV3(parameters::UPGRADE_HEIGHT_V3);
@@ -1375,18 +1406,19 @@ namespace cn
     testnet(false);
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   Transaction CurrencyBuilder::generateGenesisTransaction()
   {
     cn::Transaction tx;
-    cn::AccountPublicAddress ac = boost::value_initialized<cn::AccountPublicAddress>();
-    m_currency.constructMinerTx(0, 0, 0, 0, 0, ac, tx); // zero fee in genesis
+    cn::AccountPublicAddress ac =
+        boost::value_initialized<cn::AccountPublicAddress>();
+    m_currency.constructMinerTx(0, 0, 0, 0, 0, ac, tx);  // zero fee in genesis
 
     return tx;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   CurrencyBuilder &CurrencyBuilder::numberOfDecimalPlaces(size_t val)
   {
@@ -1400,7 +1432,7 @@ namespace cn
     return *this;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   CurrencyBuilder &CurrencyBuilder::difficultyWindow(size_t val)
   {
@@ -1413,7 +1445,7 @@ namespace cn
     return *this;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   CurrencyBuilder &CurrencyBuilder::upgradeVotingThreshold(unsigned int val)
   {
@@ -1426,7 +1458,7 @@ namespace cn
     return *this;
   }
 
-  /* ---------------------------------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------------------------- */
 
   CurrencyBuilder &CurrencyBuilder::upgradeWindow(uint32_t val)
   {
@@ -1439,5 +1471,4 @@ namespace cn
     return *this;
   }
 
-} // namespace cn
-
+}  // namespace cn

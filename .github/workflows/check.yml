@@ -12,8 +12,6 @@ jobs:
   build-windows:
     name: Windows
     runs-on: windows-2019
-    env:
-      BOOST_ROOT: C:/tools/boost/x86_64
     steps:
       - uses: actions/checkout@master
 
@@ -32,11 +30,8 @@ jobs:
       - name: Install dependencies
         shell: powershell
         run: |
-          echo "${env:BOOST_ROOT}"
-          $Url = "https://sourceforge.net/projects/boost/files/boost-binaries/1.72.0/boost_1_72_0-msvc-14.2-64.exe"
-          (New-Object System.Net.WebClient).DownloadFile($Url, "$env:TEMP\boost.exe")
-          Start-Process -Wait -FilePath "$env:TEMP\boost.exe" "/SILENT","/SP-","/SUPPRESSMSGBOXES","/DIR=${env:BOOST_ROOT}"
-
+          choco install boost-msvc-14.2
+      
       - name: Build
         shell: powershell
         id: build
@@ -45,7 +40,7 @@ jobs:
           cd build
           cmake .. -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON
           msbuild concealX.sln /p:Configuration=Release /m:2
-
+      
       - name: Prepare release
         shell: powershell
         run: |
@@ -257,29 +252,51 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: core_tests
-        run: |
-          cd build/bin
-          ./core_tests --generate_and_play_test_data
+  build-macos10:
+    name: macOS 10.15
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@master
 
-      - name: difficulty_tests
+      - name: Prepare version
+        id: setup
         run: |
-          cp tests/Difficulty/data.txt build/bin
-          cd build/bin
-          ./difficulty_tests data.txt
+          os=macos-10.15
+          ccx_version=${GITHUB_SHA::7}
+          release_name=ccx-cli-"$os"-dev-"$ccx_version"
+          echo "::set-output name=release_name::${release_name}"
 
-      - name: performance_tests
+      - name: Install dependencies
         run: |
-          cd build/bin
-          ./performance_tests
+          brew install boost
 
-      - name: system_tests
+      - name: Build
+        id: build
         run: |
-          cd build/bin
-          ./system_tests
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DSTATIC=ON
+          make -j2
+
+      - name: Prepare release
+        run: |
+          mkdir build/bin
+          mv build/src/conceald build/bin
+          mv build/src/concealwallet build/bin
+          mv build/src/optimizer build/bin
+          mv build/src/walletd build/bin
+          mv build/tests/*_tests build/bin
+
+      - name: Upload To GH Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.setup.outputs.release_name }}
+          path: build/bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos11:
-    name: macOS
+    name: macOS 11
     runs-on: macos-11
     steps:
       - uses: actions/checkout@master

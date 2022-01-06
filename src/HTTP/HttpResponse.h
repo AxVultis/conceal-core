@@ -1,24 +1,27 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
 // Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+//
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
+#include <map>
 #include <ostream>
 #include <string>
 #include <map>
-
-namespace cn {
-
-  class HttpResponse {
-  public:
-    enum HTTP_STATUS {
-      STATUS_200,
-      STATUS_401,
-      STATUS_404,
-      STATUS_500
+namespace cn
+{
+  class HttpResponse
+  {
+   public:
+    enum HTTP_STATUS
+    {
+      STATUS_200 = 200,
+      STATUS_401 = 401,
+      STATUS_404 = 404,
+      STATUS_500 = 500
     };
 
     HttpResponse();
@@ -31,7 +34,7 @@ namespace cn {
     HTTP_STATUS getStatus() const { return status; }
     const std::string& getBody() const { return body; }
 
-  private:
+   private:
     friend std::ostream& operator<<(std::ostream& os, const HttpResponse& resp);
     std::ostream& printHttpResponse(std::ostream& os) const;
 
@@ -40,8 +43,9 @@ namespace cn {
     std::string body;
   };
 
-  inline std::ostream& operator<<(std::ostream& os, const HttpResponse& resp) {
+  inline std::ostream& operator<<(std::ostream& os, const HttpResponse& resp)
+  {
     return resp.printHttpResponse(os);
   }
 
-} //namespace cn
+}  // namespace cn

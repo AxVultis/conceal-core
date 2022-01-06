@@ -6,21 +6,23 @@
 
 #pragma once
 
+#include <boost/program_options.hpp>
 #include <string>
 
-#include <boost/program_options.hpp>
+namespace cn
+{
+  class CoreConfig
+  {
+   private:
+      public:
+    CoreConfig();
 
-namespace cn {
+    static void initOptions(boost::program_options::options_description& desc);
+    void init(const boost::program_options::variables_map& options);
+    bool testnet = false;
 
-class CoreConfig {
-public:
-  CoreConfig();
+    std::string configFolder;
+    bool configFolderDefaulted = true;
+  };
 
-  static void initOptions(boost::program_options::options_description& desc);
-  void init(const boost::program_options::variables_map& options);
-
-  std::string configFolder;
-  bool configFolderDefaulted = true;
-};
-
-} //namespace cn
+}  // namespace cn

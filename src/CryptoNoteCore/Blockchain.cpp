@@ -495,10 +495,12 @@ namespace cn
     return static_cast<uint32_t>(m_blocks.size());
   }
 
-  bool Blockchain::init(const std::string &config_folder, bool load_existing)
+  bool Blockchain::init(const std::string &config_folder, bool load_existing, bool testnet)
   {
+    m_testnet = testnet;
+    m_checkpoints.set_testnet(m_testnet);
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
-    if (!config_folder.empty() && !tools::create_directories_if_necessary(config_folder))
+    if (!config_folder.empty() && !tools::createDirectoriesIfNecessary(config_folder))
     {
       logger(ERROR, BRIGHT_RED) << " Failed to create data directory: " << m_config_folder;
       return false;
@@ -570,7 +572,9 @@ namespace cn
     uint32_t lastValidCheckpointHeight = 0;
     if (!checkCheckpoints(lastValidCheckpointHeight))
     {
-      logger(WARNING, BRIGHT_YELLOW) << "Invalid checkpoint. Rollback blockchain to last valid checkpoint at height " << lastValidCheckpointHeight;
+      logger(WARNING, BRIGHT_YELLOW)
+          << "Invalid checkpoint. Rollback blockchain to last valid checkpoint at height "
+          << lastValidCheckpointHeight;
       rollbackBlockchainTo(lastValidCheckpointHeight);
     }
 

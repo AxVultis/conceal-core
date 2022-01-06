@@ -1,17 +1,19 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
 // Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+//
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #pragma once
 
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/variables_map.hpp>
 #include <iostream>
 #include <type_traits>
 
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
+#include "CryptoNoteCore/Core.h"
 
 namespace command_line
 {
@@ -50,7 +52,8 @@ namespace command_line
   };
 
   template<typename T>
-  boost::program_options::typed_value<T, char>* make_semantic(const arg_descriptor<T, true>& /*arg*/)
+  boost::program_options::typed_value<T, char>* make_semantic(
+      const arg_descriptor<T, true>& /*arg*/)
   {
     return boost::program_options::value<T>()->required();
   }
@@ -65,7 +68,8 @@ namespace command_line
   }
 
   template<typename T>
-  boost::program_options::typed_value<T, char>* make_semantic(const arg_descriptor<T, false>& arg, const T& def)
+  boost::program_options::typed_value<T, char>* make_semantic(const arg_descriptor<T, false>& arg,
+                                                              const T& def)
   {
     auto semantic = boost::program_options::value<T>();
     if (!arg.not_use_default)
@@ -74,15 +78,17 @@ namespace command_line
   }
 
   template<typename T>
-  boost::program_options::typed_value<std::vector<T>, char>* make_semantic(const arg_descriptor<std::vector<T>, false>& /*arg*/)
+  boost::program_options::typed_value<std::vector<T>, char>* make_semantic(
+      const arg_descriptor<std::vector<T>, false>& /*arg*/)
   {
-    auto semantic = boost::program_options::value< std::vector<T> >();
+    auto semantic = boost::program_options::value<std::vector<T>>();
     semantic->default_value(std::vector<T>(), "");
     return semantic;
   }
 
   template<typename T, bool required>
-  void add_arg(boost::program_options::options_description& description, const arg_descriptor<T, required>& arg, bool unique = true)
+  void add_arg(boost::program_options::options_description& description,
+               const arg_descriptor<T, required>& arg, bool unique = true)
   {
     if (unique && 0 != description.find_nothrow(arg.name, false))
     {
@@ -94,7 +100,8 @@ namespace command_line
   }
 
   template<typename T>
-  void add_arg(boost::program_options::options_description& description, const arg_descriptor<T, false>& arg, const T& def, bool unique = true)
+  void add_arg(boost::program_options::options_description& description,
+               const arg_descriptor<T, false>& arg, const T& def, bool unique = true)
   {
     if (unique && 0 != description.find_nothrow(arg.name, false))
     {
@@ -106,7 +113,8 @@ namespace command_line
   }
 
   template<>
-  inline void add_arg(boost::program_options::options_description& description, const arg_descriptor<bool, false>& arg, bool unique)
+  inline void add_arg(boost::program_options::options_description& description,
+                      const arg_descriptor<bool, false>& arg, bool unique)
   {
     if (unique && 0 != description.find_nothrow(arg.name, false))
     {
@@ -118,8 +126,9 @@ namespace command_line
   }
 
   template<typename charT>
-  boost::program_options::basic_parsed_options<charT> parse_command_line(int argc, const charT* const argv[],
-    const boost::program_options::options_description& desc, bool allow_unregistered = false)
+  boost::program_options::basic_parsed_options<charT> parse_command_line(
+      int argc, const charT* const argv[], const boost::program_options::options_description& desc,
+      bool allow_unregistered = false)
   {
     auto parser = boost::program_options::command_line_parser(argc, argv);
     parser.options(desc);
@@ -152,27 +161,36 @@ namespace command_line
   }
 
   template<typename T, bool required>
-  bool has_arg(const boost::program_options::variables_map& vm, const arg_descriptor<T, required>& arg)
+  bool has_arg(const boost::program_options::variables_map& vm,
+               const arg_descriptor<T, required>& arg)
   {
     auto value = vm[arg.name];
     return !value.empty();
   }
-
 
   template<typename T, bool required>
   T get_arg(const boost::program_options::variables_map& vm, const arg_descriptor<T, required>& arg)
   {
     return vm[arg.name].template as<T>();
   }
- 
+
   template<>
-  inline bool has_arg<bool, false>(const boost::program_options::variables_map& vm, const arg_descriptor<bool, false>& arg)
+  inline bool has_arg<bool, false>(const boost::program_options::variables_map& vm,
+                                   const arg_descriptor<bool, false>& arg)
   {
     return get_arg<bool, false>(vm, arg);
   }
 
-
   extern const arg_descriptor<bool> arg_help;
   extern const arg_descriptor<bool> arg_version;
   extern const arg_descriptor<std::string> arg_data_dir;
-}
+  extern const arg_descriptor<std::string> arg_config_file;
+  extern const arg_descriptor<bool> arg_os_version;
+  extern const arg_descriptor<std::string> arg_log_file;
+  extern const arg_descriptor<std::string> arg_set_fee_address;
+  extern const arg_descriptor<std::string> arg_set_view_key;
+  extern const arg_descriptor<int> arg_log_level;
+  extern const arg_descriptor<bool> arg_console;
+  extern const arg_descriptor<bool> arg_testnet_on;
+  extern const arg_descriptor<bool> arg_print_genesis_tx;
+}  // namespace command_line

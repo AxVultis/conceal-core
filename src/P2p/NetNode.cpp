@@ -486,11 +486,19 @@ namespace cn
   //-----------------------------------------------------------------------------------
 
   bool NodeServer::init(const NetNodeConfig& config) {
-    if (!config.getTestnet()) {
-      for (auto seed : cn::SEED_NODES) {
+    if (!config.getTestnet())
+    {
+      for (auto seed : cn::SEED_NODES)
+      {
         append_net_address(m_seed_nodes, seed);
       }
-    } else {
+    }
+    else
+    {
+      for (auto seed : cn::TESTNET_SEED_NODES)
+      {
+        append_net_address(m_seed_nodes, seed);
+      }
       m_network_id.data[0] += 1;
     }
 
@@ -585,7 +593,7 @@ namespace cn
   bool NodeServer::store_config()
   {
     try {
-      if (!tools::create_directories_if_necessary(m_config_folder)) {
+      if (!tools::createDirectoriesIfNecessary(m_config_folder)) {
         logger(INFO) <<  "Failed to create data directory: " << m_config_folder;
         return false;
       }
@@ -1146,7 +1154,7 @@ namespace cn
     rsp.connections_count = get_connections_count();
     rsp.incoming_connections_count = rsp.connections_count - get_outgoing_connections_count();
     rsp.version = PROJECT_VERSION_LONG;
-    rsp.os_version = tools::get_os_version_string();
+    rsp.os_version = tools::getOSVersion();
     m_payload_handler.get_stat_info(rsp.payload_info);
     return 1;
   }

@@ -1,0 +1,17 @@
+---
+BasedOnStyle: Google
+AlignConsecutiveMacros: "true"
+AllowShortCaseLabelsOnASingleLine: "true"
+AllowShortBlocksOnASingleLine: "Empty"
+AllowShortIfStatementsOnASingleLine: "Never"
+AllowShortLoopsOnASingleLine: "false"
+BreakBeforeBraces: Allman
+Cpp11BracedListStyle: "false"
+ColumnLimit: 100
+NamespaceIndentation: All
+SpaceAfterTemplateKeyword: "false"
+SpaceBeforeCtorInitializerColon: "true"
+SpaceBeforeInheritanceColon: "true"
+SpaceBeforeRangeBasedForLoopColon: "true"
+SpaceInEmptyBlock: true
+Standard: "Latest"
