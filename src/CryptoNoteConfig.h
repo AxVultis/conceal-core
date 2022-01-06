@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <initializer_list>
 
-namespace CryptoNote
+namespace cn
 {
 	namespace parameters
 	{
@@ -327,5 +327,5 @@ namespace CryptoNote
           { 35000, "dc0f5be53085ffe347c92ff551a4e8757759ef30bdd4589a636d976c580ce4c3" }
         };
 
-} // namespace CryptoNote
+} // namespace cn
 

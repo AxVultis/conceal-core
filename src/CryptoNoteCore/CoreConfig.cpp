@@ -9,9 +9,9 @@
 #include "Common/CommandLine.h"
 #include "Common/Util.h"
 
-namespace CryptoNote
+namespace cn
 {
-  CoreConfig::CoreConfig() { configFolder = Tools::getDefaultDataDirectory(); }
+  CoreConfig::CoreConfig() { configFolder = tools::getDefaultDataDirectory(); }
 
   void CoreConfig::init(const boost::program_options::variables_map& options)
   {
@@ -24,11 +24,11 @@ namespace CryptoNote
     }
     else
     {
-      configFolder = Tools::getDefaultDataDirectory(testnet);
+      configFolder = tools::getDefaultDataDirectory(testnet);
       configFolderDefaulted = true;
     }
   }
 
   void CoreConfig::initOptions(boost::program_options::options_description& desc) { }
 
-}  // namespace CryptoNote
+}  // namespace cn

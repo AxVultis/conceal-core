@@ -24,10 +24,10 @@
 
 #undef ERROR
 
-using namespace Logging;
-using namespace Common;
+using namespace logging;
+using namespace common;
 
-namespace CryptoNote
+namespace cn
 {
   // clang-format off
   const std::vector<uint64_t> Currency::PRETTY_AMOUNTS = {
@@ -176,10 +176,10 @@ namespace CryptoNote
 
     uint64_t base_reward = 0;
 
-    if (height > CryptoNote::parameters::UPGRADE_HEIGHT_V8 ||
-        (isTestnet() && height > CryptoNote::parameters::TESTNET_UPGRADE_HEIGHT_V8))
+    if (height > cn::parameters::UPGRADE_HEIGHT_V8 ||
+        (isTestnet() && height > cn::parameters::TESTNET_UPGRADE_HEIGHT_V8))
     {
-      base_reward = CryptoNote::MAX_BLOCK_REWARD_V1;
+      base_reward = cn::MAX_BLOCK_REWARD_V1;
     }
     else
     {
@@ -282,9 +282,9 @@ namespace CryptoNote
     /* early deposit multiplier */
     uint64_t interestHi;
     uint64_t interestLo;
-    if (height <= CryptoNote::parameters::END_MULTIPLIER_BLOCK)
+    if (height <= cn::parameters::END_MULTIPLIER_BLOCK)
     {
-      interestLo = mul128(cLo, CryptoNote::parameters::MULTIPLIER_FACTOR, &interestHi);
+      interestLo = mul128(cLo, cn::parameters::MULTIPLIER_FACTOR, &interestHi);
       assert(interestHi == 0);
     }
     else
@@ -610,11 +610,11 @@ namespace CryptoNote
     uint64_t summaryAmounts = 0;
     for (size_t no = 0; no < outAmounts.size(); no++)
     {
-      Crypto::KeyDerivation derivation = boost::value_initialized<Crypto::KeyDerivation>();
-      Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
+      crypto::KeyDerivation derivation = boost::value_initialized<crypto::KeyDerivation>();
+      crypto::PublicKey outEphemeralPubKey = boost::value_initialized<crypto::PublicKey>();
 
       bool r =
-          Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+          crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
 
       if (!(r))
       {
@@ -624,7 +624,7 @@ namespace CryptoNote
         return false;
       }
 
-      r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey,
+      r = crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey,
                                     outEphemeralPubKey);
 
       if (!(r))
@@ -739,7 +739,7 @@ namespace CryptoNote
       return false;
     }
 
-    if (height < CryptoNote::parameters::UPGRADE_HEIGHT_V4 && amount < defaultDustThreshold())
+    if (height < cn::parameters::UPGRADE_HEIGHT_V4 && amount < defaultDustThreshold())
     {
       return false;
     }
@@ -774,7 +774,7 @@ namespace CryptoNote
   bool Currency::parseAccountAddressString(const std::string &str, AccountPublicAddress &addr) const
   {
     uint64_t prefix;
-    if (!CryptoNote::parseAccountAddressString(prefix, addr, str))
+    if (!cn::parseAccountAddressString(prefix, addr, str))
     {
       return false;
     }
@@ -863,7 +863,7 @@ namespace CryptoNote
       strAmount.append(m_numberOfDecimalPlaces - fractionSize, '0');
     }
 
-    return Common::fromString(strAmount, amount);
+    return common::fromString(strAmount, amount);
   }
 
   /* ------------------------------------------------------------------------------------------- */
@@ -1283,9 +1283,9 @@ namespace CryptoNote
 
   /* ------------------------------------------------------------------------------------------- */
 
-  bool Currency::checkProofOfWork(Crypto::cn_context &context, const Block &block,
+  bool Currency::checkProofOfWork(crypto::cn_context &context, const Block &block,
                                   difficulty_type currentDifficulty,
-                                  Crypto::Hash &proofOfWork) const
+                                  crypto::Hash &proofOfWork) const
   {
     if (!get_block_longhash(context, block, proofOfWork))
     {
@@ -1300,17 +1300,17 @@ namespace CryptoNote
   size_t Currency::getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount,
                                                    size_t mixinCount) const
   {
-    const size_t KEY_IMAGE_SIZE = sizeof(Crypto::KeyImage);
+    const size_t KEY_IMAGE_SIZE = sizeof(crypto::KeyImage);
     const size_t OUTPUT_KEY_SIZE = sizeof(decltype(KeyOutput::key));
     const size_t AMOUNT_SIZE = sizeof(uint64_t) + 2;                    // varint
     const size_t GLOBAL_INDEXES_VECTOR_SIZE_SIZE = sizeof(uint8_t);     // varint
     const size_t GLOBAL_INDEXES_INITIAL_VALUE_SIZE = sizeof(uint32_t);  // varint
     const size_t GLOBAL_INDEXES_DIFFERENCE_SIZE = sizeof(uint32_t);     // varint
-    const size_t SIGNATURE_SIZE = sizeof(Crypto::Signature);
+    const size_t SIGNATURE_SIZE = sizeof(crypto::Signature);
     const size_t EXTRA_TAG_SIZE = sizeof(uint8_t);
     const size_t INPUT_TAG_SIZE = sizeof(uint8_t);
     const size_t OUTPUT_TAG_SIZE = sizeof(uint8_t);
-    const size_t PUBLIC_KEY_SIZE = sizeof(Crypto::PublicKey);
+    const size_t PUBLIC_KEY_SIZE = sizeof(crypto::PublicKey);
     const size_t TRANSACTION_VERSION_SIZE = sizeof(uint8_t);
     const size_t TRANSACTION_UNLOCK_TIME_SIZE = sizeof(uint64_t);
 
@@ -1326,7 +1326,7 @@ namespace CryptoNote
 
   /* ------------------------------------------------------------------------------------------- */
 
-  CurrencyBuilder::CurrencyBuilder(Logging::ILogger &log) : m_currency(log)
+  CurrencyBuilder::CurrencyBuilder(logging::ILogger &log) : m_currency(log)
   {
     maxBlockNumber(parameters::CRYPTONOTE_MAX_BLOCK_NUMBER);
     maxBlockBlobSize(parameters::CRYPTONOTE_MAX_BLOCK_BLOB_SIZE);
@@ -1410,9 +1410,9 @@ namespace CryptoNote
 
   Transaction CurrencyBuilder::generateGenesisTransaction()
   {
-    CryptoNote::Transaction tx;
-    CryptoNote::AccountPublicAddress ac =
-        boost::value_initialized<CryptoNote::AccountPublicAddress>();
+    cn::Transaction tx;
+    cn::AccountPublicAddress ac =
+        boost::value_initialized<cn::AccountPublicAddress>();
     m_currency.constructMinerTx(0, 0, 0, 0, 0, ac, tx);  // zero fee in genesis
 
     return tx;
@@ -1471,4 +1471,4 @@ namespace CryptoNote
     return *this;
   }
 
-}  // namespace CryptoNote
+}  // namespace cn

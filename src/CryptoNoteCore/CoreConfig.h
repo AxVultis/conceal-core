@@ -9,14 +9,12 @@
 #include <boost/program_options.hpp>
 #include <string>
 
-namespace CryptoNote
+namespace cn
 {
   class CoreConfig
   {
    private:
-    
-
-   public:
+      public:
     CoreConfig();
 
     static void initOptions(boost::program_options::options_description& desc);
@@ -27,4 +25,4 @@ namespace CryptoNote
     bool configFolderDefaulted = true;
   };
 
-}  // namespace CryptoNote
+}  // namespace cn

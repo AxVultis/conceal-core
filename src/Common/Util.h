@@ -10,7 +10,7 @@
 #include <string>
 #include <system_error>
 
-namespace Tools
+namespace tools
 {
   std::string getDefaultDataDirectory(bool testnet = false);
   std::string getOSVersion();

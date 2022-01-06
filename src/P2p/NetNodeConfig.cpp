@@ -15,7 +15,7 @@
 #include "CryptoNoteConfig.h"
 #include "crypto/crypto.h"
 
-namespace CryptoNote
+namespace cn
 {
   namespace
   {
@@ -53,7 +53,7 @@ namespace CryptoNote
 
     bool parsePeerFromString(NetworkAddress& pe, const std::string& node_addr)
     {
-      return Common::parseIpAddressAndPort(pe.ip, pe.port, node_addr);
+      return common::parseIpAddressAndPort(pe.ip, pe.port, node_addr);
     }
 
     bool parsePeersAndAddToContainer(
@@ -99,7 +99,7 @@ namespace CryptoNote
     allowLocalIp = false;
     hideMyPort = false;
     testnet = false;
-    configFolder = Tools::getDefaultDataDirectory(testnet);
+    configFolder = tools::getDefaultDataDirectory(testnet);
   }
 
   bool NetNodeConfig::init(const boost::program_options::variables_map& vm)
@@ -133,12 +133,12 @@ namespace CryptoNote
 
     if (vm.count(command_line::arg_data_dir.name) != 0 &&
         (!vm[command_line::arg_data_dir.name].defaulted() ||
-         configFolder == Tools::getDefaultDataDirectory(testnet)))
+         configFolder == tools::getDefaultDataDirectory(testnet)))
     {
       configFolder = command_line::get_arg(vm, command_line::arg_data_dir);
     }
 
-    p2pStateFilename = CryptoNote::parameters::P2P_NET_DATA_FILENAME;
+    p2pStateFilename = cn::parameters::P2P_NET_DATA_FILENAME;
 
     if (command_line::has_arg(vm, arg_p2p_add_peer))
     {
@@ -146,7 +146,7 @@ namespace CryptoNote
       for (const std::string& pr_str : perrs)
       {
         PeerlistEntry pe = boost::value_initialized<PeerlistEntry>();
-        pe.id = Crypto::rand<uint64_t>();
+        pe.id = crypto::rand<uint64_t>();
         if (!parsePeerFromString(pe.adr, pr_str))
         {
           return false;
@@ -250,4 +250,4 @@ namespace CryptoNote
 
   void NetNodeConfig::setConfigFolder(const std::string& folder) { configFolder = folder; }
 
-}  // namespace CryptoNote
+}  // namespace cn
