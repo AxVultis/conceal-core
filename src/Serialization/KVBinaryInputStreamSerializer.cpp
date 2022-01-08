@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <Common/StreamTools.h>
 #include "KVBinaryCommon.h"
+#include <iostream>
 
 using namespace common;
 using namespace cn;
@@ -70,7 +71,8 @@ size_t readVarint(common::IInputStream& s) {
 
 std::string readString(common::IInputStream& s) {
   auto size = readVarint(s);
-  if (size > SIZE_MAX) {
+  if (size > 128 * 1024 * 1024) {
+    std::cout << "limit exceeded KVBinaryInputStreamSerializer string size too big" << std::endl;
     throw std::runtime_error("string size is too big");
   }
 

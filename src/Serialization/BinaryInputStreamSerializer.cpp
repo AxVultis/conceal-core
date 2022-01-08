@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <Common/StreamTools.h>
 #include "SerializationOverloads.h"
+#include <iostream>
 
 using namespace common;
 
@@ -39,7 +40,8 @@ void BinaryInputStreamSerializer::endObject() {
 bool BinaryInputStreamSerializer::beginArray(size_t& size, common::StringView name) {
   readVarintAs<uint64_t>(stream, size);
 
-  if (size > SIZE_MAX) {
+  if (size > 128 * 1024 * 1024) {
+    std::cout << "limit exceeded BinaryInputStreamSerializer array size too big" << std::endl;
     throw std::runtime_error("array size is too big");
   }
 
@@ -93,7 +95,8 @@ bool BinaryInputStreamSerializer::operator()(std::string& value, common::StringV
   uint64_t size;
   readVarint(stream, size);
 
-  if (size > SIZE_MAX) {
+  if (size > 128 * 1024 * 1024) {
+    std::cout << "limit exceeded BinaryInputStreamSerializer string size too big" << std::endl;
     throw std::runtime_error("string size is too big");
   } else if (size > 0) {
     std::vector<char> temp;
