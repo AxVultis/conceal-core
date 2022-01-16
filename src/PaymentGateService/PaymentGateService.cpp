@@ -223,7 +223,7 @@ void PaymentGateService::runWalletService(const cn::Currency& currency, cn::INod
 
   std::unique_ptr<cn::WalletGreen> wallet(new cn::WalletGreen(*dispatcher, currency, node, logger));
 
-  service = new payment_service::WalletService(currency, *dispatcher, node, *wallet, *wallet, walletConfiguration, logger);
+  service = new payment_service::WalletService(currency, *dispatcher, node, *wallet, *wallet, walletConfiguration, logger, config.gateConfiguration.testnet);
   std::unique_ptr<payment_service::WalletService> serviceGuard(service);
   try {
     service->init();
