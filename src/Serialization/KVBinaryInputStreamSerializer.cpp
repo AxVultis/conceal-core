@@ -71,8 +71,7 @@ size_t readVarint(common::IInputStream& s) {
 
 std::string readString(common::IInputStream& s) {
   auto size = readVarint(s);
-  if (size > 128 * 1024 * 1024) {
-    std::cout << "limit exceeded KVBinaryInputStreamSerializer string size too big" << std::endl;
+  if (size > 128*1024*1024) {
     throw std::runtime_error("string size is too big");
   }
 
