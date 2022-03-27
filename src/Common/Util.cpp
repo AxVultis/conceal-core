@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
-// Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+// Copyright (c) 2018-2022 Conceal Network & Conceal Devs
 //
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -284,7 +284,7 @@ namespace tools
 #ifdef _WIN32
     // Windows
     config_folder = get_special_folder_path(CSIDL_APPDATA, true) + "/" +
-                    cn::CRYPTONOTE_NAME + (testnet ? "/testnet" : "");
+                    cn::BLOCKCHAIN_DIR + (testnet ? "/testnet" : "");
 #else
     std::string pathRet;
     char* pszHome = getenv("HOME");
@@ -295,10 +295,10 @@ namespace tools
 #ifdef MAC_OSX
     // Mac
     pathRet /= "Library/Application Support";
-    config_folder = (pathRet + "/" + cn::CRYPTONOTE_NAME + (testnet ? "/testnet" : ""));
+    config_folder = (pathRet + "/" + cn::BLOCKCHAIN_DIR + (testnet ? "/testnet" : ""));
 #else
     // Unix
-    config_folder = (pathRet + "/." + cn::CRYPTONOTE_NAME + (testnet ? "/testnet" : ""));
+    config_folder = (pathRet + "/." + cn::BLOCKCHAIN_DIR + (testnet ? "/testnet" : ""));
 #endif
 #endif
 

@@ -1,7 +1,8 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
-// Copyright (c) 2016-2018, The Karbo developers
+// Copyright (c) 2016-2022, The Karbo developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
-// Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+// Copyright (c) 2018-2022 Conceal Network & Conceal Devs
+//
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,6 +13,9 @@
 
 #include "Common/PathTools.h"
 #include "Common/SignalHandler.h"
+#include "crypto/hash.h"
+#include "CryptoNoteConfig.h"
+#include "CryptoNoteCore/Checkpoints.h"
 #include "CryptoNoteCore/Core.h"
 #include "CryptoNoteCore/CoreConfig.h"
 #include "CryptoNoteCore/CryptoNoteTools.h"
@@ -37,66 +41,37 @@ using namespace logging;
 
 namespace po = boost::program_options;
 
-bool command_line_preprocessor(const boost::program_options::variables_map& vm, LoggerRef& logger);
-
-void print_genesis_tx_hex()
+namespace
 {
+  const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", "Specify configuration file", "conceal.conf"};
+  const command_line::arg_descriptor<bool>        arg_os_version  = {"os-version", ""};
+  const command_line::arg_descriptor<std::string> arg_log_file    = {"log-file", "", ""};
+  const command_line::arg_descriptor<std::string> arg_set_fee_address = { "fee-address", "Set a fee address for remote nodes", "" };
+  const command_line::arg_descriptor<std::string> arg_set_view_key = { "view-key", "Set secret view-key for remote node fee confirmation", "" };
+  const command_line::arg_descriptor<int>         arg_log_level   = {"log-level", "", 2};
+  const command_line::arg_descriptor<bool>        arg_console     = {"no-console", "Disable daemon console commands"};
+  const command_line::arg_descriptor<bool>        arg_testnet_on  = {"testnet", "Used to deploy test nets. Checkpoints and hardcoded seeds are ignored, "
+    "network id is changed. Use it with --data-dir flag. The wallet must be launched with --testnet flag.", false};
+  const command_line::arg_descriptor<bool>        arg_print_genesis_tx = { "print-genesis-tx", "Prints genesis' block tx hex to insert it to config and exits" };
+}
+
+void print_genesis_tx_hex() {
   logging::ConsoleLogger logger;
   cn::Transaction tx = cn::CurrencyBuilder(logger).generateGenesisTransaction();
   cn::BinaryArray txb = cn::toBinaryArray(tx);
   std::string tx_hex = common::toHex(txb);
+  LoggerManager lm;
+  LoggerRef gen_log(lm, "[Genesis]");
 
-  std::cout << "Insert this line into your coin configuration file as is: " << std::endl;
-  std::cout << "const char GENESIS_COINBASE_TX_HEX[] = \"" << tx_hex << "\";" << std::endl;
-
+  /**
+   * Someone who knows what to do with this will find it helpful,
+   * if not, it't not our job to teach.
+  **/
+  gen_log(INFO) << "Random genesis hex: " << tx_hex;
   return;
 }
 
-// void print_genesis_tx_hex(const po::variables_map& vm) {
-  // std::vector<cn::AccountPublicAddress> targets;
- //  auto genesis_block_reward_addresses = command_line::get_arg(vm, arg_genesis_block_reward_address);
-
-//   logging::ConsoleLogger logger;
-//   cn::CurrencyBuilder currencyBuilder(logger);
-
- //  cn::Currency currency = currencyBuilder.currency();
-
- //  for (const auto& address_string : genesis_block_reward_addresses) {
- //     cn::AccountPublicAddress address;
-   //  if (!currency.parseAccountAddressString(address_string, address)) {
-   //    std::cout << "Failed to parse address: " << address_string << std::endl;
-   //    return;
-  //   }
- //	//Print GENESIS_BLOCK_REWARD Mined Address
- //	std::cout << "Your SDN Pre-mined Address String is:  " << address_string << std::endl;
- //    targets.emplace_back(std::move(address));
-//   }
-
- //  if (targets.empty()) {
- //    if (cn::parameters::GENESIS_BLOCK_REWARD > 0) {
- //      std::cout << "Error: genesis block reward addresses are not defined" << std::endl;
- //    } else {
-
- //	  cn::Transaction tx = cn::CurrencyBuilder(logger).generateGenesisTransaction();
- //	  cn::BinaryArray txb = cn::toBinaryArray(tx);
- //	  std::string tx_hex = common::toHex(txb);
-
-// 	  std::cout << "Insert this line into your coin configuration file as is: " << std::endl;
-//	  std::cout << "const char GENESIS_COINBASE_TX_HEX[] = \"" << tx_hex << "\";" << std::endl;
-//	}
-//   } else {
- //	cn::Transaction tx = cn::CurrencyBuilder(logger).generateGenesisTransaction(targets);
- //	cn::BinaryArray txb = cn::toBinaryArray(tx);
- //	std::string tx_hex = common::toHex(txb);
-
-//	std::cout << "Modify this line into your concealX configuration file as is:  " << std::endl;
-//	std::cout << "const char GENESIS_COINBASE_TX_HEX[] = \"" << tx_hex << "\";" << std::endl;
-//   }
-//   return;
-// }
-
-JsonValue buildLoggerConfiguration(Level level, const std::string& logfile)
-{
+JsonValue buildLoggerConfiguration(Level level, const std::string& logfile) {
   JsonValue loggerConfiguration(JsonValue::OBJECT);
   loggerConfiguration.insert("globalLevel", static_cast<int64_t>(level));
 
@@ -113,33 +88,6 @@ JsonValue buildLoggerConfiguration(Level level, const std::string& logfile)
   consoleLogger.insert("pattern", "%T %L ");
 
   return loggerConfiguration;
-}
-
-void renameDataDir(std::string directory)
-{
-  std::string concealXDir = directory;
-  boost::filesystem::path concealXDirPath(concealXDir);
-  if (boost::filesystem::exists(concealXDirPath))
-  {
-    return;
-  }
-
-  std::string dataDirPrefix =
-      concealXDir.substr(0, concealXDir.size() + 1 - sizeof(CRYPTONOTE_NAME));
-  boost::filesystem::path cediDirPath(dataDirPrefix + "BXC");
-
-  if (boost::filesystem::exists(cediDirPath))
-  {
-    boost::filesystem::rename(cediDirPath, concealXDirPath);
-  }
-  else
-  {
-    boost::filesystem::path BcediDirPath(dataDirPrefix + "Bcedi");
-    if (boost::filesystem::exists(boost::filesystem::path(BcediDirPath)))
-    {
-      boost::filesystem::rename(BcediDirPath, concealXDirPath);
-    }
-  }
 }
 
 int main(int argc, char* argv[])
@@ -192,16 +140,26 @@ int main(int argc, char* argv[])
 
       coreConfig.init(vm);
 
+      // logger is not configured yet, std::cout is fine here
       if (command_line::get_arg(vm, command_line::arg_help))
       {
-        std::cout << cn::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG << ENDL << ENDL;
-        std::cout << desc_options << std::endl;
+        std::cout << CCX_RELEASE_VERSION << std::endl
+                  << std::endl;
+        std::cout << desc_options;
         return false;
       }
-
-      if (command_line::get_arg(vm, command_line::arg_print_genesis_tx))
+      else if (command_line::get_arg(vm, command_line::arg_version))
       {
-        // print_genesis_tx_hex(vm);
+        std::cout << CCX_RELEASE_VERSION << std::endl;
+        return false;
+      }
+      else if (command_line::get_arg(vm, arg_os_version))
+      {
+        std::cout << "OS " << tools::getOSVersion() << std::endl;
+        return false;
+      }
+      else if (command_line::get_arg(vm, arg_print_genesis_tx))
+      {
         print_genesis_tx_hex();
         return false;
       }
@@ -233,17 +191,6 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    NetNodeConfig netNodeConfig;
-    netNodeConfig.init(vm);
-    netNodeConfig.setTestnet(coreConfig.testnet);
-    netNodeConfig.setConfigFolder(coreConfig.configFolder);
-    MinerConfig minerConfig;
-    minerConfig.init(vm);
-    RpcServerConfig rpcConfig;
-    rpcConfig.init(vm);
-
-    renameDataDir(coreConfig.configFolder);
-
     auto modulePath = common::NativePathToGeneric(argv[0]);
     auto cfgLogFile =
         common::NativePathToGeneric(command_line::get_arg(vm, command_line::arg_log_file));
@@ -266,12 +213,7 @@ int main(int argc, char* argv[])
     // configure logging
     logManager.configure(buildLoggerConfiguration(cfgLogLevel, cfgLogFile));
 
-    logger(INFO, BRIGHT_YELLOW) << "Conceal v" << PROJECT_VERSION_LONG;
-
-    if (command_line_preprocessor(vm, logger))
-    {
-      return 0;
-    }
+    logger(INFO, BRIGHT_YELLOW) << CCX_RELEASE_VERSION;
 
     logger(INFO) << "Module folder: " << argv[0];
 
@@ -290,17 +232,34 @@ int main(int argc, char* argv[])
     {
       currencyBuilder.currency();
     }
-    catch (std::exception&)
+    catch (const std::exception&)
     {
-      std::cout << "GENESIS_COINBASE_TX_HEX constant has an incorrect value. Please launch: "
-                << cn::CRYPTONOTE_NAME << "d --" << command_line::arg_print_genesis_tx.name;
+      logger(ERROR) << "Incorrect genesis hash! Please do not change the genesis hash: " << cn::GENESIS_COINBASE_TX_HEX;
       return 1;
     }
 
     cn::Currency currency = currencyBuilder.currency();
-    cn::core ccore(currency, nullptr, logManager,
-                           vm["enable-blockchain-indexes"].as<bool>(),
-                           vm["enable-autosave"].as<bool>());
+    cn::core ccore(currency, nullptr, logManager, vm["enable-blockchain-indexes"].as<bool>(), vm["enable-autosave"].as<bool>());
+
+    cn::Checkpoints checkpoints(logManager);
+    for (const auto& cp : cn::CHECKPOINTS) {
+      checkpoints.add_checkpoint(cp.height, cp.blockId);
+    }
+
+    checkpoints.load_checkpoints_from_dns();
+
+    if (!coreConfig.testnet) {
+      ccore.set_checkpoints(std::move(checkpoints));
+    }
+
+    NetNodeConfig netNodeConfig;
+    netNodeConfig.init(vm);
+    netNodeConfig.setTestnet(coreConfig.testnet);
+    netNodeConfig.setConfigFolder(coreConfig.configFolder);
+    MinerConfig minerConfig;
+    minerConfig.init(vm);
+    RpcServerConfig rpcConfig;
+    rpcConfig.init(vm);
 
     if (!coreConfig.configFolderDefaulted)
     {
@@ -336,8 +295,8 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    logger(INFO) << "P2p server initialized OK";
-
+      logger(INFO) << "P2p server initialized OK";
+    
     // initialize core here
     logger(INFO) << "Initializing core...";
     if (!ccore.init(coreConfig, minerConfig, true))
@@ -346,20 +305,23 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    logger(INFO) << "Core initialized OK";
+      logger(INFO) << "Core initialized OK";
 
-    // start components
-    if (!command_line::has_arg(vm, command_line::arg_console))
-    {
-      dch.start_handling();
-    }
+      // start components
+      if (!command_line::has_arg(vm, command_line::arg_console))
+      {
+        dch.start_handling();
+      }
 
     logger(INFO) << "Starting core rpc server on address " << rpcConfig.getBindAddress();
-
-    /* Set address for remote node fee */
-    if (command_line::has_arg(vm, command_line::arg_set_fee_address))
+  
+    /**
+     * Set address for remote node fee.
+    **/
+  	if (command_line::has_arg(vm, arg_set_fee_address))
     {
-      std::string addr_str = command_line::get_arg(vm, command_line::arg_set_fee_address);
+	    std::string addr_str = command_line::get_arg(vm, arg_set_fee_address);
+      
       if (!addr_str.empty())
       {
         AccountPublicAddress acc = boost::value_initialized<AccountPublicAddress>();
@@ -371,14 +333,17 @@ int main(int argc, char* argv[])
         rpcServer.setFeeAddress(addr_str, acc);
         logger(INFO, BRIGHT_YELLOW) << "Remote node fee address set: " << addr_str;
       }
-    }
-
-    /* This sets the view-key so we can confirm that
-       the fee is part of the transaction blob */
-    if (command_line::has_arg(vm, command_line::arg_set_view_key))
+	  }
+  
+    /**
+     * This sets the view-key so we can confirm that the fee 
+     * is part of the transaction blob.
+     **/       
+    if (command_line::has_arg(vm, arg_set_view_key))
     {
-      std::string vk_str = command_line::get_arg(vm, command_line::arg_set_view_key);
-      if (!vk_str.empty())
+      std::string vk_str = command_line::get_arg(vm, arg_set_view_key);
+
+	    if (!vk_str.empty())
       {
         rpcServer.setViewKey(vk_str);
         logger(INFO, BRIGHT_YELLOW) << "Secret view key set: " << vk_str;
@@ -388,7 +353,8 @@ int main(int argc, char* argv[])
     rpcServer.start(rpcConfig.bindIp, rpcConfig.bindPort);
     logger(INFO) << "Core rpc server started ok";
 
-    tools::SignalHandler::install([&dch, &p2psrv] {
+    tools::SignalHandler::install([&dch, &p2psrv]
+    {
       dch.stop_handling();
       p2psrv.sendStopSignal();
     });
@@ -409,8 +375,8 @@ int main(int argc, char* argv[])
     logger(INFO) << "Deinitializing p2p...";
     p2psrv.deinit();
 
-    ccore.set_cryptonote_protocol(NULL);
-    cprotocol.set_p2p_endpoint(NULL);
+    ccore.set_cryptonote_protocol(nullptr);
+    cprotocol.set_p2p_endpoint(nullptr);
   }
   catch (const std::exception& e)
   {
@@ -420,28 +386,4 @@ int main(int argc, char* argv[])
 
   logger(INFO) << "Node stopped.";
   return 0;
-}
-
-bool command_line_preprocessor(const boost::program_options::variables_map& vm, LoggerRef& logger)
-{
-  bool exit = false;
-
-  if (command_line::get_arg(vm, command_line::arg_version))
-  {
-    std::cout << cn::CRYPTONOTE_NAME << " v" << PROJECT_VERSION_LONG << ENDL;
-    exit = true;
-  }
-
-  if (command_line::get_arg(vm, command_line::arg_os_version))
-  {
-    std::cout << "OS: " << tools::getOSVersion() << ENDL;
-    exit = true;
-  }
-
-  if (exit)
-  {
-    return true;
-  }
-
-  return false;
 }

@@ -1,6 +1,7 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
-// Copyright (c) 2018-2021 Conceal Network & Conceal Devs
+// Copyright (c) 2018-2022 Conceal Network & Conceal Devs
+//
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -220,6 +221,13 @@ struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry {
 };
 #pragma pack(pop)
 
+struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry_json : public COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry {
+  void serialize(ISerializer & s) {
+    s(global_amount_index, "global_index");
+    s(out_key, "public_key");
+  }
+};
+
 struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount {
   uint64_t amount;
   std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry> outs;
@@ -230,8 +238,29 @@ struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount {
   }
 };
 
+
+struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount_json {
+  uint64_t amount;
+  std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry_json> outs;
+
+  void serialize(ISerializer &s) {
+    KV_MEMBER(amount)
+    KV_MEMBER(outs)
+  }
+};
+
 struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response {
   std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount> outs;
+  std::string status;
+
+  void serialize(ISerializer &s) {
+    KV_MEMBER(outs);
+    KV_MEMBER(status)
+  }
+};
+
+struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response_json {
+  std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount_json> outs;
   std::string status;
 
   void serialize(ISerializer &s) {
@@ -246,6 +275,14 @@ struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS {
 
   typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry out_entry;
   typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount outs_for_amount;
+};
+
+struct COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_JSON {
+  typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request request;
+  typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response_json response;
+
+  typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_out_entry_json out_entry;
+  typedef COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_outs_for_amount_json outs_for_amount;
 };
 
 //-----------------------------------------------
@@ -604,12 +641,10 @@ struct currency_core {
   uint64_t DIFFICULTY_TARGET;
   uint64_t CRYPTONOTE_DISPLAY_DECIMAL_POINT;
   std::string MONEY_SUPPLY;
- // uint64_t GENESIS_BLOCK_REWARD;
   uint64_t DEFAULT_DUST_THRESHOLD;
   uint64_t MINIMUM_FEE;
   uint64_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
   uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE;
-//  uint64_t CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1;
   uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
   uint64_t P2P_DEFAULT_PORT;
   uint64_t RPC_DEFAULT_PORT;
@@ -618,8 +653,7 @@ struct currency_core {
   uint64_t UPGRADE_HEIGHT;
   uint64_t DIFFICULTY_CUT;
   uint64_t DIFFICULTY_LAG;
-  //std::string BYTECOIN_NETWORK;
-  std::string CRYPTONOTE_NAME;
+  std::string BLOCKCHAIN_DIR;
   std::string GENESIS_COINBASE_TX_HEX;
   std::vector<std::string> CHECKPOINTS;
 
@@ -629,12 +663,10 @@ struct currency_core {
     KV_MEMBER(DIFFICULTY_TARGET)
     KV_MEMBER(CRYPTONOTE_DISPLAY_DECIMAL_POINT)
     KV_MEMBER(MONEY_SUPPLY)
- //   KV_MEMBER(GENESIS_BLOCK_REWARD)
     KV_MEMBER(DEFAULT_DUST_THRESHOLD)
     KV_MEMBER(MINIMUM_FEE)
     KV_MEMBER(CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
     KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE)
-//    KV_MEMBER(CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V1)
     KV_MEMBER(CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX)
     KV_MEMBER(P2P_DEFAULT_PORT)
     KV_MEMBER(RPC_DEFAULT_PORT)
@@ -643,8 +675,7 @@ struct currency_core {
     KV_MEMBER(UPGRADE_HEIGHT)
     KV_MEMBER(DIFFICULTY_CUT)
     KV_MEMBER(DIFFICULTY_LAG)
-//    KV_MEMBER(BYTECOIN_NETWORK)
-    KV_MEMBER(CRYPTONOTE_NAME)
+    KV_MEMBER(BLOCKCHAIN_DIR)
     KV_MEMBER(GENESIS_COINBASE_TX_HEX)
     KV_MEMBER(CHECKPOINTS)
   }
@@ -914,6 +945,68 @@ struct COMMAND_RPC_GET_BLOCK_DETAILS_BY_HEIGHT
     {
       KV_MEMBER(status)
       KV_MEMBER(block)
+    }
+  };
+};
+
+struct tx_with_output_global_indexes {
+  TransactionPrefix transaction;
+  crypto::Hash hash;
+  crypto::Hash block_hash;
+  uint32_t height;
+  uint64_t fee;
+  uint64_t timestamp;
+  std::vector<uint32_t> output_indexes;
+
+  void serialize(ISerializer &s)
+  {
+    KV_MEMBER(transaction)
+    KV_MEMBER(hash)
+    KV_MEMBER(block_hash)
+    KV_MEMBER(height)
+    KV_MEMBER(fee)
+    KV_MEMBER(timestamp)
+    KV_MEMBER(output_indexes)
+  }
+};
+
+struct COMMAND_RPC_GET_TRANSACTIONS_WITH_OUTPUT_GLOBAL_INDEXES {
+  struct request {
+    std::vector<uint32_t> heights;
+    bool include_miner_txs = true;
+    bool range = false;
+
+    void serialize(ISerializer &s) {
+      KV_MEMBER(heights)
+      KV_MEMBER(include_miner_txs)
+      KV_MEMBER(range)
+    };
+  };
+
+  struct response {
+    std::vector<tx_with_output_global_indexes> transactions;
+    std::list<std::string> missed_txs;
+    std::string status;
+
+    void serialize(ISerializer &s)
+    {
+      KV_MEMBER(transactions)
+      KV_MEMBER(missed_txs)
+      KV_MEMBER(status)
+    }
+  };
+};
+
+struct COMMAND_RPC_GET_RAW_TRANSACTIONS_POOL {
+  typedef EMPTY_STRUCT request;
+
+  struct response {
+    std::vector<tx_with_output_global_indexes> transactions;
+    std::string status;
+
+    void serialize(ISerializer &s) {
+      KV_MEMBER(transactions)
+      KV_MEMBER(status)
     }
   };
 };

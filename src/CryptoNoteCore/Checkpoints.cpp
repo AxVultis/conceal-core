@@ -1,5 +1,7 @@
 // Copyright (c) 2011-2017 The Cryptonote developers
 // Copyright (c) 2017-2018 The Circle Foundation & Conceal Devs
+// Copyright (c) 2018-2022 Conceal Network & Conceal Devs
+//
 // Copyright (c) 2016-2019, The Karbo developers
 // Copyright (c) 2018-2021 Conceal Network & Conceal Devs
 //
@@ -40,11 +42,12 @@ bool Checkpoints::add_checkpoint(uint32_t height, const std::string &hash_str) {
   }
 
   if (!(0 == m_points.count(height))) {
-    logger(ERROR) << "<< Checkpoints.cpp << " << "Incorrect hash in checkpoints";
+    logger(DEBUGGING) << "Checkpoint already exists for height " << height;
     return false;
   }
-
+  
   m_points[height] = h;
+
   return true;
 }
 //---------------------------------------------------------------------------
@@ -139,7 +142,7 @@ bool Checkpoints::load_checkpoints_from_dns()
       logger(DEBUGGING) << "<< Checkpoints.cpp << " << "Checkpoint already exists for height: " << height << ". Ignoring DNS checkpoint.";
     } else {
       add_checkpoint(height, hash_str);
-	    logger(INFO) << "<< Checkpoints.cpp << " << "Added DNS checkpoint: " << height_str << ":" << hash_str;
+	  logger(DEBUGGING) << "<< Checkpoints.cpp << " << "Added DNS checkpoint: " << height_str << ":" << hash_str;
     }
   }
 
