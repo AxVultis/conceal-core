@@ -43,18 +43,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
-          msbuild concealX.sln /p:Configuration=Debug /m:2
+          cmake .. -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTS=ON
+          msbuild concealX.sln /p:Configuration=MinSizeRel /m:2
 
       - name: Prepare release
         shell: powershell
         run: |
           mkdir build/conceal
-          mv build/src/Debug/conceald.exe build/conceal
-          mv build/src/Debug/concealwallet.exe build/conceal
-          mv build/src/Debug/optimizer.exe build/conceal
-          mv build/src/Debug/walletd.exe build/conceal
-          cp build/tests/Debug/*_tests.exe build/conceal
+          mv build/src/MinSizeRel/conceald.exe build/conceal
+          mv build/src/MinSizeRel/concealwallet.exe build/conceal
+          mv build/src/MinSizeRel/optimizer.exe build/conceal
+          mv build/src/MinSizeRel/walletd.exe build/conceal
+          cp build/tests/MinSizeRel/*_tests.exe build/conceal
 
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
@@ -121,8 +121,8 @@ jobs:
           ls
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
-          cmake --build . --config Debug
+          cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake --build . --config MinSizeRel
 
       - name: Prepare release
         shell: msys2 {0}
@@ -191,7 +191,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -261,7 +261,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -331,7 +331,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          CC=clang CXX=clang++ cmake .. -DCMAKE_BUILD_TYPE=Debug  -DBUILD_TESTS=ON -DSTATIC=ON
+          CC=clang CXX=clang++ cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel  -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -400,7 +400,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
