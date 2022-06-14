@@ -43,18 +43,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON
-          msbuild concealX.sln /p:Configuration=Release /m:2
+          cmake .. -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+          msbuild concealX.sln /p:Configuration=Debug /m:2
 
       - name: Prepare release
         shell: powershell
         run: |
           mkdir build/conceal
-          mv build/src/Release/conceald.exe build/conceal
-          mv build/src/Release/concealwallet.exe build/conceal
-          mv build/src/Release/optimizer.exe build/conceal
-          mv build/src/Release/walletd.exe build/conceal
-          cp build/tests/Release/*_tests.exe build/conceal
+          mv build/src/Debug/conceald.exe build/conceal
+          mv build/src/Debug/concealwallet.exe build/conceal
+          mv build/src/Debug/optimizer.exe build/conceal
+          mv build/src/Debug/walletd.exe build/conceal
+          cp build/tests/Debug/*_tests.exe build/conceal
 
       - name: Upload To GH Artifacts
         uses: actions/upload-artifact@v2
@@ -121,8 +121,8 @@ jobs:
           ls
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DSTATIC=ON
-          cmake --build . --config Release
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake --build . --config Debug
 
       - name: Prepare release
         shell: msys2 {0}
@@ -191,7 +191,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -261,7 +261,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -331,7 +331,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          CC=clang CXX=clang++ cmake .. -DCMAKE_BUILD_TYPE=Release  -DBUILD_TESTS=ON -DSTATIC=ON
+          CC=clang CXX=clang++ cmake .. -DCMAKE_BUILD_TYPE=Debug  -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
@@ -400,7 +400,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DSTATIC=ON
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DSTATIC=ON
           make -j2
 
       - name: Prepare release
