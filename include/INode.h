@@ -24,7 +24,7 @@ namespace cn {
 
 class INodeObserver {
 public:
-  virtual ~INodeObserver() {}
+  virtual ~INodeObserver() = default;
   virtual void peerCountUpdated(size_t count) {}
   virtual void localBlockchainUpdated(uint32_t height) {}
   virtual void lastKnownBlockHeightUpdated(uint32_t height) {}
@@ -56,9 +56,9 @@ struct BlockShortEntry {
 
 class INode {
 public:
-  typedef std::function<void(std::error_code)> Callback;
+  using Callback = std::function<void(std::error_code)>;
 
-  virtual ~INode() {}
+  virtual ~INode() = default;
   virtual bool addObserver(INodeObserver* observer) = 0;
   virtual bool removeObserver(INodeObserver* observer) = 0;
 
@@ -77,7 +77,7 @@ public:
   virtual void getNewBlocks(std::vector<crypto::Hash>&& knownBlockIds, std::vector<cn::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) = 0;
   virtual void getTransactionOutsGlobalIndices(const crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) = 0;
   virtual void queryBlocks(std::vector<crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks, uint32_t& startHeight, const Callback& callback) = 0;
-  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual, std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds, const Callback& callback) = 0;
+  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual, std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds, const Callback& callback) = 0;
   virtual void getMultisignatureOutputByGlobalIndex(uint64_t amount, uint32_t gindex, MultisignatureOutput& out, const Callback& callback) = 0;
   virtual void getTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction, const Callback &callback) = 0;
   virtual void getBlocks(const std::vector<uint32_t>& blockHeights, std::vector<std::vector<BlockDetails>>& blocks, const Callback& callback) = 0;

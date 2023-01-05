@@ -29,47 +29,47 @@ class HttpClient;
 
 class INodeRpcProxyObserver {
 public:
-  virtual ~INodeRpcProxyObserver() {}
+  virtual ~INodeRpcProxyObserver() = default;
   virtual void connectionStatusUpdated(bool connected) {}
 };
 
 class NodeRpcProxy : public cn::INode {
 public:
   NodeRpcProxy(const std::string& nodeHost, unsigned short nodePort);
-  virtual ~NodeRpcProxy();
+  ~NodeRpcProxy() override;
 
-  virtual bool addObserver(cn::INodeObserver* observer) override;
-  virtual bool removeObserver(cn::INodeObserver* observer) override;
+  bool addObserver(cn::INodeObserver* observer) override;
+  bool removeObserver(cn::INodeObserver* observer) override;
 
   virtual bool addObserver(cn::INodeRpcProxyObserver* observer);
   virtual bool removeObserver(cn::INodeRpcProxyObserver* observer);
 
-  virtual void init(const Callback& callback) override;
-  virtual bool shutdown() override;
+  void init(const Callback& callback) override;
+  bool shutdown() final;
 
-  virtual size_t getPeerCount() const override;
-  virtual uint32_t getLastLocalBlockHeight() const override;
-  virtual uint32_t getLastKnownBlockHeight() const override;
-  virtual uint32_t getLocalBlockCount() const override;
-  virtual uint32_t getKnownBlockCount() const override;
-  virtual uint64_t getLastLocalBlockTimestamp() const override;
+  size_t getPeerCount() const override;
+  uint32_t getLastLocalBlockHeight() const override;
+  uint32_t getLastKnownBlockHeight() const override;
+  uint32_t getLocalBlockCount() const override;
+  uint32_t getKnownBlockCount() const override;
+  uint64_t getLastLocalBlockTimestamp() const override;
 
-  virtual void relayTransaction(const cn::Transaction& transaction, const Callback& callback) override;
-  virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override;
-  virtual void getNewBlocks(std::vector<crypto::Hash>&& knownBlockIds, std::vector<cn::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
-  virtual void getTransactionOutsGlobalIndices(const crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) override;
-  virtual void queryBlocks(std::vector<crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
-  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual,
+  void relayTransaction(const cn::Transaction& transaction, const Callback& callback) override;
+  void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override;
+  void getNewBlocks(std::vector<crypto::Hash>&& knownBlockIds, std::vector<cn::block_complete_entry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
+  void getTransactionOutsGlobalIndices(const crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) override;
+  void queryBlocks(std::vector<crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<BlockShortEntry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
+  void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual,
           std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds, const Callback& callback) override;
-  virtual void getMultisignatureOutputByGlobalIndex(uint64_t amount, uint32_t gindex, MultisignatureOutput& out, const Callback& callback) override;
-  virtual void getBlocks(const std::vector<uint32_t>& blockHeights, std::vector<std::vector<BlockDetails>>& blocks, const Callback& callback) override;
+  void getMultisignatureOutputByGlobalIndex(uint64_t amount, uint32_t gindex, MultisignatureOutput& out, const Callback& callback) override;
+  void getBlocks(const std::vector<uint32_t>& blockHeights, std::vector<std::vector<BlockDetails>>& blocks, const Callback& callback) override;
   
-  virtual void getBlocks(const std::vector<crypto::Hash>& blockHashes, std::vector<BlockDetails>& blocks, const Callback& callback) override;
-  virtual void getBlocks(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t blocksNumberLimit, std::vector<BlockDetails>& blocks, uint32_t& blocksNumberWithinTimestamps, const Callback& callback) override;
-  virtual void getTransactions(const std::vector<crypto::Hash>& transactionHashes, std::vector<TransactionDetails>& transactions, const Callback& callback) override;
-  virtual void getTransactionsByPaymentId(const crypto::Hash& paymentId, std::vector<TransactionDetails>& transactions, const Callback& callback) override;
-  virtual void getPoolTransactions(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t transactionsNumberLimit, std::vector<TransactionDetails>& transactions, uint64_t& transactionsNumberWithinTimestamps, const Callback& callback) override;
-  virtual void isSynchronized(bool& syncStatus, const Callback& callback) override;
+  void getBlocks(const std::vector<crypto::Hash>& blockHashes, std::vector<BlockDetails>& blocks, const Callback& callback) override;
+  void getBlocks(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t blocksNumberLimit, std::vector<BlockDetails>& blocks, uint32_t& blocksNumberWithinTimestamps, const Callback& callback) override;
+  void getTransactions(const std::vector<crypto::Hash>& transactionHashes, std::vector<TransactionDetails>& transactions, const Callback& callback) override;
+  void getTransactionsByPaymentId(const crypto::Hash& paymentId, std::vector<TransactionDetails>& transactions, const Callback& callback) override;
+  void getPoolTransactions(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t transactionsNumberLimit, std::vector<TransactionDetails>& transactions, uint64_t& transactionsNumberWithinTimestamps, const Callback& callback) override;
+  void isSynchronized(bool& syncStatus, const Callback& callback) override;
 
   unsigned int rpcTimeout() const { return m_rpcTimeout; }
   void rpcTimeout(unsigned int val) { m_rpcTimeout = val; }
@@ -86,28 +86,28 @@ private:
   void updatePeerCount(size_t peerCount);
   void updatePoolState(const std::vector<std::unique_ptr<ITransactionReader>>& addedTxs, const std::vector<crypto::Hash>& deletedTxsIds);
 
-  std::error_code doRelayTransaction(const cn::Transaction& transaction);
+  std::error_code doRelayTransaction(const cn::Transaction& transaction) const;
   std::error_code doGetRandomOutsByAmounts(std::vector<uint64_t>& amounts, uint64_t outsCount,
-                                           std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result);
+                                           std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result) const;
 
   std::error_code doGetNewBlocks(std::vector<crypto::Hash>& knownBlockIds,
-    std::vector<cn::block_complete_entry>& newBlocks, uint32_t& startHeight);
+    std::vector<cn::block_complete_entry>& newBlocks, uint32_t& startHeight) const;
   std::error_code doGetTransactionOutsGlobalIndices(const crypto::Hash& transactionHash,
-                                                    std::vector<uint32_t>& outsGlobalIndices);
+                                                    std::vector<uint32_t>& outsGlobalIndices) const;
   std::error_code doQueryBlocksLite(const std::vector<crypto::Hash>& knownBlockIds, uint64_t timestamp,
-    std::vector<cn::BlockShortEntry>& newBlocks, uint32_t& startHeight);
-  std::error_code doGetPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual,
-          std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds);
-  virtual void getTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction, const Callback &callback) override;
-  std::error_code doGetTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction);
+    std::vector<cn::BlockShortEntry>& newBlocks, uint32_t& startHeight) const;
+  std::error_code doGetPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual,
+          std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds) const;
+  void getTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction, const Callback &callback) override;
+  std::error_code doGetTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction) const;
 
   void scheduleRequest(std::function<std::error_code()>&& procedure, const Callback& callback);
 template <typename Request, typename Response>
-  std::error_code binaryCommand(const std::string& url, const Request& req, Response& res);
+  std::error_code binaryCommand(const std::string& url, const Request& req, Response& res) const;
   template <typename Request, typename Response>
-  std::error_code jsonCommand(const std::string& url, const Request& req, Response& res);
+  std::error_code jsonCommand(const std::string& url, const Request& req, Response& res) const;
   template <typename Request, typename Response>
-  std::error_code jsonRpcCommand(const std::string& method, const Request& req, Response& res);
+  std::error_code jsonRpcCommand(const std::string& method, const Request& req, Response& res) const;
 
   enum State {
     STATE_NOT_INITIALIZED,
@@ -115,7 +115,6 @@ template <typename Request, typename Response>
     STATE_INITIALIZED
   };
 
-private:
   State m_state = STATE_NOT_INITIALIZED;
   std::mutex m_mutex;
   std::condition_variable m_cv_initialized;
@@ -127,11 +126,11 @@ private:
 
   const std::string m_nodeHost;
   const unsigned short m_nodePort;
-  unsigned int m_rpcTimeout;
+  unsigned int m_rpcTimeout = 10000;
   HttpClient* m_httpClient = nullptr;
   platform_system::Event* m_httpEvent = nullptr;
 
-  uint64_t m_pullInterval;
+  uint64_t m_pullInterval = 5000;
 
   // Internal state
   bool m_stop = false;
@@ -141,10 +140,10 @@ private:
 
   //protect it with mutex if decided to add worker threads
   crypto::Hash m_lastKnowHash;
-  std::atomic<uint64_t> m_lastLocalBlockTimestamp;
+  std::atomic<uint64_t> m_lastLocalBlockTimestamp{0};
   std::unordered_set<crypto::Hash> m_knownTxs;
 
-  bool m_connected;
+  bool m_connected = true;
 };
 
 }

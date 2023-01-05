@@ -52,14 +52,10 @@ std::error_code interpretResponseStatus(const std::string& status) {
 
 }
 
-NodeRpcProxy::NodeRpcProxy(const std::string& nodeHost, unsigned short nodePort) :
-  m_nodeHost(nodeHost),
-  m_nodePort(nodePort),
-  m_rpcTimeout(10000),
-  m_pullInterval(5000),
-  m_lastLocalBlockTimestamp(0),
-  m_connected(true) {
-    resetInternalState();
+NodeRpcProxy::NodeRpcProxy(const std::string &nodeHost, unsigned short nodePort) : m_nodeHost(nodeHost),
+                                                                                   m_nodePort(nodePort)
+{
+  resetInternalState();
 }
 
 NodeRpcProxy::~NodeRpcProxy() {
@@ -364,7 +360,7 @@ void NodeRpcProxy::queryBlocks(std::vector<crypto::Hash>&& knownBlockIds, uint64
           std::ref(newBlocks), std::ref(startHeight)), callback);
 }
 
-void NodeRpcProxy::getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual,
+void NodeRpcProxy::getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual,
         std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds, const Callback& callback) {
   std::lock_guard<std::mutex> lock(m_mutex);
   if (m_state != STATE_INITIALIZED) {
@@ -465,7 +461,7 @@ void NodeRpcProxy::isSynchronized(bool& syncStatus, const Callback& callback) {
   callback(std::error_code());
 }
 
-std::error_code NodeRpcProxy::doRelayTransaction(const cn::Transaction& transaction) {
+std::error_code NodeRpcProxy::doRelayTransaction(const cn::Transaction& transaction) const {
   COMMAND_RPC_SEND_RAW_TX::request req;
   COMMAND_RPC_SEND_RAW_TX::response rsp;
   req.tx_as_hex = toHex(toBinaryArray(transaction));
@@ -473,7 +469,7 @@ std::error_code NodeRpcProxy::doRelayTransaction(const cn::Transaction& transact
 }
 
 std::error_code NodeRpcProxy::doGetRandomOutsByAmounts(std::vector<uint64_t>& amounts, uint64_t outsCount,
-                                                       std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& outs) {
+                                                       std::vector<COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& outs) const {
   COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::request req = AUTO_VAL_INIT(req);
   COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::response rsp = AUTO_VAL_INIT(rsp);
   req.amounts = std::move(amounts);
@@ -489,7 +485,7 @@ std::error_code NodeRpcProxy::doGetRandomOutsByAmounts(std::vector<uint64_t>& am
 
 std::error_code NodeRpcProxy::doGetNewBlocks(std::vector<crypto::Hash>& knownBlockIds,
                                              std::vector<cn::block_complete_entry>& newBlocks,
-                                             uint32_t& startHeight) {
+                                             uint32_t& startHeight) const {
   cn::COMMAND_RPC_GET_BLOCKS_FAST::request req = AUTO_VAL_INIT(req);
   cn::COMMAND_RPC_GET_BLOCKS_FAST::response rsp = AUTO_VAL_INIT(rsp);
   req.block_ids = std::move(knownBlockIds);
@@ -504,7 +500,7 @@ std::error_code NodeRpcProxy::doGetNewBlocks(std::vector<crypto::Hash>& knownBlo
 }
 
 std::error_code NodeRpcProxy::doGetTransactionOutsGlobalIndices(const crypto::Hash& transactionHash,
-                                                                std::vector<uint32_t>& outsGlobalIndices) {
+                                                                std::vector<uint32_t>& outsGlobalIndices) const {
   cn::COMMAND_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES::request req = AUTO_VAL_INIT(req);
   cn::COMMAND_RPC_GET_TX_GLOBAL_OUTPUTS_INDEXES::response rsp = AUTO_VAL_INIT(rsp);
   req.txid = transactionHash;
@@ -521,7 +517,7 @@ std::error_code NodeRpcProxy::doGetTransactionOutsGlobalIndices(const crypto::Ha
 }
 
 std::error_code NodeRpcProxy::doQueryBlocksLite(const std::vector<crypto::Hash>& knownBlockIds, uint64_t timestamp,
-        std::vector<cn::BlockShortEntry>& newBlocks, uint32_t& startHeight) {
+        std::vector<cn::BlockShortEntry>& newBlocks, uint32_t& startHeight) const {
   cn::COMMAND_RPC_QUERY_BLOCKS_LITE::request req = AUTO_VAL_INIT(req);
   cn::COMMAND_RPC_QUERY_BLOCKS_LITE::response rsp = AUTO_VAL_INIT(rsp);
 
@@ -561,13 +557,13 @@ std::error_code NodeRpcProxy::doQueryBlocksLite(const std::vector<crypto::Hash>&
   return std::error_code();
 }
 
-std::error_code NodeRpcProxy::doGetPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual,
-        std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds) {
+std::error_code NodeRpcProxy::doGetPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual,
+        std::vector<std::unique_ptr<ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds) const {
   cn::COMMAND_RPC_GET_POOL_CHANGES_LITE::request req = AUTO_VAL_INIT(req);
   cn::COMMAND_RPC_GET_POOL_CHANGES_LITE::response rsp = AUTO_VAL_INIT(rsp);
 
   req.tailBlockId = knownBlockId;
-  req.knownTxsIds = knownPoolTxIds;
+  req.knownTxsIds = std::move(knownPoolTxIds);
 
   std::error_code ec = binaryCommand("/get_pool_changes_lite.bin", req, rsp);
 
@@ -586,7 +582,7 @@ std::error_code NodeRpcProxy::doGetPoolSymmetricDifference(std::vector<crypto::H
   return ec;
 }
 
-std::error_code NodeRpcProxy::doGetTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction)
+std::error_code NodeRpcProxy::doGetTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction) const
 {
   COMMAND_RPC_GET_TRANSACTIONS::request req = AUTO_VAL_INIT(req);
   COMMAND_RPC_GET_TRANSACTIONS::response resp = AUTO_VAL_INIT(resp);
@@ -599,7 +595,7 @@ std::error_code NodeRpcProxy::doGetTransaction(const crypto::Hash &transactionHa
     return ec;
   }
 
-  if (resp.missed_tx.size() > 0)
+  if (!resp.missed_tx.empty())
   {
     return make_error_code(cn::error::REQUEST_ERROR);
   }
@@ -672,7 +668,7 @@ void NodeRpcProxy::scheduleRequest(std::function<std::error_code()>&& procedure,
 }
 
 template <typename Request, typename Response>
-std::error_code NodeRpcProxy::binaryCommand(const std::string& url, const Request& req, Response& res) {
+std::error_code NodeRpcProxy::binaryCommand(const std::string& url, const Request& req, Response& res) const {
   std::error_code ec;
 
   try {
@@ -689,7 +685,7 @@ std::error_code NodeRpcProxy::binaryCommand(const std::string& url, const Reques
 }
 
 template <typename Request, typename Response>
-std::error_code NodeRpcProxy::jsonCommand(const std::string& url, const Request& req, Response& res) {
+std::error_code NodeRpcProxy::jsonCommand(const std::string& url, const Request& req, Response& res) const {
   std::error_code ec;
 
   try {
@@ -706,7 +702,7 @@ std::error_code NodeRpcProxy::jsonCommand(const std::string& url, const Request&
 }
 
 template <typename Request, typename Response>
-std::error_code NodeRpcProxy::jsonRpcCommand(const std::string& method, const Request& req, Response& res) {
+std::error_code NodeRpcProxy::jsonRpcCommand(const std::string& method, const Request& req, Response& res) const {
   std::error_code ec = make_error_code(error::INTERNAL_NODE_ERROR);
 
   try {

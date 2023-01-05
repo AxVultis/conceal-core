@@ -45,7 +45,7 @@ public:
     callback(std::error_code());
   };
 
-  void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, crypto::Hash knownBlockId, bool& isBcActual,
+  void getPoolSymmetricDifference(std::vector<crypto::Hash>&& knownPoolTxIds, const crypto::Hash &knownBlockId, bool& isBcActual,
           std::vector<std::unique_ptr<cn::ITransactionReader>>& newTxs, std::vector<crypto::Hash>& deletedTxIds, const Callback& callback) override {
     isBcActual = true;
     callback(std::error_code());
