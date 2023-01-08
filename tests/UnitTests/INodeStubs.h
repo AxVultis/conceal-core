@@ -37,7 +37,7 @@ public:
   virtual void relayTransaction(const cn::Transaction& transaction, const Callback& callback) override { callback(std::error_code()); };
   virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override { callback(std::error_code()); };
   virtual void getTransactionOutsGlobalIndices(const crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) override { callback(std::error_code()); };
-  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, crypto::Hash known_block_id, bool& is_bc_actual,
+  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, const crypto::Hash& known_block_id, bool& is_bc_actual,
           std::vector<std::unique_ptr<cn::ITransactionReader>>& new_txs, std::vector<crypto::Hash>& deleted_tx_ids, const Callback& callback) override {
     is_bc_actual = true; callback(std::error_code());
   };
@@ -80,7 +80,7 @@ public:
   virtual void getRandomOutsByAmounts(std::vector<uint64_t>&& amounts, uint64_t outsCount, std::vector<cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS::outs_for_amount>& result, const Callback& callback) override;
   virtual void getTransactionOutsGlobalIndices(const crypto::Hash& transactionHash, std::vector<uint32_t>& outsGlobalIndices, const Callback& callback) override;
   virtual void queryBlocks(std::vector<crypto::Hash>&& knownBlockIds, uint64_t timestamp, std::vector<cn::BlockShortEntry>& newBlocks, uint32_t& startHeight, const Callback& callback) override;
-  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, crypto::Hash known_block_id, bool& is_bc_actual,
+  virtual void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, const crypto::Hash& known_block_id, bool& is_bc_actual,
           std::vector<std::unique_ptr<cn::ITransactionReader>>& new_txs, std::vector<crypto::Hash>& deleted_tx_ids, const Callback& callback) override;
 
   virtual void getBlocks(const std::vector<uint32_t>& blockHeights, std::vector<std::vector<cn::BlockDetails>>& blocks, const Callback& callback) override;

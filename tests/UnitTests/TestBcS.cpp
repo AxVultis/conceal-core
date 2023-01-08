@@ -43,7 +43,7 @@ public:
     INodeTrivialRefreshStub::queryBlocks(std::move(knownBlockIds), timestamp, newBlocks, startHeight, callback);
   }
 
-  virtual void getPoolSymmetricDifference(std::vector<Hash>&& known_pool_tx_ids, Hash known_block_id, bool& is_bc_actual,
+  virtual void getPoolSymmetricDifference(std::vector<Hash>&& known_pool_tx_ids, const Hash& known_block_id, bool& is_bc_actual,
           std::vector<std::unique_ptr<ITransactionReader>>& new_txs, std::vector<Hash>& deleted_tx_ids, const Callback& callback) override {
     poolWasQueried = true;
     INodeTrivialRefreshStub::getPoolSymmetricDifference(std::move(known_pool_tx_ids), known_block_id, is_bc_actual, new_txs, deleted_tx_ids, callback);
@@ -74,7 +74,7 @@ public:
     }
   }
 
-  virtual void getPoolSymmetricDifference(std::vector<Hash>&& known_pool_tx_ids, Hash known_block_id, bool& is_bc_actual,
+  virtual void getPoolSymmetricDifference(std::vector<Hash>&& known_pool_tx_ids, const Hash& known_block_id, bool& is_bc_actual,
           std::vector<std::unique_ptr<ITransactionReader>>& new_txs, std::vector<Hash>& deleted_tx_ids, const Callback& callback) override {
     if (getPoolSymmetricDifferenceFunctor(known_pool_tx_ids, known_block_id, is_bc_actual, new_txs, deleted_tx_ids, callback)) {
       INodeNonTrivialRefreshStub::getPoolSymmetricDifference(std::move(known_pool_tx_ids), known_block_id, is_bc_actual, new_txs, deleted_tx_ids, callback);

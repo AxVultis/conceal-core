@@ -58,7 +58,7 @@ public:
   }
 
 
-  void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, crypto::Hash known_block_id, bool& is_bc_actual, std::vector<std::unique_ptr<cn::ITransactionReader>>& new_txs, std::vector<crypto::Hash>& deleted_tx_ids, const Callback& callback) override
+  void getPoolSymmetricDifference(std::vector<crypto::Hash>&& known_pool_tx_ids, const crypto::Hash& known_block_id, bool& is_bc_actual, std::vector<std::unique_ptr<cn::ITransactionReader>>& new_txs, std::vector<crypto::Hash>& deleted_tx_ids, const Callback& callback) override
   {
     std::unique_lock<std::mutex> lk(mutex);
     std::sort(relayedTxs.begin(), relayedTxs.end(), [](const std::pair<uint32_t, cn::Transaction>& val1, const std::pair<uint32_t, cn::Transaction>& val2)->bool {return val1.first < val2.first; });
