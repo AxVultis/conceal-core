@@ -168,3 +168,4 @@ Special thanks goes out to the developers from Cryptonote, Bytecoin, Ryo, Monero
 
 
 Copyright (c) 2017-2023 Conceal Community, Conceal Network & Conceal Devs
+
