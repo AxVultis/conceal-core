@@ -54,6 +54,7 @@ namespace cn {
   std::string getAccountAddressAsStr(uint64_t prefix, const AccountPublicAddress& adr) {
     BinaryArray ba;
     bool r = toBinaryArray(adr, ba);
+    static_cast<void>(r);
     assert(r);
     return tools::base_58::encode_addr(prefix, common::asString(ba));
   }

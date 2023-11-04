@@ -972,6 +972,7 @@ void TransfersContainer::addUnlockJob(const TransactionOutputInformationEx& outp
   TransferUnlockJob job = makeTransferUnlockJob(output, static_cast<uint32_t>(m_transactionSpendableAge));
 
   auto r = m_transfersUnlockJobs.emplace(std::move(job));
+  static_cast<void>(r);
   assert(r.second);
 }
 

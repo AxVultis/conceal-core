@@ -99,6 +99,7 @@ namespace payment_service
 
       crypto::Hash paymentId;
       bool r = common::podFromHex(paymentIdStr, paymentId);
+      static_cast<void>(r);
       assert(r);
 
       return paymentId;

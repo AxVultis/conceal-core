@@ -104,11 +104,13 @@ Dispatcher::Dispatcher() {
         }
 
         auto result = close(remoteSpawnEvent);
+        static_cast<void>(result);
         assert(result == 0);
       }
     }
 
     auto result = close(epoll);
+    static_cast<void>(result);
     assert(result == 0);
   }
 
@@ -135,15 +137,19 @@ Dispatcher::~Dispatcher() {
 
   while (!timers.empty()) {
     int result = ::close(timers.top());
+    static_cast<void>(result);
     assert(result == 0);
     timers.pop();
   }
 
   auto result = close(epoll);
+  static_cast<void>(result);
   assert(result == 0);
   result = close(remoteSpawnEvent);
+  static_cast<void>(result);
   assert(result == 0);
   result = pthread_mutex_destroy(reinterpret_cast<pthread_mutex_t*>(this->mutex));
+  static_cast<void>(result);
   assert(result == 0);
 }
 

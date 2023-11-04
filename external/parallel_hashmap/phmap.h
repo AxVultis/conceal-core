@@ -1,6 +1,10 @@
 #if !defined(phmap_h_guard_)
 #define phmap_h_guard_
 
+#ifndef _MSVC_LANG
+#define _MSVC_LANG 0
+#endif
+
 // ---------------------------------------------------------------------------
 // Copyright (c) 2019, Gregory Popovitch - greg7mdp@gmail.com
 //

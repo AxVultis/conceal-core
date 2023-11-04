@@ -409,7 +409,7 @@ namespace cn
     }
 
     transactionHash = common::podToHex(transaction->getTransactionHash());
-    size_t id = validateSaveAndSendTransaction(*transaction, {}, false, true);
+    validateSaveAndSendTransaction(*transaction, {}, false, true);
   }
 
   crypto::SecretKey WalletGreen::getTransactionDeterministicSecretKey(crypto::Hash &transactionHash) const
@@ -522,7 +522,7 @@ namespace cn
      which includes the term, and then after that the change outputs */
 
     /* Add the deposit outputs to the transaction */
-    auto depositIndex = transaction->addOutput(
+    transaction->addOutput(
         neededMoney - fee,
         {destAddr},
         1,
@@ -619,7 +619,7 @@ namespace cn
 
     /* Return the transaction hash */
     transactionHash = common::podToHex(transaction->getTransactionHash());
-    size_t id = validateSaveAndSendTransaction(*transaction, {}, false, true);
+    validateSaveAndSendTransaction(*transaction, {}, false, true);
   }
 
   void WalletGreen::validateOrders(const std::vector<WalletOrder> &orders) const
@@ -944,8 +944,6 @@ namespace cn
       dst.setAutoFlush(true);
       dst.flush();
     });
-
-    size_t counter = 0;
 
     for (auto &encryptedSpendKeys : src)
     {
@@ -2024,11 +2022,6 @@ namespace cn
     size_t id = WALLET_INVALID_TRANSACTION_ID;
     tools::ScopeExit releaseContext([this, &id] {
       m_dispatcher.yield();
-
-      if (id != WALLET_INVALID_TRANSACTION_ID)
-      {
-        auto &tx = m_transactions[id];
-      }
     });
 
     platform_system::EventLock lk(m_readyEvent);
@@ -2202,7 +2195,7 @@ namespace cn
         updated = true;
       }
     });
-
+    static_cast<void>(r);
     assert(r);
 
     return updated;
@@ -2267,6 +2260,7 @@ namespace cn
       }
     });
 
+    static_cast<void>(r);
     assert(r);
 
     return updated;
@@ -3730,6 +3724,7 @@ namespace cn
       crypto::Hash hash = transfer.transactionHash;
       TransactionInformation info;
       bool ok = container->getTransactionInformation(hash, info, NULL, NULL);
+      static_cast<void>(ok);
       assert(ok);
       heights.push_back(info.blockHeight);
     }
@@ -3856,11 +3851,6 @@ namespace cn
     size_t id = WALLET_INVALID_TRANSACTION_ID;
     tools::ScopeExit releaseContext([this, &id] {
       m_dispatcher.yield();
-
-      if (id != WALLET_INVALID_TRANSACTION_ID)
-      {
-        auto &tx = m_transactions[id];
-      }
     });
 
     platform_system::EventLock lk(m_readyEvent);
@@ -3915,7 +3905,6 @@ namespace cn
     std::unique_ptr<ITransaction> fusionTransaction;
     size_t transactionSize;
     int round = 0;
-    uint64_t transactionAmount;
     do
     {
       if (round != 0)
@@ -3927,8 +3916,6 @@ namespace cn
       uint64_t inputsAmount = std::accumulate(fusionInputs.begin(), fusionInputs.end(), static_cast<uint64_t>(0), [](uint64_t amount, const OutputToTransfer &input) {
         return amount + input.out.amount;
       });
-
-      transactionAmount = inputsAmount;
 
       ReceiverAmounts decomposedOutputs = decomposeFusionOutputs(destination, inputsAmount);
       assert(decomposedOutputs.amounts.size() <= MAX_FUSION_OUTPUT_COUNT);

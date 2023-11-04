@@ -19,7 +19,9 @@
 #else 
 #include <sys/utsname.h>
 #endif
+#ifdef _MSC_VER
 #pragma warning(disable : 4996)
+#endif
 
 namespace tools
 {
