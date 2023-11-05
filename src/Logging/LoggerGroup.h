@@ -14,11 +14,11 @@ namespace logging {
 
 class LoggerGroup : public CommonLogger {
 public:
-  LoggerGroup(Level level = DEBUGGING);
+  explicit LoggerGroup(Level level = DEBUGGING);
 
   void addLogger(ILogger& logger);
   void removeLogger(ILogger& logger);
-  virtual void operator()(const std::string& category, Level level, boost::posix_time::ptime time, const std::string& body) override;
+  void operator()(const std::string& category, Level level, boost::posix_time::ptime time, const std::string& body) override;
 
 protected:
   std::vector<ILogger*> loggers;

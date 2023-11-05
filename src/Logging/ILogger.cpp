@@ -9,23 +9,23 @@
 
 namespace logging {
 
-const std::string BLUE = "\x1F""BLUE\x1F";
-const std::string GREEN = "\x1F""GREEN\x1F";
-const std::string RED = "\x1F""RED\x1F";
-const std::string YELLOW = "\x1F""YELLOW\x1F";
-const std::string WHITE = "\x1F""WHITE\x1F";
-const std::string CYAN = "\x1F""CYAN\x1F";
-const std::string MAGENTA = "\x1F""MAGENTA\x1F";
-const std::string BRIGHT_BLUE = "\x1F""BRIGHT_BLUE\x1F";
-const std::string BRIGHT_GREEN = "\x1F""BRIGHT_GREEN\x1F";
-const std::string BRIGHT_RED = "\x1F""BRIGHT_RED\x1F";
-const std::string BRIGHT_YELLOW = "\x1F""BRIGHT_YELLOW\x1F";
-const std::string BRIGHT_WHITE = "\x1F""BRIGHT_WHITE\x1F";
-const std::string BRIGHT_CYAN = "\x1F""BRIGHT_CYAN\x1F";
-const std::string BRIGHT_MAGENTA = "\x1F""BRIGHT_MAGENTA\x1F";
-const std::string DEFAULT = "\x1F""DEFAULT\x1F";
+const std::string BLUE = "\037BLUE\037";
+const std::string GREEN = "\037GREEN\037";
+const std::string RED = "\037RED\037";
+const std::string YELLOW = "\037YELLOW\037";
+const std::string WHITE = "\037WHITE\037";
+const std::string CYAN = "\037CYAN\037";
+const std::string MAGENTA = "\037MAGENTA\037";
+const std::string BRIGHT_BLUE = "\037BRIGHT_BLUE\037";
+const std::string BRIGHT_GREEN = "\037BRIGHT_GREEN\037";
+const std::string BRIGHT_RED = "\037BRIGHT_RED\037";
+const std::string BRIGHT_YELLOW = "\037BRIGHT_YELLOW\037";
+const std::string BRIGHT_WHITE = "\037BRIGHT_WHITE\037";
+const std::string BRIGHT_CYAN = "\037BRIGHT_CYAN\037";
+const std::string BRIGHT_MAGENTA = "\037BRIGHT_MAGENTA\037";
+const std::string DEFAULT = "\037DEFAULT\037";
 
-const char ILogger::COLOR_DELIMETER = '\x1F';
+const char ILogger::COLOR_DELIMETER = '\037';
 
 const std::array<std::string, 6> ILogger::LEVEL_NAMES = {
   {"FATAL",

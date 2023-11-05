@@ -14,14 +14,13 @@ namespace logging {
 
 class StreamLogger : public CommonLogger {
 public:
-  StreamLogger(Level level = DEBUGGING);
+  explicit StreamLogger(Level level = DEBUGGING);
   StreamLogger(std::ostream& stream, Level level = DEBUGGING);
-  void attachToStream(std::ostream& stream);
+  void attachToStream(std::ostream& stream_);
 
 protected:
-  virtual void doLogString(const std::string& message) override;
+  void doLogString(const std::string& message) override;
 
-protected:
   std::ostream* stream;
 
 private:
