@@ -31,7 +31,7 @@ namespace common {
 
 template<class T>
 struct EnableIfPod {
-  typedef typename std::enable_if<std::is_pod<T>::value, EnableIfPod>::type type;
+  typedef typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value, EnableIfPod>::type type;
 };
 
 enum class FileMappedVectorOpenMode {

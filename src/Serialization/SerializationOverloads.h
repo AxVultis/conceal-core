@@ -28,7 +28,7 @@ namespace cn
 {
 
 template <typename T>
-typename std::enable_if<std::is_pod<T>::value>::type
+typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value>::type
 serializeAsBinary(std::vector<T> &value, common::StringView name, cn::ISerializer &serializer)
 {
   std::string blob;
@@ -61,7 +61,7 @@ else
 } // namespace cn
 
 template <typename T>
-typename std::enable_if<std::is_pod<T>::value>::type
+typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value>::type
 serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer &serializer)
 {
   std::string blob;

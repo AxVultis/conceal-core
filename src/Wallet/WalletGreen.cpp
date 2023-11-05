@@ -3278,7 +3278,7 @@ namespace cn
 
   void WalletGreen::onTransactionDeleteBegin(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash)
   {
-    m_dispatcher.remoteSpawn([=]() { transactionDeleteBegin(transactionHash); });
+    m_dispatcher.remoteSpawn([=, this]() { transactionDeleteBegin(transactionHash); });
   }
 
   // TODO remove
@@ -3288,7 +3288,7 @@ namespace cn
 
   void WalletGreen::onTransactionDeleteEnd(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash)
   {
-    m_dispatcher.remoteSpawn([=]() { transactionDeleteEnd(transactionHash); });
+    m_dispatcher.remoteSpawn([=, this]() { transactionDeleteEnd(transactionHash); });
   }
 
   // TODO remove
