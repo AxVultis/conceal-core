@@ -14,7 +14,7 @@ namespace common {
 
 class StringOutputStream : public IOutputStream {
 public:
-  StringOutputStream(std::string& out);
+  explicit StringOutputStream(std::string& out);
   size_t writeSome(const void* data, size_t size) override;
 
 private:

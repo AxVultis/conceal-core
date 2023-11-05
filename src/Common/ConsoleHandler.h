@@ -23,7 +23,7 @@ class AsyncConsoleReader {
 
 public:
 
-  AsyncConsoleReader();
+  AsyncConsoleReader() = default;
   ~AsyncConsoleReader();
 
   void start();
@@ -36,7 +36,7 @@ private:
   void consoleThread();
   bool waitInput();
 
-  std::atomic<bool> m_stop;
+  std::atomic<bool> m_stop = true;
   std::thread m_thread;
   BlockingQueue<std::string> m_queue;
 };
@@ -45,9 +45,9 @@ private:
 class ConsoleHandler {
 public:
 
-  ~ConsoleHandler();
+  virtual ~ConsoleHandler();
 
-  typedef std::function<bool(const std::vector<std::string> &)> ConsoleCommandHandler;
+  using ConsoleCommandHandler = std::function<bool(const std::vector<std::string> &)>;
 
   std::string getUsage() const;
   void setHandler(const std::string& command, const ConsoleCommandHandler& handler, const std::string& usage = "");
@@ -60,7 +60,7 @@ public:
 
 private:
 
-  typedef std::map<std::string, std::pair<ConsoleCommandHandler, std::string>> CommandHandlersMap;
+  using CommandHandlersMap = std::map<std::string, std::pair<ConsoleCommandHandler, std::string>>;
 
   virtual void handleCommand(const std::string& cmd);
 

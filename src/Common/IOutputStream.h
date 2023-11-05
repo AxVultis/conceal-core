@@ -13,7 +13,7 @@ namespace common {
 
 class IOutputStream {
 public:
-  virtual ~IOutputStream() { }
+  virtual ~IOutputStream() = default;
   virtual size_t writeSome(const void* data, size_t size) = 0;
 };
 

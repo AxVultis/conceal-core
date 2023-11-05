@@ -64,7 +64,6 @@ static inline uint64_t mul128(uint64_t multiplier, uint64_t multiplicand, uint64
   uint64_t adbc = ad + bc;
   uint64_t adbc_carry = adbc < ad ? 1 : 0;
 
-  // multiplier * multiplicand = product_hi * 2^64 + product_lo
   uint64_t product_lo = bd + (adbc << 32);
   uint64_t product_lo_carry = product_lo < bd ? 1 : 0;
   *product_hi = ac + (adbc >> 32) + (adbc_carry << 32) + product_lo_carry;

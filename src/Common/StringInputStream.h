@@ -14,7 +14,7 @@ namespace common {
 
 class StringInputStream : public IInputStream {
 public:
-  StringInputStream(const std::string& in);
+  explicit StringInputStream(const std::string& in);
   size_t readSome(void* data, size_t size) override;
 
 private:
