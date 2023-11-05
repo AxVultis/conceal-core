@@ -51,7 +51,7 @@ TEST(StringViewTests, copyAssignment) {
   ASSERT_EQ(view1.getSize(), view2.getSize());
 }
 
-TEST(ArrayRefTests, stdString) {
+TEST(StringViewTests, stdString) {
   const char data[] = "ABCD";
   const StringView view(data);
   std::string string(view);
