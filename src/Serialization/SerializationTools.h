@@ -21,7 +21,6 @@ namespace common {
 template <typename T>
 T getValueAs(const JsonValue& js) {
   return js;
-  //cdstatic_assert(false, "undefined conversion");
 }
 
 template <>

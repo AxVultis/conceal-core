@@ -76,7 +76,7 @@ serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer 
       throw std::runtime_error("Invalid blob size given!");
     }
 
-    const T *ptr = reinterpret_cast<const T *>(blob.data());
+    auto ptr = reinterpret_cast<const T *>(blob.data());
 
     while (count--)
     {
@@ -88,7 +88,7 @@ serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer 
     if (!value.empty())
     {
       blob.resize(value.size() * sizeof(T));
-      T *ptr = reinterpret_cast<T *>(&blob[0]);
+      auto ptr = reinterpret_cast<T *>(&blob[0]);
 
       for (const auto &item : value)
       {
@@ -125,7 +125,7 @@ bool serializeEnumClass(E &value, common::StringView name, cn::ISerializer &seri
 {
   static_assert(std::is_enum<E>::value, "E must be an enum class");
 
-  typedef typename std::underlying_type<E>::type EType;
+  using EType = std::underlying_type<E>::type;
 
   if (serializer.type() == cn::ISerializer::SerializerType::INPUT)
   {
@@ -250,13 +250,13 @@ bool serialize(std::unordered_map<K, V, Hash> &value, common::StringView name, c
 template <typename K, typename V, typename Hash>
 bool serialize(flat_hash_map<K, V, Hash> &value, common::StringView name, cn::ISerializer &serializer)
 {
-  return serializeMap(value, name, serializer, [](size_t size) {});
+  return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
 }
 
 template <typename K, typename V, typename Hash>
 bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView name, cn::ISerializer &serializer)
 {
-  return serializeMap(value, name, serializer, [](size_t size) {});
+  return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
 }
 
   template <typename K, typename V, typename Hash>
@@ -268,13 +268,13 @@ bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView nam
   template <typename K, typename V, typename Hash>
   bool serialize(std::map<K, V, Hash> & value, common::StringView name, cn::ISerializer & serializer)
   {
-    return serializeMap(value, name, serializer, [](size_t size) {});
+    return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
   }
 
   template <typename K, typename V, typename Hash>
   bool serialize(std::multimap<K, V, Hash> & value, common::StringView name, cn::ISerializer & serializer)
   {
-    return serializeMap(value, name, serializer, [](size_t size) {});
+    return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
   }
 
   template <size_t size>

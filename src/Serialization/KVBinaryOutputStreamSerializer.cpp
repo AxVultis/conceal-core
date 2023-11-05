@@ -24,7 +24,7 @@ void writePod(IOutputStream& s, const T& value) {
 
 template<class T>
 size_t packVarint(IOutputStream& s, uint8_t type_or, size_t pv) {
-  T v = static_cast<T>(pv << 2);
+  auto v = static_cast<T>(pv << 2);
   v |= type_or;
   write(s, &v, sizeof(T));
   return sizeof(T);
@@ -35,7 +35,7 @@ void writeElementName(IOutputStream& s, common::StringView name) {
     throw std::runtime_error("Element name is too long");
   }
 
-  uint8_t len = static_cast<uint8_t>(name.getSize());
+  auto len = static_cast<uint8_t>(name.getSize());
   write(s, &len, sizeof(len));
   write(s, name.getData(), len);
 }
@@ -84,8 +84,8 @@ ISerializer::SerializerType KVBinaryOutputStreamSerializer::type() const {
 bool KVBinaryOutputStreamSerializer::beginObject(common::StringView name) {
   checkArrayPreamble(BIN_KV_SERIALIZE_TYPE_OBJECT);
  
-  m_stack.push_back(Level(name));
-  m_objectsStack.push_back(MemoryStream());
+  m_stack.emplace_back(name);
+  m_objectsStack.emplace_back();
 
   return true;
 }
@@ -108,7 +108,7 @@ void KVBinaryOutputStreamSerializer::endObject() {
 }
 
 bool KVBinaryOutputStreamSerializer::beginArray(size_t& size, common::StringView name) {
-  m_stack.push_back(Level(name, size));
+  m_stack.emplace_back(name, size);
   return true;
 }
 
