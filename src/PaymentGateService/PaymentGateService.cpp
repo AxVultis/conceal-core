@@ -49,8 +49,11 @@ bool PaymentGateService::init(int argc, char** argv) {
     return false;
   }
 
+  std::unique_ptr<logging::StreamLogger> fileLogger = std::make_unique<logging::StreamLogger>();
+  std::unique_ptr<logging::ConsoleLogger> consoleLogger = std::make_unique<logging::ConsoleLogger>();
+
   logger.setMaxLevel(static_cast<logging::Level>(config.gateConfiguration.logLevel));
-  logger.addLogger(consoleLogger);
+  logger.addLogger(std::move(consoleLogger));
 
   logging::LoggerRef log(logger, "main");
 
@@ -70,8 +73,8 @@ bool PaymentGateService::init(int argc, char** argv) {
     throw std::runtime_error("Couldn't open log file");
   }
 
-  fileLogger.attachToStream(fileStream);
-  logger.addLogger(fileLogger);
+  fileLogger->attachToStream(fileStream);
+  logger.addLogger(std::move(fileLogger));
 
   return true;
 }

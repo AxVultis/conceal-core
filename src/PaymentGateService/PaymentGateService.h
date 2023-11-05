@@ -49,6 +49,4 @@ private:
   
   logging::LoggerGroup logger;
   std::ofstream fileStream;
-  logging::StreamLogger fileLogger;
-  logging::ConsoleLogger consoleLogger;
 };
