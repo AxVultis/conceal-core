@@ -40,8 +40,8 @@ namespace {
 class PeerIndexGenerator {
 public:
 
-  PeerIndexGenerator(size_t maxIndex)
-    : maxIndex(maxIndex), randCount(0) {
+  explicit PeerIndexGenerator(size_t maxIndex)
+    : maxIndex(maxIndex) {
     assert(maxIndex > 0);
   }
 
@@ -61,7 +61,7 @@ public:
 
 private:
 
-  size_t getRandomIndex() {
+  size_t getRandomIndex() const {
     //divide by zero workaround
     if (maxIndex == 0) {
       return 0;
@@ -72,7 +72,7 @@ private:
   }
 
   const size_t maxIndex;
-  size_t randCount;
+  size_t randCount = 0;
   std::set<size_t> visited;
 };
 
@@ -110,7 +110,6 @@ void doWithTimeoutAndThrow(platform_system::Dispatcher& dispatcher, std::chrono:
 
 P2pNode::P2pNode(const P2pNodeConfig& cfg, Dispatcher& dispatcher, logging::ILogger& log, const crypto::Hash& genesisHash, PeerIdType peerId) :
   logger(log, "P2pNode:" + std::to_string(cfg.getBindPort())),
-  m_stopRequested(false),
   m_cfg(cfg),
   m_myPeerId(peerId),
   m_genesisHash(genesisHash),
@@ -121,7 +120,7 @@ P2pNode::P2pNode(const P2pNodeConfig& cfg, Dispatcher& dispatcher, logging::ILog
   m_queueEvent(dispatcher) {
   m_peerlist.init(cfg.getAllowLocalIp());
   m_listener = TcpListener(m_dispatcher, Ipv4Address(m_cfg.getBindIp()), m_cfg.getBindPort());
-  for (auto& peer : cfg.getPeers()) {
+  for (const auto& peer : cfg.getPeers()) {
     m_peerlist.append_with_peer_white(peer);
   }
 }
@@ -288,7 +287,7 @@ bool P2pNode::makeNewConnectionFromPeerlist(const PeerlistManager::Peerlist& pee
     }
 
     logger(DEBUGGING) << "Selected peer: [" << peer.id << " " << peer.adr << "] last_seen: " <<
-      (peer.last_seen ? common::timeIntervalToString(time(NULL) - peer.last_seen) : "never");
+      (peer.last_seen ? common::timeIntervalToString(time(nullptr) - peer.last_seen) : "never");
 
     auto conn = tryToConnectPeer(peer.adr);
     if (conn.get()) {
@@ -327,28 +326,18 @@ void P2pNode::connectPeerList(const std::vector<NetworkAddress>& peers) {
   }
 }
 
-bool P2pNode::isPeerConnected(const NetworkAddress& address) {
-  for (const auto& c : m_contexts) {
-    if (!c->isIncoming() && c->getRemoteAddress() == address) {
-      return true;
-    }
-  }
-
-  return false;
+bool P2pNode::isPeerConnected(const NetworkAddress& address) const {
+  return std::any_of(m_contexts.begin(), m_contexts.end(), [&address](const ContextPtr &c)
+                     { return !c->isIncoming() && c->getRemoteAddress() == address ;});
 }
 
-bool P2pNode::isPeerUsed(const PeerlistEntry& peer) {
+bool P2pNode::isPeerUsed(const PeerlistEntry& peer) const {
   if (m_myPeerId == peer.id) {
     return true; //dont make connections to ourself
   }
 
-  for (const auto& c : m_contexts) {
-    if (c->getPeerId() == peer.id || (!c->isIncoming() && c->getRemoteAddress() == peer.adr)) {
-      return true;
-    }
-  }
-
-  return false;
+  return std::any_of(m_contexts.begin(), m_contexts.end(), [&peer](const ContextPtr &c)
+                     { return c->getPeerId() == peer.id || (!c->isIncoming() && c->getRemoteAddress() == peer.adr); });
 }
 
 P2pNode::ContextPtr P2pNode::tryToConnectPeer(const NetworkAddress& address) {
@@ -356,7 +345,7 @@ P2pNode::ContextPtr P2pNode::tryToConnectPeer(const NetworkAddress& address) {
     TcpConnector connector(m_dispatcher);
     TcpConnection tcpConnection;
 
-    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getConnectTimeout(), [&] {
+    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getConnectTimeout(), [&tcpConnection, &connector, &address] {
       tcpConnection = connector.connect(
         Ipv4Address(common::ipAddressToString(address.ip)),
         static_cast<uint16_t>(address.port));
@@ -507,11 +496,11 @@ void P2pNode::tryPing(P2pContext& ctx) {
     TcpConnector connector(m_dispatcher);
     TcpConnection connection;
 
-    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getConnectTimeout(), [&] {
+    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getConnectTimeout(), [&connection, &connector, &peerAddress] {
       connection = connector.connect(Ipv4Address(common::ipAddressToString(peerAddress.ip)), static_cast<uint16_t>(peerAddress.port));
     });
 
-    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getHandshakeTimeout(), [&]  {
+    doWithTimeoutAndThrow(m_dispatcher, m_cfg.getHandshakeTimeout(), [this, &connection, &ctx, &peerAddress]  {
       LevinProtocol proto(connection);
       COMMAND_PING::request request;
       COMMAND_PING::response response;

@@ -15,7 +15,7 @@ P2pContextOwner::P2pContextOwner(P2pContext* ctx, ContextList& contextList) : co
   contextIterator = contextList.insert(contextList.end(), ContextList::value_type(ctx));
 }
 
-P2pContextOwner::P2pContextOwner(P2pContextOwner&& other) : contextList(other.contextList), contextIterator(other.contextIterator) {
+P2pContextOwner::P2pContextOwner(P2pContextOwner&& other)  noexcept : contextList(other.contextList), contextIterator(other.contextIterator) {
   other.contextIterator = contextList.end();
 }
 

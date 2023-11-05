@@ -160,7 +160,9 @@ namespace cn
     struct request
     {
       /*actually we don't need to send any real data*/
-      void serialize(ISerializer& s) {}
+      void serialize(const ISerializer&) const {
+        // Nothing to do here.
+      }
     };
 
     struct response

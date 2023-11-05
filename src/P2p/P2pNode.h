@@ -33,7 +33,7 @@ class P2pConnectionProxy;
 class P2pNode : 
   public IP2pNode, 
   public IStreamSerializable,
-  IP2pNodeInternal {
+  private IP2pNodeInternal {
 
 public:
 
@@ -44,26 +44,26 @@ public:
     const crypto::Hash& genesisHash, 
     PeerIdType peerId);
 
-  ~P2pNode();
+  ~P2pNode() override;
   
   // IP2pNode
-  virtual std::unique_ptr<IP2pConnection> receiveConnection() override;
-  virtual void stop() override;
+  std::unique_ptr<IP2pConnection> receiveConnection() override;
+  void stop() override;
 
   // IStreamSerializable
-  virtual void save(std::ostream& os) override;
-  virtual void load(std::istream& in) override;
+  void save(std::ostream& os) override;
+  void load(std::istream& in) override;
 
   // P2pNode
   void start();
   void serialize(ISerializer& s);
 
 private:
-  typedef std::unique_ptr<P2pContext> ContextPtr;
-  typedef std::list<ContextPtr> ContextList;
+  using ContextPtr = std::unique_ptr<P2pContext>;
+  using ContextList = std::list<ContextPtr>;
 
   logging::LoggerRef logger;
-  bool m_stopRequested;
+  bool m_stopRequested = false;
   const P2pNodeConfig m_cfg;
   const PeerIdType m_myPeerId;
   const crypto::Hash m_genesisHash;
@@ -79,14 +79,14 @@ private:
   std::deque<std::unique_ptr<IP2pConnection>> m_connectionQueue;
 
   // IP2pNodeInternal
-  virtual const CORE_SYNC_DATA& getGenesisPayload() const override;
-  virtual std::list<PeerlistEntry> getLocalPeerList() const override;
-  virtual basic_node_data getNodeData() const override;
-  virtual PeerIdType getPeerId() const override;
+  const CORE_SYNC_DATA& getGenesisPayload() const override;
+  std::list<PeerlistEntry> getLocalPeerList() const override;
+  basic_node_data getNodeData() const override;
+  PeerIdType getPeerId() const override;
 
-  virtual void handleNodeData(const basic_node_data& node, P2pContext& ctx) override;
-  virtual bool handleRemotePeerList(const std::list<PeerlistEntry>& peerlist, time_t local_time) override;
-  virtual void tryPing(P2pContext& ctx) override;
+  void handleNodeData(const basic_node_data& node, P2pContext& ctx) override;
+  bool handleRemotePeerList(const std::list<PeerlistEntry>& peerlist, time_t local_time) override;
+  void tryPing(P2pContext& ctx) override;
 
   // spawns
   void acceptLoop();
@@ -95,8 +95,8 @@ private:
   // connection related
   void connectPeers();
   void connectPeerList(const std::vector<NetworkAddress>& peers);
-  bool isPeerConnected(const NetworkAddress& address);
-  bool isPeerUsed(const PeerlistEntry& peer);
+  bool isPeerConnected(const NetworkAddress& address) const;
+  bool isPeerUsed(const PeerlistEntry& peer) const;
   ContextPtr tryToConnectPeer(const NetworkAddress& address);
   bool fetchPeerList(ContextPtr connection);
 
