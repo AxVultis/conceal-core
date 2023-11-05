@@ -8,6 +8,8 @@
 
 #include "P2pNode.h"
 
+#include <ranges>
+
 #include <boost/uuid/uuid_io.hpp>
 
 #include <System/ContextGroupTimeout.h>
