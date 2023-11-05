@@ -33,7 +33,7 @@ class P2pConnectionProxy;
 class P2pNode : 
   public IP2pNode, 
   public IStreamSerializable,
-  private IP2pNodeInternal {
+  public IP2pNodeInternal {
 
 public:
 

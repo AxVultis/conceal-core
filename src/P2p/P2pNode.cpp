@@ -191,11 +191,11 @@ void P2pNode::acceptLoop() {
   while (!m_stopRequested) {
     try {
       auto connection = m_listener.accept();
-      auto ctx = new P2pContext(m_dispatcher, std::move(connection), true, 
+      auto ctx = std::make_unique<P2pContext>(m_dispatcher, std::move(connection), true, 
         getRemoteAddress(connection), m_cfg.getTimedSyncInterval(), getGenesisPayload());
       logger(INFO) << "Incoming connection from " << ctx->getRemoteAddress();
-      workingContextGroup.spawn([this, ctx] {
-        preprocessIncomingConnection(ContextPtr(ctx));
+      workingContextGroup.spawn([this, &ctx] {
+        preprocessIncomingConnection(std::move(ctx));
       });
     } catch (InterruptedException&) {
       break;
@@ -355,7 +355,7 @@ P2pNode::ContextPtr P2pNode::tryToConnectPeer(const NetworkAddress& address) {
 
     logger(DEBUGGING) << "connection established to " << address;
 
-    return ContextPtr(new P2pContext(m_dispatcher, std::move(tcpConnection), false, address, m_cfg.getTimedSyncInterval(), getGenesisPayload()));
+    return std::make_unique<P2pContext>(m_dispatcher, std::move(tcpConnection), false, address, m_cfg.getTimedSyncInterval(), getGenesisPayload());
   } catch (std::exception& e) {
     logger(DEBUGGING) << "Connection to " << address << " failed: " << e.what();
   }
@@ -472,8 +472,8 @@ size_t P2pNode::getOutgoingConnectionsCount() const {
 }
 
 std::unique_ptr<P2pConnectionProxy> P2pNode::createProxy(ContextPtr ctx) {
-  return std::unique_ptr<P2pConnectionProxy>(
-    new P2pConnectionProxy(P2pContextOwner(ctx.release(), m_contexts), *this));
+  P2pContextOwner owner(std::move(ctx), m_contexts);
+  return std::make_unique<P2pConnectionProxy>(std::move(owner), *this);
 }
 
 void P2pNode::enqueueConnection(std::unique_ptr<P2pConnectionProxy> proxy) {
