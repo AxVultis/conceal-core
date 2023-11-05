@@ -69,7 +69,7 @@ namespace Randomize
     T randomValue()
     {
         std::uniform_int_distribution<T> distribution{
-            std::numeric_limits<T>::min(), std::numeric_limits<T>::max()
+            (std::numeric_limits<T>::min)(), (std::numeric_limits<T>::max)()
         };
 
         return distribution(gen);
