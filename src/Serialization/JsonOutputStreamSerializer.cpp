@@ -38,7 +38,7 @@ JsonOutputStreamSerializer::JsonOutputStreamSerializer() {
 }
 
 ISerializer::SerializerType JsonOutputStreamSerializer::type() const {
-  return ISerializer::OUTPUT;
+  return ISerializer::SerializerType::OUTPUT;
 }
 
 bool JsonOutputStreamSerializer::beginObject(common::StringView name) {

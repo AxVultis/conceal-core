@@ -36,7 +36,7 @@ void serialize(BlockShortEntry &v, ISerializer &s)
 {
   s(v.blockHash, "hash");
 
-  if (s.type() == ISerializer::INPUT)
+  if (s.type() == ISerializer::SerializerType::INPUT)
   {
     std::string blockBinary;
     if (s.binary(blockBinary, "block"))

@@ -73,7 +73,7 @@ namespace cn {
   }
 
   void BlockIndex::serialize(ISerializer& s) {
-    if (s.type() == ISerializer::INPUT) {
+    if (s.type() == ISerializer::SerializerType::INPUT) {
       readSequence<crypto::Hash>(std::back_inserter(m_container), "index", s);
     } else {
       writeSequence<crypto::Hash>(m_container.begin(), m_container.end(), "index", s);

@@ -38,7 +38,7 @@ JsonInputValueSerializer::JsonInputValueSerializer(common::JsonValue&& value) : 
 }
 
 ISerializer::SerializerType JsonInputValueSerializer::type() const {
-  return ISerializer::INPUT;
+  return ISerializer::SerializerType::INPUT;
 }
 
 bool JsonInputValueSerializer::beginObject(common::StringView name) {

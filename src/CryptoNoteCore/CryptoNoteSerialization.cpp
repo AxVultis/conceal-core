@@ -198,7 +198,7 @@ void serialize(Transaction& tx, ISerializer& serializer) {
 
   size_t sigSize = tx.inputs.size();
   
-  if (serializer.type() == ISerializer::INPUT) {
+  if (serializer.type() == ISerializer::SerializerType::INPUT) {
     tx.signatures.resize(sigSize);
   }
 
@@ -217,7 +217,7 @@ void serialize(Transaction& tx, ISerializer& serializer) {
       }
     }
 
-    if (serializer.type() == ISerializer::OUTPUT) {
+    if (serializer.type() == ISerializer::SerializerType::OUTPUT) {
       if (signatureSize != tx.signatures[i].size()) {
         throw serialization_error("Unexpected signature size caused a serialization problem");
       }
@@ -238,7 +238,7 @@ void serialize(Transaction& tx, ISerializer& serializer) {
 }
 
 void serialize(TransactionInput& in, ISerializer& serializer) {
-  if (serializer.type() == ISerializer::OUTPUT) {
+  if (serializer.type() == ISerializer::SerializerType::OUTPUT) {
     BinaryVariantTagGetter tagGetter;
     uint8_t tag = boost::apply_visitor(tagGetter, in);
     serializer.binary(&tag, sizeof(tag), "type");
@@ -282,7 +282,7 @@ void serialize(TransactionOutput& output, ISerializer& serializer) {
 }
 
 void serialize(TransactionOutputTarget& output, ISerializer& serializer) {
-  if (serializer.type() == ISerializer::OUTPUT) {
+  if (serializer.type() == ISerializer::SerializerType::OUTPUT) {
     BinaryVariantTagGetter tagGetter;
     uint8_t tag = boost::apply_visitor(tagGetter, output);
     serializer.binary(&tag, sizeof(tag), "type");
@@ -347,7 +347,7 @@ void doSerialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer) {
 }
 
 void serialize(TransactionExtraMergeMiningTag& tag, ISerializer& serializer) {
-  if (serializer.type() == ISerializer::OUTPUT) {
+  if (serializer.type() == ISerializer::SerializerType::OUTPUT) {
     std::string field;
     StringOutputStream os(field);
     BinaryOutputStreamSerializer output(os);

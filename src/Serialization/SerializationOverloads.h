@@ -32,7 +32,7 @@ typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>:
 serializeAsBinary(std::vector<T> &value, common::StringView name, cn::ISerializer &serializer)
 {
   std::string blob;
-  if (serializer.type() == ISerializer::INPUT)
+  if (serializer.type() == ISerializer::SerializerType::INPUT)
   {
     serializer.binary(blob, name);
 
@@ -65,7 +65,7 @@ typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>:
 serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer &serializer)
 {
   std::string blob;
-  if (serializer.type() == ISerializer::INPUT)
+  if (serializer.type() == ISerializer::SerializerType::INPUT)
   {
     serializer.binary(blob, name);
 
@@ -127,7 +127,7 @@ bool serializeEnumClass(E &value, common::StringView name, cn::ISerializer &seri
 
   typedef typename std::underlying_type<E>::type EType;
 
-  if (serializer.type() == cn::ISerializer::INPUT)
+  if (serializer.type() == cn::ISerializer::SerializerType::INPUT)
   {
     EType numericValue;
     serializer(numericValue, name);
@@ -165,7 +165,7 @@ bool serializeMap(MapT &value, common::StringView name, cn::ISerializer &seriali
     return false;
   }
 
-  if (serializer.type() == cn::ISerializer::INPUT)
+  if (serializer.type() == cn::ISerializer::SerializerType::INPUT)
   {
     reserve(size);
 
@@ -208,7 +208,7 @@ bool serializeSet(SetT &value, common::StringView name, cn::ISerializer &seriali
     return false;
   }
 
-  if (serializer.type() == cn::ISerializer::INPUT)
+  if (serializer.type() == cn::ISerializer::SerializerType::INPUT)
   {
     for (size_t i = 0; i < size; ++i)
     {

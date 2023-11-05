@@ -54,7 +54,7 @@ namespace cn
 
     void serialize(ISerializer& s) {
       KV_MEMBER(network_id)
-      if (s.type() == ISerializer::INPUT) {
+      if (s.type() == ISerializer::SerializerType::INPUT) {
         version = 0;
       }
       KV_MEMBER(version)

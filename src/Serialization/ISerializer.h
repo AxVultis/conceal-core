@@ -17,7 +17,7 @@ namespace cn {
 class ISerializer {
 public:
 
-  enum SerializerType {
+  enum class SerializerType {
     INPUT,
     OUTPUT
   };

@@ -30,7 +30,7 @@ bool WalletUnconfirmedTransactions::serialize(ISerializer& s) {
   s(m_createdDeposits, "unconfirmedCreatedDeposits");
   s(m_spentDeposits, "unconfirmedSpentDeposits");
 
-  if (s.type() == ISerializer::INPUT) {
+  if (s.type() == ISerializer::SerializerType::INPUT) {
     collectUsedOutputs();
   }
 
@@ -40,7 +40,7 @@ bool WalletUnconfirmedTransactions::serialize(ISerializer& s) {
 bool WalletUnconfirmedTransactions::deserializeV1(ISerializer& s) {
   s(m_unconfirmedTxs, "transactions");
 
-  if (s.type() == ISerializer::INPUT) {
+  if (s.type() == ISerializer::SerializerType::INPUT) {
     collectUsedOutputs();
   }
 

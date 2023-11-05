@@ -118,7 +118,7 @@ bool WalletUserTransactionsCache::serialize(cn::ISerializer& s) {
   s(m_unconfirmedTransactions, "unconfirmed");
   s(m_deposits, "deposits");
 
-  if (s.type() == cn::ISerializer::INPUT) {
+  if (s.type() == cn::ISerializer::SerializerType::INPUT) {
     updateUnconfirmedTransactions();
     deleteOutdatedTransactions();
     restoreTransactionOutputToDepositIndex();

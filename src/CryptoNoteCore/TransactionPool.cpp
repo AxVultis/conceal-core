@@ -643,7 +643,7 @@ namespace cn
 
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
 
-    if (s.type() == ISerializer::INPUT)
+    if (s.type() == ISerializer::SerializerType::INPUT)
     {
       m_transactions.clear();
       readSequence<TransactionDetails>(std::inserter(m_transactions, m_transactions.end()), "transactions", s);

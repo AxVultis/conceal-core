@@ -28,7 +28,7 @@ void readVarintAs(IInputStream& s, T &i) {
 }
 
 ISerializer::SerializerType BinaryInputStreamSerializer::type() const {
-  return ISerializer::INPUT;
+  return ISerializer::SerializerType::INPUT;
 }
 
 bool BinaryInputStreamSerializer::beginObject(common::StringView name) {

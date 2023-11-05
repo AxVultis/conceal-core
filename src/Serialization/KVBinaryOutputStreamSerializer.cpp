@@ -78,7 +78,7 @@ void KVBinaryOutputStreamSerializer::dump(IOutputStream& target) {
 }
 
 ISerializer::SerializerType KVBinaryOutputStreamSerializer::type() const {
-  return ISerializer::OUTPUT;
+  return ISerializer::SerializerType::OUTPUT;
 }
 
 bool KVBinaryOutputStreamSerializer::beginObject(common::StringView name) {

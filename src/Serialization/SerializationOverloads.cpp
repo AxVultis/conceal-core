@@ -13,7 +13,7 @@
 namespace cn {
 
 void serializeBlockHeight(ISerializer& s, uint32_t& blockHeight, common::StringView name) {
-  if (s.type() == ISerializer::INPUT) {
+  if (s.type() == ISerializer::SerializerType::INPUT) {
     uint64_t height;
     s(height, name);
 

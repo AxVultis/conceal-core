@@ -16,7 +16,7 @@ using namespace common;
 namespace cn {
 
 ISerializer::SerializerType BinaryOutputStreamSerializer::type() const {
-  return ISerializer::OUTPUT;
+  return ISerializer::SerializerType::OUTPUT;
 }
 
 bool BinaryOutputStreamSerializer::beginObject(common::StringView name) {
