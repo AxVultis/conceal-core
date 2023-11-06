@@ -124,7 +124,7 @@ int runDaemon() {
 #ifdef _WIN32
 
   SERVICE_TABLE_ENTRY serviceTable[] {
-    { "Payment Gate", serviceMain },
+    { L"Payment Gate", serviceMain },
     { NULL, NULL }
   };
 
