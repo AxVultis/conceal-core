@@ -123,8 +123,9 @@ int daemonize() {
 int runDaemon() {
 #ifdef _WIN32
 
+  wchar_t serviceName[] = L"Payment Gate";
   SERVICE_TABLE_ENTRY serviceTable[] {
-    { L"Payment Gate", serviceMain },
+    { serviceName, serviceMain },
     { NULL, NULL }
   };
 
