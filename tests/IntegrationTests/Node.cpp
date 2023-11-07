@@ -63,7 +63,7 @@ void serialize(TransactionShortInfo &v, ISerializer &s)
   s(v.txPrefix, "prefix");
 }
 
-bool operator==(const BlockShortEntry &a, const BlockShortEntry &b)
+inline bool operator==(const BlockShortEntry &a, const BlockShortEntry &b)
 {
   return a.blockHash == b.blockHash &&
          a.hasBlock == b.hasBlock &&
@@ -71,7 +71,7 @@ bool operator==(const BlockShortEntry &a, const BlockShortEntry &b)
          a.txsShortInfo == b.txsShortInfo;
 }
 
-bool operator==(const TransactionShortInfo &a, const TransactionShortInfo &b)
+inline bool operator==(const TransactionShortInfo &a, const TransactionShortInfo &b)
 {
   return a.txId == b.txId;
 }
