@@ -44,16 +44,15 @@ protected:
 
 namespace cn
 {
+  inline bool operator==(const TransactionShortInfo &a, const TransactionShortInfo &b)
+  {
+    return a.txId == b.txId;
+  }
   inline bool operator==(const BlockShortEntry &a, const BlockShortEntry &b)
   {
     return a.blockHash == b.blockHash &&
            a.hasBlock == b.hasBlock &&
            // a.block == b.block &&
            a.txsShortInfo == b.txsShortInfo;
-  }
-
-  inline bool operator==(const TransactionShortInfo &a, const TransactionShortInfo &b)
-  {
-    return a.txId == b.txId;
   }
 }
