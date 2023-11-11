@@ -11,11 +11,12 @@
 #include "CryptoNoteCore/Difficulty.h"
 
 namespace cn {
-  struct IMinerHandler {
+  class IMinerHandler {
+  public:
     virtual bool handle_block_found(Block& b) = 0;
     virtual bool get_block_template(Block& b, const AccountPublicAddress& adr, difficulty_type& diffic, uint32_t& height, const BinaryArray& ex_nonce) = 0;
 
   protected:
-    ~IMinerHandler(){};
+    virtual ~IMinerHandler() = default;
   };
 }

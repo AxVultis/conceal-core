@@ -24,7 +24,7 @@ namespace cn {
 #if defined(__SIZEOF_INT128__)
 
   static inline void mul(uint64_t a, uint64_t b, uint64_t &low, uint64_t &high) {
-    typedef unsigned __int128 uint128_t;
+    using uint128_t = unsigned __int128;
     uint128_t res = (uint128_t) a * (uint128_t) b;
     low = (uint64_t) res;
     high = (uint64_t) (res >> 64);

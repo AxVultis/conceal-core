@@ -14,7 +14,7 @@
 
 namespace cn
 {
-    typedef std::uint64_t difficulty_type;
+    using difficulty_type = std::uint64_t;
 
     bool check_hash(const crypto::Hash &hash, difficulty_type difficulty);
 }
