@@ -41,7 +41,7 @@ const int errInternalError = -32603;
 class JsonRpcError: public std::exception {
 public:
   JsonRpcError();
-  JsonRpcError(int c);
+  explicit JsonRpcError(int c);
   JsonRpcError(int c, const std::string& msg);
 
 #ifdef _MSC_VER
@@ -61,7 +61,7 @@ public:
   std::string message;
 };
 
-typedef boost::optional<common::JsonValue> OptionalId;
+using OptionalId = boost::optional<common::JsonValue>;
 
 class JsonRpcRequest {
 public:
@@ -219,7 +219,7 @@ bool invokeMethod(const JsonRpcRequest& jsReq, JsonRpcResponse& jsRes, Handler h
   return result;
 }
 
-typedef std::function<bool(void*, const JsonRpcRequest& req, JsonRpcResponse& res)> JsonMemberMethod;
+using JsonMemberMethod = std::function<bool(void *, const JsonRpcRequest &req, JsonRpcResponse &res)>;
 
 template <typename Class, typename Params, typename Result>
 JsonMemberMethod makeMemberMethod(bool (Class::*handler)(const Params&, Result&)) {

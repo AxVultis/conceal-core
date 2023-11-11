@@ -23,7 +23,7 @@ class ICryptoNoteProtocolQuery;
 class RpcServer : public HttpServer {
 public:
   RpcServer(platform_system::Dispatcher& dispatcher, logging::ILogger& log, Core& c, NodeServer& p2p, const ICryptoNoteProtocolQuery& protocolQuery);
-  typedef std::function<bool(RpcServer*, const HttpRequest& request, HttpResponse& response)> HandlerFunction;
+  using HandlerFunction = std::function<bool(RpcServer *, const HttpRequest &request, HttpResponse &response)>;
   bool setFeeAddress(const std::string& fee_address, const AccountPublicAddress& fee_acc);
   bool setViewKey(const std::string& view_key);
   bool restrictRPC(const bool is_resctricted);
@@ -41,7 +41,6 @@ private:
     const bool allowBusyCore;
   };
 
-  typedef void (RpcServer::*HandlerPtr)(const HttpRequest& request, HttpResponse& response);
   static std::unordered_map<std::string, RpcHandler<HandlerFunction>> s_handlers;
 
   void processRequest(const HttpRequest& request, HttpResponse& response) override;

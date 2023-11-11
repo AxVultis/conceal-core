@@ -38,6 +38,7 @@ class HttpServer {
 public:
 
   HttpServer(platform_system::Dispatcher& dispatcher, logging::ILogger& log);
+  virtual ~HttpServer() = default;
 
   void start(const std::string& address, uint16_t port, const std::string& user = "", const std::string& password = "");
   void stop();

@@ -80,7 +80,6 @@ void HttpServer::acceptLoop() {
 
 	workingContextGroup.spawn(std::bind(&HttpServer::acceptLoop, this));
 
-	//auto addr = connection.getPeerAddressAndPort();
 	auto addr = std::pair<platform_system::Ipv4Address, uint16_t>(static_cast<platform_system::Ipv4Address>(0), 0);
 	try {
 		addr = connection.getPeerAddressAndPort();
