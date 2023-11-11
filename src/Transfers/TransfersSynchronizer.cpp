@@ -110,14 +110,14 @@ void TransfersSyncronizer::onBlockchainDetach(IBlockchainConsumer* consumer, uin
   }
 }
 
-void TransfersSyncronizer::onTransactionDeleteBegin(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {
+void TransfersSyncronizer::onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {
   auto it = findSubscriberForConsumer(consumer);
   if (it != m_subscribers.end()) {
     it->second->notify(&ITransfersSynchronizerObserver::onTransactionDeleteBegin, it->first, transactionHash);
   }
 }
 
-void TransfersSyncronizer::onTransactionDeleteEnd(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {
+void TransfersSyncronizer::onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {
   auto it = findSubscriberForConsumer(consumer);
   if (it != m_subscribers.end()) {
     it->second->notify(&ITransfersSynchronizerObserver::onTransactionDeleteEnd, it->first, transactionHash);

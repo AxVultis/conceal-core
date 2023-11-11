@@ -26,28 +26,28 @@ class BlockchainSynchronizer :
 public:
 
   BlockchainSynchronizer(INode& node, const crypto::Hash& genesisBlockHash);
-  ~BlockchainSynchronizer();
+  ~BlockchainSynchronizer() override;
 
   // IBlockchainSynchronizer
-  virtual void addConsumer(IBlockchainConsumer* consumer) override;
-  virtual bool removeConsumer(IBlockchainConsumer* consumer) override;
-  virtual IStreamSerializable* getConsumerState(IBlockchainConsumer* consumer) const override;
-  virtual std::vector<crypto::Hash> getConsumerKnownBlocks(IBlockchainConsumer& consumer) const override;
+  void addConsumer(IBlockchainConsumer* consumer) override;
+  bool removeConsumer(IBlockchainConsumer* consumer) override;
+  IStreamSerializable* getConsumerState(IBlockchainConsumer* consumer) const override;
+  std::vector<crypto::Hash> getConsumerKnownBlocks(IBlockchainConsumer& consumer) const override;
 
-  virtual std::future<std::error_code> addUnconfirmedTransaction(const ITransactionReader& transaction) override;
-  virtual std::future<void> removeUnconfirmedTransaction(const crypto::Hash& transactionHash) override;
+  std::future<std::error_code> addUnconfirmedTransaction(const ITransactionReader& transaction) override;
+  std::future<void> removeUnconfirmedTransaction(const crypto::Hash& transactionHash) override;
 
-  virtual void start() override;
-  virtual void stop() override;
+  void start() override;
+  void stop() override;
 
   // IStreamSerializable
-  virtual void save(std::ostream& os) override;
-  virtual void load(std::istream& in) override;
+  void save(std::ostream& os) override;
+  void load(std::istream& in) override;
 
   // INodeObserver
-  virtual void localBlockchainUpdated(uint32_t height) override;
-  virtual void lastKnownBlockHeightUpdated(uint32_t height) override;
-  virtual void poolChanged() override;
+  void localBlockchainUpdated(uint32_t height) override;
+  void lastKnownBlockHeightUpdated(uint32_t height) override;
+  void poolChanged() override;
 
 private:
 
@@ -89,13 +89,12 @@ private:
     errorOccurred = 2
   };
 
-  //void startSync();
   void startPoolSync();
   void startBlockchainSync();
 
   void processBlocks(GetBlocksResponse& response);
   UpdateConsumersResult updateConsumers(const BlockchainInterval& interval, const std::vector<CompleteBlock>& blocks);
-  std::error_code processPoolTxs(GetPoolResponse& response);
+  std::error_code processPoolTxs(const GetPoolResponse& response);
   std::error_code getPoolSymmetricDifferenceSync(GetPoolRequest&& request, GetPoolResponse& response);
   std::error_code doAddUnconfirmedTransaction(const ITransactionReader& transaction);
   void doRemoveUnconfirmedTransaction(const crypto::Hash& transactionHash);
@@ -114,7 +113,7 @@ private:
   void getPoolUnionAndIntersection(std::unordered_set<crypto::Hash>& poolUnion, std::unordered_set<crypto::Hash>& poolIntersection) const;
   SynchronizationState* getConsumerSynchronizationState(IBlockchainConsumer* consumer) const ;
 
-  typedef std::map<IBlockchainConsumer*, std::shared_ptr<SynchronizationState>> ConsumersMap;
+  using ConsumersMap = std::map<IBlockchainConsumer*, std::shared_ptr<SynchronizationState>>;
 
   ConsumersMap m_consumers;
   INode& m_node;

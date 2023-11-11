@@ -134,7 +134,7 @@ std::error_code BlockchainSynchronizer::doAddUnconfirmedTransaction(const ITrans
 void BlockchainSynchronizer::doRemoveUnconfirmedTransaction(const crypto::Hash& transactionHash) {
   std::unique_lock<std::mutex> lk(m_consumersMutex);
 
-  for (auto& consumer : m_consumers) {
+  for (const auto& consumer : m_consumers) {
     consumer.first->removeUnconfirmedTransaction(transactionHash);
   }
 }
@@ -444,7 +444,7 @@ void BlockchainSynchronizer::processBlocks(GetBlocksResponse& response) {
 BlockchainSynchronizer::UpdateConsumersResult BlockchainSynchronizer::updateConsumers(const BlockchainInterval& interval, const std::vector<CompleteBlock>& blocks) {
   bool smthChanged = false;
 
-  for (auto& kv : m_consumers) {
+  for (const auto& kv : m_consumers) {
     auto result = kv.second->checkInterval(interval);
 
     if (result.detachRequired) {
@@ -538,11 +538,11 @@ std::error_code BlockchainSynchronizer::getPoolSymmetricDifferenceSync(GetPoolRe
   return future.get();
 }
 
-std::error_code BlockchainSynchronizer::processPoolTxs(GetPoolResponse& response) {
+std::error_code BlockchainSynchronizer::processPoolTxs(const GetPoolResponse& response) {
   std::error_code error;
   {
     std::unique_lock<std::mutex> lk(m_consumersMutex);
-    for (auto& consumer : m_consumers) {
+    for (const auto& consumer : m_consumers) {
       if (checkIfShouldStop()) { //if stop, return immediately, without notification
         return std::make_error_code(std::errc::interrupted);
       }
