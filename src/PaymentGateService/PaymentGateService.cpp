@@ -142,7 +142,7 @@ void PaymentGateService::runInProcess(const logging::LoggerRef& log) {
   log(logging::INFO) << "Starting Payment Gate with local node";
 
   cn::Currency currency = currencyBuilder.currency();
-  cn::core core(currency, nullptr, logger, false, false);
+  cn::Core core(currency, nullptr, logger, false, false);
 
   cn::CryptoNoteProtocolHandler protocol(currency, *dispatcher, core, nullptr, logger);
   cn::NodeServer p2pNode(*dispatcher, protocol, logger);

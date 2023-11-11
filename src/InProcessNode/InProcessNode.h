@@ -21,7 +21,7 @@
 
 namespace cn {
 
-class core;
+class Core;
 
 class InProcessNode : public INode, public cn::ICryptoNoteProtocolObserver, public cn::ICoreObserver {
 public:
