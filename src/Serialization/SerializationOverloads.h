@@ -125,7 +125,7 @@ bool serializeEnumClass(E &value, common::StringView name, cn::ISerializer &seri
 {
   static_assert(std::is_enum<E>::value, "E must be an enum class");
 
-  using EType = std::underlying_type<E>::type;
+  using EType = typename std::underlying_type<E>::type;
 
   if (serializer.type() == cn::ISerializer::SerializerType::INPUT)
   {

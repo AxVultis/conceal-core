@@ -23,8 +23,8 @@ public:
       throw std::runtime_error("shuffle sequence ended");
     }
 
-    using distr_t = std::uniform_int_distribution<T>;
-    using param_t = distr_t::param_type;
+    using distr_t = typename std::uniform_int_distribution<T>;
+    using param_t = typename distr_t::param_type;
 
     distr_t distr;
     
