@@ -13,11 +13,11 @@ namespace cn {
 
   struct ITimeProvider {
     virtual time_t now() = 0;
-    virtual ~ITimeProvider() {}
+    virtual ~ITimeProvider() = default;
   };
 
   struct RealTimeProvider : public ITimeProvider {
-    virtual time_t now() override {
+    time_t now() override {
       return time(nullptr);
     }
   };

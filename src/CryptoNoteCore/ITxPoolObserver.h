@@ -10,9 +10,7 @@
 namespace cn {
 class ITxPoolObserver {
 public:
-  virtual ~ITxPoolObserver() {
-  }
-
+  virtual ~ITxPoolObserver() = default;
   virtual void txDeletedFromPool() = 0;
 };
 }
