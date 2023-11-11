@@ -32,7 +32,6 @@
 
 #include <Logging/LoggerRef.h>
 
-#undef ERROR
 using phmap::parallel_flat_hash_map;
 namespace cn
 {

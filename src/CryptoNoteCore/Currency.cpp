@@ -22,8 +22,6 @@
 #include "TransactionExtra.h"
 #include "UpgradeDetector.h"
 
-#undef ERROR
-
 using namespace logging;
 using namespace common;
 

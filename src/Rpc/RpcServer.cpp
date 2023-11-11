@@ -29,8 +29,6 @@
 #include "JsonRpc.h"
 #include "version.h"
 
-#undef ERROR
-
 using namespace logging;
 using namespace crypto;
 using namespace common;

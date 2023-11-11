@@ -14,7 +14,6 @@
 #include "INode.h"
 #include "CryptoNoteCore/Currency.h"
 #include "PaymentServiceJsonRpcMessages.h"
-#undef ERROR //TODO: workaround for windows build. fix it
 #include "Logging/LoggerRef.h"
 
 #include <fstream>

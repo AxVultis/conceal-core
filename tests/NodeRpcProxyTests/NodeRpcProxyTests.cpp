@@ -13,9 +13,6 @@
 
 using namespace cn;
 using namespace logging;
-
-#undef ERROR
-
 class NodeObserver : public INodeObserver {
 public:
   NodeObserver(const std::string& name, NodeRpcProxy& nodeProxy, ILogger& log)

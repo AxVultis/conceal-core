@@ -13,8 +13,6 @@
 #include "CryptoNoteCore/Account.h"
 #include "WalletLegacyObserver.h"
 
-#undef ERROR
-
 using namespace cn;
 using namespace logging;
 

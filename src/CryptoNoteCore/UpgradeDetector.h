@@ -18,8 +18,6 @@
 #include "CryptoNoteConfig.h"
 #include <Logging/LoggerRef.h>
 
-#undef ERROR
-
 namespace cn {
   class UpgradeDetectorBase {
   public:

@@ -31,8 +31,6 @@
 
 using namespace logging;
 
-#undef ERROR
-
 namespace cn
 {
 

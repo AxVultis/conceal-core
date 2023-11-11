@@ -28,8 +28,6 @@
 #include "TransactionExtra.h"
 #include "IBlock.h"
 
-#undef ERROR
-
 using namespace logging;
 
 #include "CryptoNoteCore/CoreConfig.h"

@@ -19,8 +19,6 @@
 
 using namespace cn;
 
-#undef ERROR
-
 namespace Tests {
 
 namespace {

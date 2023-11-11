@@ -60,7 +60,6 @@ using namespace logging;
 using common::JsonValue;
 
 #define EXTENDED_LOGS_FILE "wallet_details.log"
-#undef ERROR
 
 namespace {
 

@@ -22,10 +22,6 @@
 #include <System/Context.h>
 #include "Wallet/WalletGreen.h"
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #ifdef _WIN32
 #include <direct.h>
 #else
