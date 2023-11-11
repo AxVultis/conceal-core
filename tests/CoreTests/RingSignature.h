@@ -16,8 +16,8 @@ public:
 
   bool generate(std::vector<test_event_entry>& events) const;
 
-  bool check_balances_1(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_balances_2(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_1(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_2(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
 private:
   cn::AccountBase m_bob_account;
@@ -35,8 +35,8 @@ public:
 
   bool generate(std::vector<test_event_entry>& events) const;
 
-  bool check_balances_1(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_balances_2(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_1(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_2(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
 private:
   cn::AccountBase m_bob_account;
@@ -54,8 +54,8 @@ public:
 
   bool generate(std::vector<test_event_entry>& events) const;
 
-  bool check_balances_1(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_balances_2(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_1(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_balances_2(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
 private:
   size_t m_test_size;

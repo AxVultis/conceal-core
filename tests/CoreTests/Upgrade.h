@@ -14,9 +14,9 @@ struct gen_upgrade : public test_chain_unit_base
 
   bool check_block_verification_context(const cn::block_verification_context& bvc, size_t eventIdx, const cn::Block& blk);
 
-  bool markInvalidBlock(cn::core& c, size_t evIndex, const std::vector<test_event_entry>& events);
-  bool checkBlockTemplateVersionIsV1(cn::core& c, size_t evIndex, const std::vector<test_event_entry>& events);
-  bool checkBlockTemplateVersionIsV2(cn::core& c, size_t evIndex, const std::vector<test_event_entry>& events);
+  bool markInvalidBlock(cn::Core& c, size_t evIndex, const std::vector<test_event_entry>& events);
+  bool checkBlockTemplateVersionIsV1(cn::Core& c, size_t evIndex, const std::vector<test_event_entry>& events);
+  bool checkBlockTemplateVersionIsV2(cn::Core& c, size_t evIndex, const std::vector<test_event_entry>& events);
 
 private:
   bool checkBeforeUpgrade(std::vector<test_event_entry>& events, test_generator& generator,
@@ -25,7 +25,7 @@ private:
   bool checkAfterUpgrade(std::vector<test_event_entry>& events, test_generator& generator,
                          const cn::Block& parentBlock, const cn::AccountBase& minerAcc) const;
 
-  bool checkBlockTemplateVersion(cn::core& c, uint8_t expectedMajorVersion, uint8_t expectedMinorVersion);
+  bool checkBlockTemplateVersion(cn::Core& c, uint8_t expectedMajorVersion, uint8_t expectedMinorVersion);
   bool makeBlockTxV1(std::vector<test_event_entry>& events, test_generator& generator, cn::Block& lastBlock,
                      const cn::Block& parentBlock, const cn::AccountBase& minerAcc, const cn::AccountBase& to, size_t count,
                      uint8_t majorVersion, uint8_t minorVersion) const;

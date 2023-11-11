@@ -37,7 +37,7 @@ bool gen_double_spend_base<concrete_test>::check_block_verification_context(cons
 }
 
 template<class concrete_test>
-bool gen_double_spend_base<concrete_test>::mark_last_valid_block(cn::core& c, size_t /*ev_index*/, const std::vector<test_event_entry>& /*events*/)
+bool gen_double_spend_base<concrete_test>::mark_last_valid_block(cn::Core& c, size_t /*ev_index*/, const std::vector<test_event_entry>& /*events*/)
 {
   std::list<cn::Block> block_list;
   bool r = c.get_blocks(c.get_current_blockchain_height() - 1, 1, block_list);
@@ -47,21 +47,21 @@ bool gen_double_spend_base<concrete_test>::mark_last_valid_block(cn::core& c, si
 }
 
 template<class concrete_test>
-bool gen_double_spend_base<concrete_test>::mark_invalid_tx(cn::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
+bool gen_double_spend_base<concrete_test>::mark_invalid_tx(cn::Core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
 {
   m_invalid_tx_index = ev_index + 1;
   return true;
 }
 
 template<class concrete_test>
-bool gen_double_spend_base<concrete_test>::mark_invalid_block(cn::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
+bool gen_double_spend_base<concrete_test>::mark_invalid_block(cn::Core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/)
 {
   m_invalid_block_index = ev_index + 1;
   return true;
 }
 
 template<class concrete_test>
-bool gen_double_spend_base<concrete_test>::check_double_spend(cn::core& c, size_t /*ev_index*/, const std::vector<test_event_entry>& events)
+bool gen_double_spend_base<concrete_test>::check_double_spend(cn::Core& c, size_t /*ev_index*/, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_double_spend_base::check_double_spend");
 

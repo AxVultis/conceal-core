@@ -92,7 +92,7 @@ bool gen_chain_switch_1::generate(std::vector<test_event_entry>& events) const
 
 
 //-----------------------------------------------------------------------------------------------------
-bool gen_chain_switch_1::check_split_not_switched(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
+bool gen_chain_switch_1::check_split_not_switched(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_chain_switch_1::check_split_not_switched");
 
@@ -133,7 +133,7 @@ bool gen_chain_switch_1::check_split_not_switched(cn::core& c, size_t ev_index, 
 }
 
 //-----------------------------------------------------------------------------------------------------
-bool gen_chain_switch_1::check_split_switched(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
+bool gen_chain_switch_1::check_split_switched(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events)
 {
   DEFINE_TESTS_ERROR_CONTEXT("gen_chain_switch_1::check_split_switched");
 

@@ -159,12 +159,12 @@ public:
     m_currency(cn::CurrencyBuilder(m_logger).currency()) {
   }
 
-  typedef std::function<bool (cn::core& c, size_t ev_index, const std::vector<test_event_entry> &events)> verify_callback;
+  typedef std::function<bool (cn::Core& c, size_t ev_index, const std::vector<test_event_entry> &events)> verify_callback;
   typedef std::map<std::string, verify_callback> callbacks_map;
 
   const cn::Currency& currency() const;
   void register_callback(const std::string& cb_name, verify_callback cb);
-  bool verify(const std::string& cb_name, cn::core& c, size_t ev_index, const std::vector<test_event_entry> &events);
+  bool verify(const std::string& cb_name, cn::Core& c, size_t ev_index, const std::vector<test_event_entry> &events);
 
 protected:
 
@@ -246,7 +246,7 @@ template<class t_test_class>
 struct push_core_event_visitor: public boost::static_visitor<bool>
 {
 private:
-  cn::core& m_c;
+  cn::Core& m_c;
   const std::vector<test_event_entry>& m_events;
   t_test_class& m_validator;
   size_t m_ev_index;
@@ -254,7 +254,7 @@ private:
   bool m_txs_keeped_by_block;
 
 public:
-  push_core_event_visitor(cn::core& c, const std::vector<test_event_entry>& events, t_test_class& validator)
+  push_core_event_visitor(cn::Core& c, const std::vector<test_event_entry>& events, t_test_class& validator)
     : m_c(c)
     , m_events(events)
     , m_validator(validator)
@@ -361,7 +361,7 @@ private:
 };
 //--------------------------------------------------------------------------
 template<class t_test_class>
-inline bool replay_events_through_core(cn::core& cr, const std::vector<test_event_entry>& events, t_test_class& validator)
+inline bool replay_events_through_core(cn::Core& cr, const std::vector<test_event_entry>& events, t_test_class& validator)
 {
   try {
     CHECK_AND_ASSERT_MES(typeid(cn::Block) == events[0].type(), false, "First event must be genesis block creation");
@@ -404,7 +404,7 @@ inline bool do_replay_events(std::vector<test_event_entry>& events, t_test_class
   coreConfig.init(vm);
   cn::MinerConfig emptyMinerConfig;
   cn::cryptonote_protocol_stub pr; //TODO: stub only for this kind of test, make real validation of relayed objects
-  cn::core c(validator.currency(), &pr, logger);
+  cn::Core c(validator.currency(), &pr, logger);
   if (!c.init(coreConfig, emptyMinerConfig, false))
   {
     std::cout << concolor::magenta << "Failed to init core" << concolor::normal << std::endl;

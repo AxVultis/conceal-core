@@ -61,7 +61,7 @@ bool gen_uint_overflow_base::check_block_verification_context(const cn::block_ve
   return m_last_valid_block_event_idx < event_idx ? bvc.m_verification_failed | bvc.m_marked_as_orphaned : !bvc.m_verification_failed;
 }
 
-bool gen_uint_overflow_base::mark_last_valid_block(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events)
+bool gen_uint_overflow_base::mark_last_valid_block(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events)
 {
   m_last_valid_block_event_idx = ev_index - 1;
   return true;
