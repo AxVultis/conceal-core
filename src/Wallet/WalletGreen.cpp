@@ -3276,7 +3276,7 @@ namespace cn
     blockHeightIndex.erase(std::next(blockHeightIndex.begin(), blockIndex), blockHeightIndex.end());
   }
 
-  void WalletGreen::onTransactionDeleteBegin(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash)
+  void WalletGreen::onTransactionDeleteBegin(const crypto::PublicKey &viewPublicKey, const crypto::Hash& transactionHash)
   {
     m_dispatcher.remoteSpawn([=, this]() { transactionDeleteBegin(transactionHash); });
   }
@@ -3286,7 +3286,7 @@ namespace cn
   {
   }
 
-  void WalletGreen::onTransactionDeleteEnd(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash)
+  void WalletGreen::onTransactionDeleteEnd(const crypto::PublicKey &viewPublicKey, const crypto::Hash& transactionHash)
   {
     m_dispatcher.remoteSpawn([=, this]() { transactionDeleteEnd(transactionHash); });
   }

@@ -218,10 +218,10 @@ protected:
   void onBlockchainDetach(const crypto::PublicKey &viewPublicKey, uint32_t blockIndex) override;
   void blocksRollback(uint32_t blockIndex);
 
-  void onTransactionDeleteBegin(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash) override;
+  void onTransactionDeleteBegin(const crypto::PublicKey &viewPublicKey, const crypto::Hash& transactionHash) override;
   void transactionDeleteBegin(crypto::Hash transactionHash);
 
-  void onTransactionDeleteEnd(const crypto::PublicKey &viewPublicKey, crypto::Hash transactionHash) override;
+  void onTransactionDeleteEnd(const crypto::PublicKey &viewPublicKey, const crypto::Hash& transactionHash) override;
   void transactionDeleteEnd(crypto::Hash transactionHash);
 
   std::vector<WalletOuts> pickWalletsWithMoney() const;
