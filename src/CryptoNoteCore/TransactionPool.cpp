@@ -76,7 +76,7 @@ namespace cn
     }
 
   private:
-    bool canAdd(const Transaction &tx)
+    bool canAdd(const Transaction &tx) const
     {
       for (const auto &in : tx.inputs)
       {
