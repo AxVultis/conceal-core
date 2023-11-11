@@ -94,7 +94,7 @@ namespace cn {
     size_t addInput(const AccountKeys& senderKeys, const transaction_types::InputKeyInfo& info, KeyPair& ephKeys) override;
 
     size_t addOutput(uint64_t amount, const AccountPublicAddress& to) override;
-    size_t addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint32_t requiredSignatures, uint32_t term = 0) override;
+    size_t addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint8_t requiredSignatures, uint32_t term = 0) override;
     size_t addOutput(uint64_t amount, const KeyOutput& out) override;
     size_t addOutput(uint64_t amount, const MultisignatureOutput& out) override;
 
@@ -293,13 +293,13 @@ namespace cn {
 
     KeyOutput outKey;
     derivePublicKey(to, txSecretKey(), transaction.outputs.size(), outKey.key);
-    transaction.outputs.emplace_back(amount, outKey);
+    transaction.outputs.emplace_back(TransactionOutput{amount, outKey});
     invalidateHash();
 
     return transaction.outputs.size() - 1;
   }
 
-  size_t TransactionImpl::addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint32_t requiredSignatures, uint32_t term) {
+  size_t TransactionImpl::addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint8_t requiredSignatures, uint32_t term) {
     checkIfSigning();
 
     const auto& txKey = txSecretKey();
@@ -313,7 +313,7 @@ namespace cn {
       derivePublicKey(to[i], txKey, outputIndex, outMsig.keys[i]);
     }
 
-    transaction.outputs.emplace_back(amount, outMsig);
+    transaction.outputs.emplace_back(TransactionOutput{amount, outMsig});
     transaction.version = TRANSACTION_VERSION_2;
     invalidateHash();
 
@@ -323,7 +323,7 @@ namespace cn {
   size_t TransactionImpl::addOutput(uint64_t amount, const KeyOutput& out) {
     checkIfSigning();
     size_t outputIndex = transaction.outputs.size();
-    transaction.outputs.emplace_back(amount, out);
+    transaction.outputs.emplace_back(TransactionOutput{amount, out});
     invalidateHash();
     return outputIndex;
   }
@@ -331,7 +331,7 @@ namespace cn {
   size_t TransactionImpl::addOutput(uint64_t amount, const MultisignatureOutput& out) {
     checkIfSigning();
     size_t outputIndex = transaction.outputs.size();
-    transaction.outputs.emplace_back(amount, out);
+    transaction.outputs.emplace_back(TransactionOutput{amount, out});
     invalidateHash();
     return outputIndex;
   }
