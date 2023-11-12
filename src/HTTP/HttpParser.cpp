@@ -13,7 +13,7 @@
 
 namespace {
 
-void throwIfNotGood(std::istream& stream) {
+void throwIfNotGood(const std::istream& stream) {
   if (!stream.good()) {
     if (stream.eof()) {
       throw std::system_error(make_error_code(cn::error::HttpParserErrorCodes::END_OF_STREAM));
@@ -119,7 +119,7 @@ void HttpParser::receiveResponse(std::istream& stream, HttpResponse& response) {
 }
 
 
-void HttpParser::readWord(std::istream& stream, std::string& word) {
+void HttpParser::readWord(std::istream& stream, std::string& word) const {
   char c;
 
   stream.get(c);
@@ -151,7 +151,7 @@ void HttpParser::readHeaders(std::istream& stream, HttpRequest::Headers& headers
   headers[name] = value; //use insert
 }
 
-bool HttpParser::readHeader(std::istream& stream, std::string& name, std::string& value) {
+bool HttpParser::readHeader(std::istream& stream, std::string& name, std::string& value) const {
   char c;
   bool isName = true;
 
@@ -204,7 +204,7 @@ bool HttpParser::readHeader(std::istream& stream, std::string& name, std::string
   return true;
 }
 
-size_t HttpParser::getBodyLen(const HttpRequest::Headers& headers) {
+size_t HttpParser::getBodyLen(const HttpRequest::Headers& headers) const {
   auto it = headers.find("content-length");
   if (it != headers.end()) {
     size_t bytes = std::stoul(it->second);
@@ -214,7 +214,7 @@ size_t HttpParser::getBodyLen(const HttpRequest::Headers& headers) {
   return 0;
 }
 
-void HttpParser::readBody(std::istream& stream, std::string& body, const size_t bodyLen) {
+void HttpParser::readBody(std::istream& stream, std::string& body, const size_t bodyLen) const {
   size_t read = 0;
 
   while (stream.good() && read < bodyLen) {

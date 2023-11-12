@@ -14,7 +14,7 @@
 namespace cn {
   class HttpRequest {
   public:
-    typedef std::map<std::string, std::string> Headers;
+    using Headers = std::map<std::string, std::string>;
 
     const std::string& getMethod() const;
     const std::string& getUrl() const;
