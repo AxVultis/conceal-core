@@ -259,7 +259,7 @@ void BlockchainSynchronizer::start() {
     throw std::runtime_error("BlockchainSynchronizer already started");
   }
 
-  workingThread.reset(new std::thread([this] { workingProcedure(); }));
+  workingThread = std::make_unique<std::thread>([this] { workingProcedure(); });
 }
 
 void BlockchainSynchronizer::stop() {
