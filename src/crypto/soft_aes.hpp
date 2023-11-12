@@ -12,7 +12,7 @@
 #if defined(__GNUC__) && !defined(ARM)
 	#include <x86intrin.h>
 #elif defined(__ARM_FEATURE_SIMD32) || defined(__ARM_NEON)
-	#include "sse2neon.h"
+	#include <sse2neon/sse2neon.h>
 #else
 	#include <intrin.h>
 #endif
