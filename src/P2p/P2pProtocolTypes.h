@@ -15,9 +15,9 @@
 
 namespace cn
 {
-  typedef boost::uuids::uuid uuid;
-  typedef boost::uuids::uuid net_connection_id;
-  typedef uint64_t PeerIdType;
+  using uuid = boost::uuids::uuid;
+  using net_connection_id = boost::uuids::uuid;
+  using PeerIdType = uint64_t;
 
 #pragma pack (push, 1)
   
