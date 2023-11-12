@@ -928,7 +928,7 @@ bool TransfersContainer::isSpendTimeUnlocked(const TransactionOutputInformationE
     isOuputUnlocked = m_currentHeight + m_currency.lockedTxAllowedDeltaBlocks() >= info.unlockTime;
   } else {
     //interpret as time
-    uint64_t current_time = static_cast<uint64_t>(time(NULL));
+    uint64_t current_time = static_cast<uint64_t>(time(nullptr));
     isOuputUnlocked = current_time + m_currency.lockedTxAllowedDeltaSeconds() >= info.unlockTime;
   }
 

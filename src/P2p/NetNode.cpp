@@ -1117,7 +1117,7 @@ namespace cn
 #ifdef ALLOW_DEBUG_COMMANDS
 
   bool NodeServer::check_trust(const proof_of_trust &tr) {
-    uint64_t local_time = time(NULL);
+    uint64_t local_time = time(nullptr);
     uint64_t time_delata = local_time > tr.time ? local_time - tr.time : tr.time - local_time;
 
     if (time_delata > 24 * 60 * 60) {
@@ -1182,7 +1182,7 @@ namespace cn
 
     m_peerlist.get_peerlist_full(rsp.local_peerlist_gray, rsp.local_peerlist_white);
     rsp.my_id = m_config.m_peer_id;
-    rsp.local_time = time(NULL);
+    rsp.local_time = time(nullptr);
     return 1;
   }
   //-----------------------------------------------------------------------------------

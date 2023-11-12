@@ -1288,7 +1288,7 @@ bool RpcServer::f_getMixin(const Transaction& transaction, uint64_t& mixin) cons
 bool RpcServer::f_on_transactions_pool_json(const F_COMMAND_RPC_GET_POOL::request&, F_COMMAND_RPC_GET_POOL::response& res) {
     auto pool = m_core.getPoolTransactions();
     auto height = m_core.get_current_blockchain_height();
-    for (const Transaction tx : pool) {
+    for (const Transaction& tx : pool) {
         f_transaction_short_response transaction_short;
         uint64_t amount_out = getOutputAmount(tx);
 

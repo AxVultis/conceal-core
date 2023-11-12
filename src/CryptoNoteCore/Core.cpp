@@ -381,7 +381,7 @@ bool Core::get_block_template(Block& b, const AccountPublicAddress& adr, difficu
 	}
 
     b.previousBlockHash = get_tail_id();
-    b.timestamp = time(NULL);
+    b.timestamp = time(nullptr);
 // k0x001
 // Don't generate a block template with invalid timestamp
 // Fix by Jagerman
