@@ -71,7 +71,7 @@ namespace cn
 {
 
   // custom serialization to speedup cache loading
-  bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>> &value, common::StringView name, cn::ISerializer &s)
+  bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>> &value, std::string_view name, cn::ISerializer &s)
   {
     const size_t elementSize = sizeof(std::pair<Blockchain::TransactionIndex, uint16_t>);
     size_t size = value.size() * elementSize;

@@ -117,11 +117,11 @@ void getVariantValue(cn::ISerializer& serializer, uint8_t tag, cn::TransactionOu
 }
 
 template <typename T>
-bool serializePod(T& v, common::StringView name, cn::ISerializer& serializer) {
+bool serializePod(T& v, std::string_view name, cn::ISerializer& serializer) {
   return serializer.binary(&v, sizeof(v), name);
 }
 
-bool serializeVarintVector(std::vector<uint32_t>& vector, cn::ISerializer& serializer, common::StringView name) {
+bool serializeVarintVector(std::vector<uint32_t>& vector, cn::ISerializer& serializer, std::string_view name) {
   size_t size = vector.size();
   
   if (!serializer.beginArray(size, name)) {
@@ -143,36 +143,36 @@ bool serializeVarintVector(std::vector<uint32_t>& vector, cn::ISerializer& seria
 
 namespace crypto {
 
-bool serialize(PublicKey& pubKey, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(PublicKey& pubKey, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(pubKey, name, serializer);
 }
 
-bool serialize(SecretKey& secKey, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(SecretKey& secKey, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(secKey, name, serializer);
 }
 
-bool serialize(Hash& h, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(Hash& h, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(h, name, serializer);
 }
 
-bool serialize(KeyImage& keyImage, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(KeyImage& keyImage, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(keyImage, name, serializer);
 }
 
-bool serialize(chacha8_iv &chacha8, common::StringView name, cn::ISerializer &serializer)
+bool serialize(chacha8_iv &chacha8, std::string_view name, cn::ISerializer &serializer)
 {
   return serializePod(chacha8, name, serializer);
 }
 
-bool serialize(Signature& sig, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(Signature& sig, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(sig, name, serializer);
 }
 
-bool serialize(EllipticCurveScalar& ecScalar, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(EllipticCurveScalar& ecScalar, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(ecScalar, name, serializer);
 }
 
-bool serialize(EllipticCurvePoint& ecPoint, common::StringView name, cn::ISerializer& serializer) {
+bool serialize(EllipticCurvePoint& ecPoint, std::string_view name, cn::ISerializer& serializer) {
   return serializePod(ecPoint, name, serializer);
 }
 

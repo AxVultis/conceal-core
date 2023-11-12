@@ -17,8 +17,8 @@ class KVBinaryInputStreamSerializer : public JsonInputValueSerializer {
 public:
   explicit KVBinaryInputStreamSerializer(common::IInputStream& strm);
 
-  bool binary(void* value, size_t size, common::StringView name) override;
-  bool binary(std::string& value, common::StringView name) override;
+  bool binary(void* value, size_t size, std::string_view name) override;
+  bool binary(std::string& value, std::string_view name) override;
 };
 
 }

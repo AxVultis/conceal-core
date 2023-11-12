@@ -19,14 +19,14 @@ ISerializer::SerializerType BinaryOutputStreamSerializer::type() const {
   return ISerializer::SerializerType::OUTPUT;
 }
 
-bool BinaryOutputStreamSerializer::beginObject(common::StringView name) {
+bool BinaryOutputStreamSerializer::beginObject(std::string_view name) {
   return true;
 }
 
 void BinaryOutputStreamSerializer::endObject() {
 }
 
-bool BinaryOutputStreamSerializer::beginArray(size_t& size, common::StringView name) {
+bool BinaryOutputStreamSerializer::beginArray(size_t& size, std::string_view name) {
   writeVarint(stream, size);
   return true;
 }
@@ -34,64 +34,64 @@ bool BinaryOutputStreamSerializer::beginArray(size_t& size, common::StringView n
 void BinaryOutputStreamSerializer::endArray() {
 }
 
-bool BinaryOutputStreamSerializer::operator()(uint8_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(uint8_t& value, std::string_view name) {
   writeVarint(stream, value);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(uint16_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(uint16_t& value, std::string_view name) {
   writeVarint(stream, value);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(int16_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(int16_t& value, std::string_view name) {
   writeVarint(stream, static_cast<uint16_t>(value));
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(uint32_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(uint32_t& value, std::string_view name) {
   writeVarint(stream, value);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(int32_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(int32_t& value, std::string_view name) {
   writeVarint(stream, static_cast<uint32_t>(value));
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(int64_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(int64_t& value, std::string_view name) {
   writeVarint(stream, static_cast<uint64_t>(value));
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(uint64_t& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(uint64_t& value, std::string_view name) {
   writeVarint(stream, value);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(bool& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(bool& value, std::string_view name) {
   char boolVal = value;
   checkedWrite(&boolVal, 1);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::operator()(std::string& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(std::string& value, std::string_view name) {
   writeVarint(stream, value.size());
   checkedWrite(value.data(), value.size());
   return true;
 }
 
-bool BinaryOutputStreamSerializer::binary(void* value, size_t size, common::StringView name) {
+bool BinaryOutputStreamSerializer::binary(void* value, size_t size, std::string_view name) {
   checkedWrite(static_cast<const char*>(value), size);
   return true;
 }
 
-bool BinaryOutputStreamSerializer::binary(std::string& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::binary(std::string& value, std::string_view name) {
   // write as string (with size prefix)
   return (*this)(value, name);
 }
 
-bool BinaryOutputStreamSerializer::operator()(double& value, common::StringView name) {
+bool BinaryOutputStreamSerializer::operator()(double& value, std::string_view name) {
   assert(false); //the method is not supported for this type of serialization
   throw std::runtime_error("BinaryOutputStreamSerializer does not support double serialization");
   return false;

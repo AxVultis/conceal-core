@@ -41,7 +41,7 @@ ISerializer::SerializerType JsonInputValueSerializer::type() const {
   return ISerializer::SerializerType::INPUT;
 }
 
-bool JsonInputValueSerializer::beginObject(common::StringView name) {
+bool JsonInputValueSerializer::beginObject(std::string_view name) {
   const JsonValue* parent = chain.back();
 
   if (parent->isArray()) {
@@ -64,7 +64,7 @@ void JsonInputValueSerializer::endObject() {
   chain.pop_back();
 }
 
-bool JsonInputValueSerializer::beginArray(size_t& size, common::StringView name) {
+bool JsonInputValueSerializer::beginArray(size_t& size, std::string_view name) {
   const JsonValue* parent = chain.back();
   std::string strName(name);
 
@@ -88,39 +88,39 @@ void JsonInputValueSerializer::endArray() {
   idxs.pop_back();
 }
 
-bool JsonInputValueSerializer::operator()(uint16_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(uint16_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(int16_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(int16_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(uint32_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(uint32_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(int32_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(int32_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(int64_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(int64_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(uint64_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(uint64_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(double& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(double& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(uint8_t& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(uint8_t& value, std::string_view name) {
   return getNumber(name, value);
 }
 
-bool JsonInputValueSerializer::operator()(std::string& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(std::string& value, std::string_view name) {
   auto ptr = getValue(name);
   if (ptr == nullptr) {
     return false;
@@ -129,7 +129,7 @@ bool JsonInputValueSerializer::operator()(std::string& value, common::StringView
   return true;
 }
 
-bool JsonInputValueSerializer::operator()(bool& value, common::StringView name) {
+bool JsonInputValueSerializer::operator()(bool& value, std::string_view name) {
   auto ptr = getValue(name);
   if (ptr == nullptr) {
     return false;
@@ -138,7 +138,7 @@ bool JsonInputValueSerializer::operator()(bool& value, common::StringView name) 
   return true;
 }
 
-bool JsonInputValueSerializer::binary(void* value, size_t size, common::StringView name) {
+bool JsonInputValueSerializer::binary(void* value, size_t size, std::string_view name) {
   auto ptr = getValue(name);
   if (ptr == nullptr) {
     return false;
@@ -148,7 +148,7 @@ bool JsonInputValueSerializer::binary(void* value, size_t size, common::StringVi
   return true;
 }
 
-bool JsonInputValueSerializer::binary(std::string& value, common::StringView name) {
+bool JsonInputValueSerializer::binary(std::string& value, std::string_view name) {
   auto ptr = getValue(name);
   if (ptr == nullptr) {
     return false;
@@ -160,7 +160,7 @@ bool JsonInputValueSerializer::binary(std::string& value, common::StringView nam
   return true;
 }
 
-const JsonValue* JsonInputValueSerializer::getValue(common::StringView name) {
+const JsonValue* JsonInputValueSerializer::getValue(std::string_view name) {
   const JsonValue& val = *chain.back();
   if (val.isArray()) {
     return &val[idxs.back()++];

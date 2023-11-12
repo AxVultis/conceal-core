@@ -29,7 +29,7 @@ namespace cn
 
 template <typename T>
 typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value>::type
-serializeAsBinary(std::vector<T> &value, common::StringView name, cn::ISerializer &serializer)
+serializeAsBinary(std::vector<T> &value, std::string_view name, cn::ISerializer &serializer)
 {
   std::string blob;
   if (serializer.type() == ISerializer::SerializerType::INPUT)
@@ -62,7 +62,7 @@ else
 
 template <typename T>
 typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value>::type
-serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer &serializer)
+serializeAsBinary(std::list<T> &value, std::string_view name, cn::ISerializer &serializer)
 {
   std::string blob;
   if (serializer.type() == ISerializer::SerializerType::INPUT)
@@ -100,7 +100,7 @@ serializeAsBinary(std::list<T> &value, common::StringView name, cn::ISerializer 
 }
 
 template <typename Cont>
-bool serializeContainer(Cont &value, common::StringView name, cn::ISerializer &serializer)
+bool serializeContainer(Cont &value, std::string_view name, cn::ISerializer &serializer)
 {
   size_t size = value.size();
   if (!serializer.beginArray(size, name))
@@ -121,7 +121,7 @@ bool serializeContainer(Cont &value, common::StringView name, cn::ISerializer &s
 }
 
 template <typename E>
-bool serializeEnumClass(E &value, common::StringView name, cn::ISerializer &serializer)
+bool serializeEnumClass(E &value, std::string_view name, cn::ISerializer &serializer)
 {
   static_assert(std::is_enum<E>::value, "E must be an enum class");
 
@@ -143,19 +143,19 @@ bool serializeEnumClass(E &value, common::StringView name, cn::ISerializer &seri
 }
 
 template <typename T>
-bool serialize(std::vector<T> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(std::vector<T> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeContainer(value, name, serializer);
 }
 
 template <typename T>
-bool serialize(std::list<T> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(std::list<T> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeContainer(value, name, serializer);
 }
 
 template <typename MapT, typename ReserveOp>
-bool serializeMap(MapT &value, common::StringView name, cn::ISerializer &serializer, ReserveOp reserve)
+bool serializeMap(MapT &value, std::string_view name, cn::ISerializer &serializer, ReserveOp reserve)
 {
   size_t size = value.size();
 
@@ -198,7 +198,7 @@ bool serializeMap(MapT &value, common::StringView name, cn::ISerializer &seriali
 }
 
 template <typename SetT>
-bool serializeSet(SetT &value, common::StringView name, cn::ISerializer &serializer)
+bool serializeSet(SetT &value, std::string_view name, cn::ISerializer &serializer)
 {
   size_t size = value.size();
 
@@ -230,55 +230,55 @@ bool serializeSet(SetT &value, common::StringView name, cn::ISerializer &seriali
 }
 
 template <typename K, typename Hash>
-bool serialize(std::unordered_set<K, Hash> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(std::unordered_set<K, Hash> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeSet(value, name, serializer);
 }
 
 template <typename K, typename Cmp>
-bool serialize(std::set<K, Cmp> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(std::set<K, Cmp> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeSet(value, name, serializer);
 }
 
 template <typename K, typename V, typename Hash>
-bool serialize(std::unordered_map<K, V, Hash> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(std::unordered_map<K, V, Hash> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeMap(value, name, serializer, [&value](size_t size) { value.reserve(size); });
 }
 
 template <typename K, typename V, typename Hash>
-bool serialize(flat_hash_map<K, V, Hash> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(flat_hash_map<K, V, Hash> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
 }
 
 template <typename K, typename V, typename Hash>
-bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView name, cn::ISerializer &serializer)
+bool serialize(parallel_flat_hash_map<K, V, Hash> &value, std::string_view name, cn::ISerializer &serializer)
 {
   return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
 }
 
   template <typename K, typename V, typename Hash>
-  bool serialize(std::unordered_multimap<K, V, Hash> & value, common::StringView name, cn::ISerializer & serializer)
+  bool serialize(std::unordered_multimap<K, V, Hash> & value, std::string_view name, cn::ISerializer & serializer)
   {
     return serializeMap(value, name, serializer, [&value](size_t size) { value.reserve(size); });
   }
 
   template <typename K, typename V, typename Hash>
-  bool serialize(std::map<K, V, Hash> & value, common::StringView name, cn::ISerializer & serializer)
+  bool serialize(std::map<K, V, Hash> & value, std::string_view name, cn::ISerializer & serializer)
   {
     return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
   }
 
   template <typename K, typename V, typename Hash>
-  bool serialize(std::multimap<K, V, Hash> & value, common::StringView name, cn::ISerializer & serializer)
+  bool serialize(std::multimap<K, V, Hash> & value, std::string_view name, cn::ISerializer & serializer)
   {
     return serializeMap(value, name, serializer, [](size_t) {/* Nothing to do here.*/});
   }
 
   template <size_t size>
-  bool serialize(std::array<uint8_t, size> & value, common::StringView name, cn::ISerializer & s)
+  bool serialize(std::array<uint8_t, size> & value, std::string_view name, cn::ISerializer & s)
   {
     return s.binary(value.data(), value.size(), name);
   }
@@ -291,7 +291,7 @@ bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView nam
   }
 
   template <typename Element, typename Iterator>
-  void writeSequence(Iterator begin, Iterator end, common::StringView name, ISerializer & s)
+  void writeSequence(Iterator begin, Iterator end, std::string_view name, ISerializer & s)
   {
     size_t size = std::distance(begin, end);
     s.beginArray(size, name);
@@ -303,7 +303,7 @@ bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView nam
   }
 
   template <typename Element, typename Iterator>
-  void readSequence(Iterator outputIterator, common::StringView name, ISerializer & s)
+  void readSequence(Iterator outputIterator, std::string_view name, ISerializer & s)
   {
     size_t size = 0;
     s.beginArray(size, name);
@@ -319,9 +319,9 @@ bool serialize(parallel_flat_hash_map<K, V, Hash> &value, common::StringView nam
   }
 
   //convinience function since we change block height type
-  void serializeBlockHeight(ISerializer & s, uint32_t & blockHeight, common::StringView name);
+  void serializeBlockHeight(ISerializer & s, uint32_t & blockHeight, std::string_view name);
 
   //convinience function since we change global output index type
-  void serializeGlobalOutputIndex(ISerializer & s, uint32_t & globalOutputIndex, common::StringView name);
+  void serializeGlobalOutputIndex(ISerializer & s, uint32_t & globalOutputIndex, std::string_view name);
 
 } // namespace cn

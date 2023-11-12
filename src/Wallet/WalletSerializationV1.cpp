@@ -163,7 +163,7 @@ std::string serialize(Object& obj, const std::string& name) {
   StdOutputStream output(stream);
   cn::BinaryOutputStreamSerializer s(output);
 
-  s(obj, common::StringView(name));
+  s(obj, std::string_view(name));
 
   stream.flush();
   return stream.str();
@@ -211,7 +211,7 @@ template<typename Object>
 void deserialize(Object& obj, const std::string& name, const std::string& plain) {
   MemoryInputStream stream(plain.data(), plain.size());
   cn::BinaryInputStreamSerializer s(stream);
-  s(obj, common::StringView(name));
+  s(obj, std::string_view(name));
 }
 
 template<typename Object>

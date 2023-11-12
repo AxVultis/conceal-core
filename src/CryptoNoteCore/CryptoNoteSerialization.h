@@ -14,14 +14,14 @@
 
 namespace crypto {
 
-bool serialize(PublicKey& pubKey, common::StringView name, cn::ISerializer& serializer);
-bool serialize(SecretKey& secKey, common::StringView name, cn::ISerializer& serializer);
-bool serialize(Hash& h, common::StringView name, cn::ISerializer& serializer);
-bool serialize(chacha8_iv &chacha8, common::StringView name, cn::ISerializer &serializer);
-bool serialize(KeyImage &keyImage, common::StringView name, cn::ISerializer &serializer);
-bool serialize(Signature& sig, common::StringView name, cn::ISerializer& serializer);
-bool serialize(EllipticCurveScalar& ecScalar, common::StringView name, cn::ISerializer& serializer);
-bool serialize(EllipticCurvePoint& ecPoint, common::StringView name, cn::ISerializer& serializer);
+bool serialize(PublicKey& pubKey, std::string_view name, cn::ISerializer& serializer);
+bool serialize(SecretKey& secKey, std::string_view name, cn::ISerializer& serializer);
+bool serialize(Hash& h, std::string_view name, cn::ISerializer& serializer);
+bool serialize(chacha8_iv &chacha8, std::string_view name, cn::ISerializer &serializer);
+bool serialize(KeyImage &keyImage, std::string_view name, cn::ISerializer &serializer);
+bool serialize(Signature& sig, std::string_view name, cn::ISerializer& serializer);
+bool serialize(EllipticCurveScalar& ecScalar, std::string_view name, cn::ISerializer& serializer);
+bool serialize(EllipticCurvePoint& ecPoint, std::string_view name, cn::ISerializer& serializer);
 
 }
 
