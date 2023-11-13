@@ -22,7 +22,7 @@ namespace {
 template <typename T>
 T readPod(common::IInputStream& s) {
   T v;
-  read(s, &v, sizeof(T));
+  read(s, reinterpret_cast<uint8_t*>(&v), sizeof(T));
   return v;
 }
 
@@ -78,7 +78,7 @@ std::string readString(common::IInputStream& s) {
   std::string str;
   str.resize(size);
   if (size) {
-    read(s, &str[0], size);
+    read(s, reinterpret_cast<uint8_t *>(&str[0]), size);
   }
   return str;
 }
@@ -91,7 +91,7 @@ void readName(common::IInputStream& s, std::string& name) {
   uint8_t len = readPod<uint8_t>(s);
   if (len) {
     name.resize(len);
-    read(s, &name[0], len);
+    read(s, reinterpret_cast<uint8_t *>(&name[0]), len);
   }
 }
 

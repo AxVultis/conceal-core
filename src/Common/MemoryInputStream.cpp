@@ -23,7 +23,7 @@ bool MemoryInputStream::endOfStream() const {
   return position == bufferSize;
 }
 
-size_t MemoryInputStream::readSome(void* data, size_t size) {
+size_t MemoryInputStream::readSome(uint8_t* data, size_t size) {
   assert(position <= bufferSize);
   size_t readSize = std::min(size, bufferSize - position);
 

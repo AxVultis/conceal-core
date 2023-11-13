@@ -8,13 +8,14 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace common {
 
 class IInputStream {
 public:
   virtual ~IInputStream() = default;
-  virtual size_t readSome(void* data, size_t size) = 0;
+  virtual size_t readSome(uint8_t* data, size_t size) = 0;
 };
 
 }

@@ -126,7 +126,7 @@ bool BinaryInputStreamSerializer::operator()(double& value, std::string_view nam
 }
 
 void BinaryInputStreamSerializer::checkedRead(char* buf, size_t size) {
-  read(stream, buf, size);
+  read(stream, reinterpret_cast<uint8_t *>(buf), size);
 }
 
 }

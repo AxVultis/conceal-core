@@ -12,35 +12,35 @@
 
 namespace common {
 
-void read(IInputStream& in, void* data, size_t size) {
+void read(IInputStream& in, uint8_t* data, size_t size) {
   while (size > 0) {
     size_t readSize = in.readSome(data, size);
     if (readSize == 0) {
       throw std::runtime_error("Reading from IInputStream failed");
     }
 
-    data = static_cast<uint8_t*>(data) + readSize;
+    data = data + readSize;
     size -= readSize;
   }
 }
 
 void read(IInputStream& in, int8_t& value) {
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, int16_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, int32_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, int64_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, uint8_t& value) {
@@ -49,17 +49,17 @@ void read(IInputStream& in, uint8_t& value) {
 
 void read(IInputStream& in, uint16_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, uint32_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, uint64_t& value) {
   // TODO: Convert from little endian on big endian platforms
-  read(in, &value, sizeof(value));
+  read(in, reinterpret_cast<uint8_t*>(&value), sizeof(value));
 }
 
 void read(IInputStream& in, std::vector<uint8_t>& data, size_t size) {
@@ -69,7 +69,7 @@ void read(IInputStream& in, std::vector<uint8_t>& data, size_t size) {
 
 void read(IInputStream& in, std::string& data, size_t size) {
   std::vector<char> temp(size);
-  read(in, temp.data(), size);
+  read(in, reinterpret_cast<uint8_t*>(temp.data()), size);
   data.assign(temp.data(), size);
 }
 

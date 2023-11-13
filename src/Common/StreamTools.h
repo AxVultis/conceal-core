@@ -16,7 +16,7 @@ namespace common {
 class IInputStream;
 class IOutputStream;
 
-void read(IInputStream& in, void* data, size_t size);
+void read(IInputStream& in, uint8_t* data, size_t size);
 void read(IInputStream& in, int8_t& value);
 void read(IInputStream& in, int16_t& value);
 void read(IInputStream& in, int32_t& value);
