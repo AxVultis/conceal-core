@@ -92,7 +92,7 @@ namespace cn
 
     if (size)
     {
-      s.binary(value.data(), size, "");
+      s.binary(reinterpret_cast<uint8_t*>(value.data()), size, "");
     }
 
     s.endArray();

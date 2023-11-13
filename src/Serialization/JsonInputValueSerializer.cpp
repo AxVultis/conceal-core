@@ -138,7 +138,7 @@ bool JsonInputValueSerializer::operator()(bool& value, std::string_view name) {
   return true;
 }
 
-bool JsonInputValueSerializer::binary(void* value, size_t size, std::string_view name) {
+bool JsonInputValueSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
   auto ptr = getValue(name);
   if (ptr == nullptr) {
     return false;

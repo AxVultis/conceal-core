@@ -110,8 +110,8 @@ bool BinaryInputStreamSerializer::operator()(std::string& value, std::string_vie
   return true;
 }
 
-bool BinaryInputStreamSerializer::binary(void* value, size_t size, std::string_view name) {
-  checkedRead(static_cast<char*>(value), size);
+bool BinaryInputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
+  checkedRead(reinterpret_cast<char*>(value), size);
   return true;
 }
 

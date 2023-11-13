@@ -118,7 +118,7 @@ void getVariantValue(cn::ISerializer& serializer, uint8_t tag, cn::TransactionOu
 
 template <typename T>
 bool serializePod(T& v, std::string_view name, cn::ISerializer& serializer) {
-  return serializer.binary(&v, sizeof(v), name);
+  return serializer.binary(reinterpret_cast<uint8_t*>(&v), sizeof(v), name);
 }
 
 bool serializeVarintVector(std::vector<uint32_t>& vector, cn::ISerializer& serializer, std::string_view name) {
@@ -316,7 +316,7 @@ void serializeBlockHeader(BlockHeader& header, ISerializer& serializer) {
   serializer(header.minorVersion, "minor_version");
   serializer(header.timestamp, "timestamp");
   serializer(header.previousBlockHash, "prev_id");
-  serializer.binary(&header.nonce, sizeof(header.nonce), "nonce");
+  serializer.binary(reinterpret_cast<uint8_t*>(&header.nonce), sizeof(header.nonce), "nonce");
 }
 
 void serialize(BlockHeader& header, ISerializer& serializer) {

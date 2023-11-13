@@ -36,7 +36,7 @@ public:
   bool operator()(double& value, std::string_view name) override;
   bool operator()(bool& value, std::string_view name) override;
   bool operator()(std::string& value, std::string_view name) override;
-  bool binary(void* value, size_t size, std::string_view name) override;
+  bool binary(uint8_t* value, size_t size, std::string_view name) override;
   bool binary(std::string& value, std::string_view name) override;
 
   template<typename T>

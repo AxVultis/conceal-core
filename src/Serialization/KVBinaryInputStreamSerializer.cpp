@@ -178,7 +178,7 @@ JsonValue parseBinary(common::IInputStream& stream) {
 KVBinaryInputStreamSerializer::KVBinaryInputStreamSerializer(common::IInputStream& strm) : JsonInputValueSerializer(parseBinary(strm)) {
 }
 
-bool KVBinaryInputStreamSerializer::binary(void* value, size_t size, std::string_view name) {
+bool KVBinaryInputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
   std::string str;
 
   if (!(*this)(str, name)) {

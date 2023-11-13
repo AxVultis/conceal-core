@@ -184,7 +184,7 @@ bool KVBinaryOutputStreamSerializer::operator()(std::string& value, std::string_
   return true;
 }
 
-bool KVBinaryOutputStreamSerializer::binary(void* value, size_t size, std::string_view name) {
+bool KVBinaryOutputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
   if (size > 0) {
     writeElementPrefix(BIN_KV_SERIALIZE_TYPE_STRING, name);
     auto& out = stream();
@@ -195,7 +195,7 @@ bool KVBinaryOutputStreamSerializer::binary(void* value, size_t size, std::strin
 }
 
 bool KVBinaryOutputStreamSerializer::binary(std::string& value, std::string_view name) {
-  return binary(const_cast<char*>(value.data()), value.size(), name);
+  return binary(reinterpret_cast<uint8_t*>(value.data()), value.size(), name);
 }
 
 void KVBinaryOutputStreamSerializer::writeElementPrefix(uint8_t type, std::string_view name) {  

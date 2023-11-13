@@ -41,7 +41,7 @@ public:
   virtual bool operator()(std::string& value, std::string_view name) = 0;
   
   // read/write binary block
-  virtual bool binary(void* value, size_t size, std::string_view name) = 0;
+  virtual bool binary(uint8_t* value, size_t size, std::string_view name) = 0;
   virtual bool binary(std::string& value, std::string_view name) = 0;
 
   template<typename T>

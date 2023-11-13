@@ -121,11 +121,11 @@ bool JsonOutputStreamSerializer::operator()(bool& value, std::string_view name) 
   return true;
 }
 
-bool JsonOutputStreamSerializer::binary(void* value, size_t size, std::string_view name) {
+bool JsonOutputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
   std::string hex = common::toHex(value, size);
   return (*this)(hex, name);
 }
 
 bool JsonOutputStreamSerializer::binary(std::string& value, std::string_view name) {
-  return binary(const_cast<char*>(value.data()), value.size(), name);
+  return binary(reinterpret_cast<uint8_t*>(value.data()), value.size(), name);
 }

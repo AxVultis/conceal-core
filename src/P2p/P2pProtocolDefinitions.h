@@ -24,7 +24,7 @@ namespace cn
 {
   const std::string PING_OK_RESPONSE_STATUS_TEXT = "OK";
   inline bool serialize(uuid& v, std::string_view name, ISerializer& s) {
-    return s.binary(&v, sizeof(v), name);
+    return s.binary(reinterpret_cast<uint8_t*>(&v), sizeof(v), name);
   }
 
   struct network_config
