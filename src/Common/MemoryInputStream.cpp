@@ -12,8 +12,11 @@
 
 namespace common {
 
-MemoryInputStream::MemoryInputStream(const void* buffer, size_t bufferSize) : 
-buffer(static_cast<const char*>(buffer)), bufferSize(bufferSize), position(0) {}
+MemoryInputStream::MemoryInputStream(const char* buffer, size_t bufferSize) : 
+buffer(buffer), bufferSize(bufferSize) {}
+
+MemoryInputStream::MemoryInputStream(const uint8_t* buffer, size_t bufferSize) : 
+buffer(reinterpret_cast<const char*>(buffer)), bufferSize(bufferSize) {}
 
 size_t MemoryInputStream::getPosition() const {
   return position;
