@@ -98,7 +98,7 @@ bool BinaryOutputStreamSerializer::operator()(double& value, std::string_view na
 }
 
 void BinaryOutputStreamSerializer::checkedWrite(const char* buf, size_t size) {
-  write(stream, buf, size);
+  write(stream, reinterpret_cast<const uint8_t*>(buf), size);
 }
 
 }

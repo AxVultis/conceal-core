@@ -19,14 +19,14 @@ namespace {
 
 template <typename T>
 void writePod(IOutputStream& s, const T& value) {
-  write(s, &value, sizeof(T));
+  write(s, reinterpret_cast<const uint8_t*>(&value), sizeof(T));
 }
 
 template<class T>
 size_t packVarint(IOutputStream& s, uint8_t type_or, size_t pv) {
   auto v = static_cast<T>(pv << 2);
   v |= type_or;
-  write(s, &v, sizeof(T));
+  write(s, reinterpret_cast<const uint8_t*>(&v), sizeof(T));
   return sizeof(T);
 }
 
@@ -37,7 +37,7 @@ void writeElementName(IOutputStream& s, std::string_view name) {
 
   auto len = static_cast<uint8_t>(name.size());
   write(s, &len, sizeof(len));
-  write(s, name.data(), len);
+  write(s, reinterpret_cast<const uint8_t*>(name.data()), len);
 }
 
 size_t writeArraySize(IOutputStream& s, size_t val) {
@@ -72,7 +72,7 @@ void KVBinaryOutputStreamSerializer::dump(IOutputStream& target) {
   hdr.m_signature_b = PORTABLE_STORAGE_SIGNATUREB;
   hdr.m_ver = PORTABLE_STORAGE_FORMAT_VER;
 
-  common::write(target, &hdr, sizeof(hdr));
+  common::write(target, reinterpret_cast<const uint8_t*>(&hdr), sizeof(hdr));
   writeArraySize(target, m_stack.front().count);
   write(target, stream().data(), stream().size());
 }
@@ -180,7 +180,7 @@ bool KVBinaryOutputStreamSerializer::operator()(std::string& value, std::string_
 
   auto& out = stream();
   writeArraySize(out, value.size());
-  write(out, value.data(), value.size());
+  write(out, reinterpret_cast<const uint8_t*>(value.data()), value.size());
   return true;
 }
 
@@ -189,7 +189,7 @@ bool KVBinaryOutputStreamSerializer::binary(void* value, size_t size, std::strin
     writeElementPrefix(BIN_KV_SERIALIZE_TYPE_STRING, name);
     auto& out = stream();
     writeArraySize(out, size);
-    write(out, value, size);
+    write(out, reinterpret_cast<const uint8_t*>(value), size);
   }
   return true;
 }
@@ -224,7 +224,7 @@ void KVBinaryOutputStreamSerializer::checkArrayPreamble(uint8_t type) {
   if (level.state == State::ArrayPrefix) {
     auto& s = stream();
     writeElementName(s, level.name);
-    char c = BIN_KV_SERIALIZE_FLAG_ARRAY | type;
+    uint8_t c = BIN_KV_SERIALIZE_FLAG_ARRAY | type;
     write(s, &c, 1);
     writeArraySize(s, level.count);
     level.state = State::Array;

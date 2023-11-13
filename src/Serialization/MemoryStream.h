@@ -20,7 +20,7 @@ public:
 
   MemoryStream() = default;
 
-  size_t writeSome(const void* data, size_t size) override {
+  size_t writeSome(const uint8_t* data, size_t size) override {
     if (size == 0) {
       return 0;
     }

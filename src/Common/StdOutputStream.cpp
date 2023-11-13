@@ -12,8 +12,8 @@ namespace common {
 StdOutputStream::StdOutputStream(std::ostream& out) : out(out) {
 }
 
-size_t StdOutputStream::writeSome(const void* data, size_t size) {
-  out.write(static_cast<const char*>(data), size);
+size_t StdOutputStream::writeSome(const uint8_t* data, size_t size) {
+  out.write(reinterpret_cast<const char*>(data), size);
   if (out.bad()) {
     return 0;
   }

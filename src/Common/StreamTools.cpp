@@ -161,35 +161,35 @@ void readVarint(IInputStream& in, uint64_t& value) {
   value = temp;
 }
 
-void write(IOutputStream& out, const void* data, size_t size) {
+void write(IOutputStream& out, const uint8_t* data, size_t size) {
   while (size > 0) {
     size_t writtenSize = out.writeSome(data, size);
     if (writtenSize == 0) {
       throw std::runtime_error("IOutputStream could not be written to");
     }
 
-    data = static_cast<const uint8_t*>(data) + writtenSize;
+    data = data + writtenSize;
     size -= writtenSize;
   }
 }
 
 void write(IOutputStream& out, int8_t value) {
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, int16_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, int32_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, int64_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, uint8_t value) {
@@ -198,17 +198,17 @@ void write(IOutputStream& out, uint8_t value) {
 
 void write(IOutputStream& out, uint16_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, uint32_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, uint64_t value) {
   // TODO: Convert to little endian on big endian platforms
-  write(out, &value, sizeof(value));
+  write(out, reinterpret_cast<const uint8_t*>(&value), sizeof(value));
 }
 
 void write(IOutputStream& out, const std::vector<uint8_t>& data) {
@@ -216,7 +216,7 @@ void write(IOutputStream& out, const std::vector<uint8_t>& data) {
 }
 
 void write(IOutputStream& out, const std::string& data) {
-  write(out, data.data(), data.size());
+  write(out, reinterpret_cast<const uint8_t*>(data.data()), data.size());
 }
 
 void writeVarint(IOutputStream& out, uint32_t value) {

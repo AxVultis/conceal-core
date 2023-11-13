@@ -16,7 +16,7 @@ class StdOutputStream : public IOutputStream {
 public:
   explicit StdOutputStream(std::ostream& out);
   StdOutputStream& operator=(const StdOutputStream&) = delete;
-  size_t writeSome(const void* data, size_t size) override;
+  size_t writeSome(const uint8_t* data, size_t size) override;
 
 private:
   std::ostream& out;
