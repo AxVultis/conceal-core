@@ -1309,17 +1309,17 @@ bool RpcServer::on_getblockcount(const COMMAND_RPC_GETBLOCKCOUNT::request&, COMM
 }
 
 namespace {
-  uint64_t slow_memmem(void* start_buff, size_t buflen, void* pat, size_t patlen)
+  uint64_t slow_memmem(uint8_t* start_buff, size_t buflen, const uint8_t* pat, size_t patlen)
   {
-    void* buf = start_buff;
-    void* end = (char*)buf + buflen - patlen;
-    while ((buf = memchr(buf, ((char*)pat)[0], buflen)))
+    uint8_t* buf = start_buff;
+    const uint8_t* end = buf + buflen - patlen;
+    while ((buf = static_cast<uint8_t*>(memchr(buf, pat[0], buflen))))
     {
       if (buf>end)
         return 0;
       if (memcmp(buf, pat, patlen) == 0)
-        return (char*)buf - (char*)start_buff;
-      buf = (char*)buf + 1;
+        return static_cast<uint64_t>(buf - start_buff);
+      buf = buf + 1;
     }
     return 0;
   }
@@ -1352,7 +1352,7 @@ bool RpcServer::on_getblocktemplate(const COMMAND_RPC_GETBLOCKTEMPLATE::request&
   }
 
   if (0 < req.reserve_size) {
-    res.reserved_offset = slow_memmem((void*)block_blob.data(), block_blob.size(), &tx_pub_key, sizeof(tx_pub_key));
+    res.reserved_offset = slow_memmem(block_blob.data(), block_blob.size(), reinterpret_cast<uint8_t*>(&tx_pub_key), sizeof(tx_pub_key));
     if (!res.reserved_offset) {
       logger(ERROR) << "Failed to find tx pub key in blockblob";
       throw JsonRpc::JsonRpcError{ CORE_RPC_ERROR_CODE_INTERNAL_ERROR, "Internal error: failed to create block template" };
