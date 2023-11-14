@@ -853,8 +853,7 @@ bool RpcServer::setFeeAddress(const std::string& fee_address, const AccountPubli
 
 bool RpcServer::setViewKey(const std::string& view_key) {
   crypto::Hash private_view_key_hash;
-  size_t size;
-  if (!common::fromHex(view_key, &private_view_key_hash, sizeof(private_view_key_hash), size) || size != sizeof(private_view_key_hash)) {
+  if (!common::podFromHex(view_key, private_view_key_hash)) {
     logger(INFO) << "Could not parse private view key";
     return false;
   }

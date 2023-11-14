@@ -14,31 +14,31 @@
 
 namespace common {
 
-std::string asString(const void* data, size_t size); // Does not throw
+std::string asString(const uint8_t* data, size_t size); // Does not throw
 std::string asString(const std::vector<uint8_t>& data); // Does not throw
 std::vector<uint8_t> asBinaryArray(const std::string& data);
 
 uint8_t fromHex(char character); // Returns value of hex 'character', throws on error
 bool fromHex(char character, uint8_t& value); // Assigns value of hex 'character' to 'value', returns false on error, does not throw
-size_t fromHex(const std::string& text, void* data, size_t bufferSize); // Assigns values of hex 'text' to buffer 'data' up to 'bufferSize', returns actual data size, throws on error
-bool fromHex(const std::string& text, void* data, size_t bufferSize, size_t& size); // Assigns values of hex 'text' to buffer 'data' up to 'bufferSize', assigns actual data size to 'size', returns false on error, does not throw
+size_t fromHex(const std::string& text, uint8_t* data, size_t bufferSize); // Assigns values of hex 'text' to buffer 'data' up to 'bufferSize', returns actual data size, throws on error
+bool fromHex(const std::string& text, uint8_t* data, size_t bufferSize, size_t& size); // Assigns values of hex 'text' to buffer 'data' up to 'bufferSize', assigns actual data size to 'size', returns false on error, does not throw
 std::vector<uint8_t> fromHex(const std::string& text); // Returns values of hex 'text', throws on error
 bool fromHex(const std::string& text, std::vector<uint8_t>& data); // Appends values of hex 'text' to 'data', returns false on error, does not throw
 
 template <typename T>
 bool podFromHex(const std::string& text, T& val) {
   size_t outSize;
-  return fromHex(text, &val, sizeof(val), outSize) && outSize == sizeof(val);
+  return fromHex(text, reinterpret_cast<uint8_t*>(&val), sizeof(val), outSize) && outSize == sizeof(val);
 }
 
-std::string toHex(const void* data, size_t size); // Returns hex representation of ('data', 'size'), does not throw
-void toHex(const void* data, size_t size, std::string& text); // Appends hex representation of ('data', 'size') to 'text', does not throw
+std::string toHex(const uint8_t* data, size_t size); // Returns hex representation of ('data', 'size'), does not throw
+void toHex(const uint8_t* data, size_t size, std::string& text); // Appends hex representation of ('data', 'size') to 'text', does not throw
 std::string toHex(const std::vector<uint8_t>& data); // Returns hex representation of 'data', does not throw
 void toHex(const std::vector<uint8_t>& data, std::string& text); // Appends hex representation of 'data' to 'text', does not throw
 
 template<class T>
 std::string podToHex(const T& s) {
-  return toHex(&s, sizeof(s));
+  return toHex(reinterpret_cast<const uint8_t*>(&s), sizeof(s));
 }
 
 std::string extract(std::string& text, char delimiter); // Does not throw

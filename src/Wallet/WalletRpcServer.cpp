@@ -248,8 +248,7 @@ bool wallet_rpc_server::on_get_tx_proof(const wallet_rpc::COMMAND_RPC_GET_TX_PRO
 
 	if (!req.tx_key.empty()) {
 		crypto::Hash tx_key_hash;
-		size_t size;
-		if (!common::fromHex(req.tx_key, &tx_key_hash, sizeof(tx_key_hash), size) || size != sizeof(tx_key_hash)) {
+		if (!common::podFromHex(req.tx_key, tx_key_hash)) {
 			throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR, std::string("Failed to parse tx_key"));
 		}
 		tx_key2 = *(struct crypto::SecretKey *) &tx_key_hash;

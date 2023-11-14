@@ -133,7 +133,7 @@ public:
       m_transfers.push_back(transactionHash);
 
       auto key = object->getAddress().spendPublicKey;
-      std::string address = common::toHex(&key, sizeof(key));
+      std::string address = common::podToHex(key);
       LOG_DEBUG("Transfer to " + address);
     }
     m_cv.notify_all();
