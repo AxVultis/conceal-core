@@ -443,11 +443,9 @@ namespace payment_service
   {
     logging::LoggerRef log(logger, "generateNewWallet");
 
-    cn::INode *nodeStub = NodeFactory::createNodeStub();
-    std::unique_ptr<cn::INode> nodeGuard(nodeStub);
+    std::unique_ptr<cn::INode> nodeStub(NodeFactory::createNodeStub());
 
-    cn::IWallet *wallet = new cn::WalletGreen(dispatcher, currency, *nodeStub, logger);
-    std::unique_ptr<cn::IWallet> walletGuard(wallet);
+    auto wallet = std::make_unique<cn::WalletGreen>(dispatcher, currency, *nodeStub, logger);
 
     std::string address;
 

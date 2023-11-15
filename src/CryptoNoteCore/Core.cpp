@@ -1099,7 +1099,7 @@ std::unique_ptr<IBlock> Core::getBlock(const crypto::Hash& blockId) {
   std::lock_guard<decltype(m_mempool)> lk(m_mempool);
   LockedBlockchainStorage lbs(m_blockchain);
 
-  std::unique_ptr<BlockWithTransactions> blockPtr(new BlockWithTransactions());
+  auto blockPtr = std::make_unique<BlockWithTransactions>();
   if (!lbs->getBlockByHash(blockId, blockPtr->block)) {
     logger(DEBUGGING) << "Can't find block: " << blockId;
     return std::unique_ptr<BlockWithTransactions>(nullptr);

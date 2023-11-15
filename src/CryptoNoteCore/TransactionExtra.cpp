@@ -371,7 +371,7 @@ namespace cn
   bool tx_extra_message::encrypt(size_t index, const std::string &message, const AccountPublicAddress *recipient, const KeyPair &txkey)
   {
     size_t mlen = message.size();
-    std::unique_ptr<char[]> buf(new char[mlen + TX_EXTRA_MESSAGE_CHECKSUM_SIZE]);
+    auto buf = std::make_unique<char[]>(mlen + TX_EXTRA_MESSAGE_CHECKSUM_SIZE);
     memcpy(buf.get(), message.data(), mlen);
     memset(buf.get() + mlen, 0, TX_EXTRA_MESSAGE_CHECKSUM_SIZE);
     mlen += TX_EXTRA_MESSAGE_CHECKSUM_SIZE;
@@ -400,10 +400,9 @@ namespace cn
       return false;
     }
     const char *buf;
-    std::unique_ptr<char[]> ptr;
     if (recepient_secret_key != nullptr)
     {
-      ptr.reset(new char[mlen]);
+      auto ptr = std::make_unique<char[]>(mlen);
       assert(ptr);
       message_key_data key_data;
       if (!generate_key_derivation(txkey, *recepient_secret_key, key_data.derivation))
