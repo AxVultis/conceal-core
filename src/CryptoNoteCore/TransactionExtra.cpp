@@ -400,9 +400,9 @@ namespace cn
       return false;
     }
     const char *buf;
+    auto ptr = std::make_unique<char[]>(mlen);
     if (recepient_secret_key != nullptr)
     {
-      auto ptr = std::make_unique<char[]>(mlen);
       assert(ptr);
       message_key_data key_data;
       if (!generate_key_derivation(txkey, *recepient_secret_key, key_data.derivation))
