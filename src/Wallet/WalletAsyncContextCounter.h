@@ -16,7 +16,7 @@ namespace cn {
 class WalletAsyncContextCounter
 {
 public:
-  WalletAsyncContextCounter() : m_asyncContexts(0) {}
+  WalletAsyncContextCounter() = default;
 
   void addAsyncContext();
   void delAsyncContext();
@@ -25,7 +25,7 @@ public:
   void waitAsyncContextsFinish();
 
 private:
-  uint32_t m_asyncContexts;
+  uint32_t m_asyncContexts = 0;
   std::condition_variable m_cv;
   std::mutex m_mutex;
 };

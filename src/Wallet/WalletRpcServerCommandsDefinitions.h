@@ -19,27 +19,27 @@ namespace wallet_rpc
 
 using cn::ISerializer;
 
-#define WALLET_RPC_STATUS_OK      "OK"
-#define WALLET_RPC_STATUS_BUSY    "BUSY"
+const std::string WALLET_RPC_STATUS_OK = "OK";
+const std::string WALLET_RPC_STATUS_BUSY = "BUSY";
 
-  struct COMMAND_RPC_GET_BALANCE
+struct COMMAND_RPC_GET_BALANCE
+{
+  using request = cn::EMPTY_STRUCT;
+
+  struct response
   {
-    typedef cn::EMPTY_STRUCT request;
+    uint64_t locked_amount;
+    uint64_t available_balance;
+    uint64_t balance;          //<! \deprecated Use locked_amount + available_balance
+    uint64_t unlocked_balance; //<! \deprecated Use available_balance
 
-    struct response
-    {
-      uint64_t locked_amount;
-      uint64_t available_balance;
-      uint64_t balance;            //<! \deprecated Use locked_amount + available_balance
-      uint64_t unlocked_balance;   //<! \deprecated Use available_balance
-
-      void serialize(ISerializer& s) {
-        KV_MEMBER(locked_amount)
-        KV_MEMBER(available_balance)
-        KV_MEMBER(balance)
-        KV_MEMBER(unlocked_balance)
-      }
-    };
+    void serialize(ISerializer& s) {
+      KV_MEMBER(locked_amount)
+      KV_MEMBER(available_balance)
+      KV_MEMBER(balance)
+      KV_MEMBER(unlocked_balance)
+    }
+  };
   };
 
   struct transfer_destination
@@ -102,8 +102,8 @@ using cn::ISerializer;
 
   struct COMMAND_RPC_STORE
   {
-    typedef cn::EMPTY_STRUCT request;
-    typedef cn::EMPTY_STRUCT response;
+    using request = cn::EMPTY_STRUCT;
+    using response = cn::EMPTY_STRUCT;
   };
 
   struct transaction_messages {
@@ -114,11 +114,11 @@ using cn::ISerializer;
     std::list<std::string> messages;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(tx_hash);
-      KV_MEMBER(tx_id);
-      KV_MEMBER(block_height);
-      KV_MEMBER(timestamp);
-      KV_MEMBER(messages);
+      KV_MEMBER(tx_hash)
+      KV_MEMBER(tx_id)
+      KV_MEMBER(block_height)
+      KV_MEMBER(timestamp)
+      KV_MEMBER(messages)
     }
   };
 
@@ -153,8 +153,8 @@ using cn::ISerializer;
       uint32_t tx_limit = std::numeric_limits<uint32_t>::max();
 
       void serialize(ISerializer& s) {
-        KV_MEMBER(first_tx_id);
-        KV_MEMBER(tx_limit);
+        KV_MEMBER(first_tx_id)
+        KV_MEMBER(tx_limit)
       }
     };
 
@@ -163,8 +163,8 @@ using cn::ISerializer;
       std::list<transaction_messages> tx_messages;
 
       void serialize(ISerializer& s) {
-        KV_MEMBER(total_tx_count);
-        KV_MEMBER(tx_messages);
+        KV_MEMBER(total_tx_count)
+        KV_MEMBER(tx_messages)
       }
     };
   };
@@ -230,7 +230,7 @@ using cn::ISerializer;
   };
 
   struct COMMAND_RPC_GET_TRANSFERS {
-    typedef cn::EMPTY_STRUCT request;
+    using request = cn::EMPTY_STRUCT;
 
     struct response {
       std::list<Transfer> transfers;
@@ -242,7 +242,7 @@ using cn::ISerializer;
   };
 
   struct COMMAND_RPC_GET_HEIGHT {
-    typedef cn::EMPTY_STRUCT request;
+    using request = cn::EMPTY_STRUCT;
 
     struct response {
       uint64_t height;
@@ -255,7 +255,7 @@ using cn::ISerializer;
 
   struct COMMAND_RPC_GET_OUTPUTS
   {
-    typedef cn::EMPTY_STRUCT request;
+    using request = cn::EMPTY_STRUCT;
 
     struct response
     {
@@ -269,7 +269,7 @@ using cn::ISerializer;
 
   struct COMMAND_RPC_OPTIMIZE
   {
-    typedef cn::EMPTY_STRUCT request;
+    using request = cn::EMPTY_STRUCT;
 
     struct response
     {
@@ -306,8 +306,8 @@ using cn::ISerializer;
   };
 
   struct COMMAND_RPC_RESET {
-    typedef cn::EMPTY_STRUCT request;
-    typedef cn::EMPTY_STRUCT response;
+    using request = cn::EMPTY_STRUCT;
+    using response = cn::EMPTY_STRUCT;
   };
 
 	struct COMMAND_RPC_GET_TX_PROOF
@@ -320,9 +320,9 @@ using cn::ISerializer;
 
 			void serialize(ISerializer& s)
 			{
-				KV_MEMBER(tx_hash);
-				KV_MEMBER(dest_address);
-				KV_MEMBER(tx_key);
+				KV_MEMBER(tx_hash)
+				KV_MEMBER(dest_address)
+				KV_MEMBER(tx_key)
 			}
 		};
 
@@ -332,7 +332,7 @@ using cn::ISerializer;
 
 			void serialize(ISerializer& s)
 			{
-				KV_MEMBER(signature);
+				KV_MEMBER(signature)
 			}
 		};
 	};
@@ -346,8 +346,8 @@ using cn::ISerializer;
 
 			void serialize(ISerializer& s)
 			{
-				KV_MEMBER(amount);
-				KV_MEMBER(message);
+				KV_MEMBER(amount)
+				KV_MEMBER(message)
 			}
 		};
 
@@ -357,7 +357,7 @@ using cn::ISerializer;
 
 			void serialize(ISerializer& s)
 			{
-				KV_MEMBER(signature);
+				KV_MEMBER(signature)
 			}
 		};
 	};

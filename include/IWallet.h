@@ -182,7 +182,7 @@ struct PaymentIdTransactions
   std::vector<WalletTransaction> transactions;
 };
 
-class TransactionOutputInformation;
+struct TransactionOutputInformation;
 class IBlockchainSynchronizerObserver;
 
 class IWalletObserver

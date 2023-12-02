@@ -22,7 +22,7 @@ namespace tools
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class wallet_rpc_server : cn::HttpServer
+  class wallet_rpc_server : public cn::HttpServer
   {
   public:
 
@@ -48,7 +48,7 @@ namespace tools
 
   private:
 
-    virtual void processRequest(const cn::HttpRequest& request, cn::HttpResponse& response) override;
+    void processRequest(const cn::HttpRequest& request, cn::HttpResponse& response) override;
 
     //json_rpc
     bool on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE::request& req, wallet_rpc::COMMAND_RPC_GET_BALANCE::response& res);

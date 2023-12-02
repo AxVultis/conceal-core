@@ -79,15 +79,15 @@ struct EncryptedWalletRecord {
     {
     };
 
-    typedef boost::multi_index_container<
-        WalletRecord,
-        boost::multi_index::indexed_by<
-            boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
-            boost::multi_index::hashed_unique<boost::multi_index::tag<KeysIndex>,
-                                              BOOST_MULTI_INDEX_MEMBER(WalletRecord, crypto::PublicKey, spendPublicKey)>,
-            boost::multi_index::hashed_unique<boost::multi_index::tag<TransfersContainerIndex>,
-                                              BOOST_MULTI_INDEX_MEMBER(WalletRecord, cn::ITransfersContainer *, container)>>>
-        WalletsContainer;
+    using WalletsContainer =
+        boost::multi_index_container<
+            WalletRecord,
+            boost::multi_index::indexed_by<
+                boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
+                boost::multi_index::hashed_unique<boost::multi_index::tag<KeysIndex>,
+                                                  boost::multi_index::member<WalletRecord, crypto::PublicKey, &cn::WalletRecord::spendPublicKey>>,
+                boost::multi_index::hashed_unique<boost::multi_index::tag<TransfersContainerIndex>,
+                                                  boost::multi_index::member<WalletRecord, cn::ITransfersContainer *, &cn::WalletRecord::container>>>>;
 
     struct UnlockTransactionJob
     {
@@ -96,51 +96,51 @@ struct EncryptedWalletRecord {
         crypto::Hash transactionHash;
     };
 
-    typedef boost::multi_index_container<
-        UnlockTransactionJob,
-        boost::multi_index::indexed_by<
-            boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
-                                                   BOOST_MULTI_INDEX_MEMBER(UnlockTransactionJob, uint32_t, blockHeight)>,
-            boost::multi_index::hashed_non_unique<boost::multi_index::tag<TransactionHashIndex>,
-                                                  BOOST_MULTI_INDEX_MEMBER(UnlockTransactionJob, crypto::Hash, transactionHash)>>>
-        UnlockTransactionJobs;
+    using UnlockTransactionJobs =
+        boost::multi_index_container<
+            UnlockTransactionJob,
+            boost::multi_index::indexed_by<
+                boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
+                                                       boost::multi_index::member<UnlockTransactionJob, uint32_t, &cn::UnlockTransactionJob::blockHeight>>,
+                boost::multi_index::hashed_non_unique<boost::multi_index::tag<TransactionHashIndex>,
+                                                      boost::multi_index::member<UnlockTransactionJob, crypto::Hash, &cn::UnlockTransactionJob::transactionHash>>>>;
 
-    typedef boost::multi_index_container<
-        cn::Deposit,
-        boost::multi_index::indexed_by<
-            boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
-            boost::multi_index::hashed_unique<boost::multi_index::tag<TransactionIndex>,
-                                              boost::multi_index::member<cn::Deposit, crypto::Hash, &cn::Deposit::transactionHash>>,
-            boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
-                                                   boost::multi_index::member<cn::Deposit, uint64_t, &cn::Deposit::height>>>>
-         WalletDeposits;
+    using WalletDeposits =
+        boost::multi_index_container<
+            cn::Deposit,
+            boost::multi_index::indexed_by<
+                boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
+                boost::multi_index::hashed_unique<boost::multi_index::tag<TransactionIndex>,
+                                                  boost::multi_index::member<cn::Deposit, crypto::Hash, &cn::Deposit::transactionHash>>,
+                boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
+                                                       boost::multi_index::member<cn::Deposit, uint64_t, &cn::Deposit::height>>>>;
 
-    typedef boost::multi_index_container<
-        cn::WalletTransaction,
-        boost::multi_index::indexed_by<
-            boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
-            boost::multi_index::hashed_unique<boost::multi_index::tag<TransactionIndex>,
-                                              boost::multi_index::member<cn::WalletTransaction, crypto::Hash, &cn::WalletTransaction::hash>>,
-            boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
-                                                   boost::multi_index::member<cn::WalletTransaction, uint32_t, &cn::WalletTransaction::blockHeight>>>>
-        WalletTransactions;
-        
-    typedef common::FileMappedVector<EncryptedWalletRecord> ContainerStorage;
-    typedef std::pair<size_t, cn::WalletTransfer> TransactionTransferPair;
-    typedef std::vector<TransactionTransferPair> WalletTransfers;
+    using WalletTransactions =
+        boost::multi_index_container<
+            cn::WalletTransaction,
+            boost::multi_index::indexed_by<
+                boost::multi_index::random_access<boost::multi_index::tag<RandomAccessIndex>>,
+                boost::multi_index::hashed_unique<boost::multi_index::tag<TransactionIndex>,
+                                                  boost::multi_index::member<cn::WalletTransaction, crypto::Hash, &cn::WalletTransaction::hash>>,
+                boost::multi_index::ordered_non_unique<boost::multi_index::tag<BlockHeightIndex>,
+                                                       boost::multi_index::member<cn::WalletTransaction, uint32_t, &cn::WalletTransaction::blockHeight>>>>;
 
-    typedef std::map<size_t, cn::Transaction> UncommitedTransactions;
+    using ContainerStorage = common::FileMappedVector<EncryptedWalletRecord>;
+    using TransactionTransferPair = std::pair<size_t, cn::WalletTransfer>;
+    using WalletTransfers = std::vector<TransactionTransferPair>;
 
-    typedef boost::multi_index_container<
-        crypto::Hash,
-        boost::multi_index::indexed_by<
-            boost::multi_index::random_access<
-                boost::multi_index::tag<BlockHeightIndex>>,
-            boost::multi_index::hashed_unique<
-                boost::multi_index::tag<BlockHashIndex>,
-                boost::multi_index::identity<crypto::Hash>>>>
-        BlockHashesContainer;
-    
+    using UncommitedTransactions = std::map<size_t, cn::Transaction>;
+
+    using BlockHashesContainer =
+        boost::multi_index_container<
+            crypto::Hash,
+            boost::multi_index::indexed_by<
+                boost::multi_index::random_access<
+                    boost::multi_index::tag<BlockHeightIndex>>,
+                boost::multi_index::hashed_unique<
+                    boost::multi_index::tag<BlockHashIndex>,
+                    boost::multi_index::identity<crypto::Hash>>>>;
+
     using WalletPaymentIds = std::unordered_map<crypto::Hash, std::vector<size_t>, boost::hash<crypto::Hash>>;
 
 } // namespace cn
