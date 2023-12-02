@@ -13,6 +13,7 @@
 #include <string>
 #include <thread>
 #include <unordered_set>
+#include <future>
 
 #include "Common/ObserverManager.h"
 #include "INode.h"
@@ -33,6 +34,34 @@ public:
   virtual void connectionStatusUpdated(bool connected) {}
 };
 
+class NodeInitObserver
+{
+public:
+  NodeInitObserver()
+  {
+    initFuture = initPromise.get_future();
+  }
+
+  void initCompleted(std::error_code result)
+  {
+    initPromise.set_value(result);
+  }
+
+  void waitForInitEnd()
+  {
+    std::error_code ec = initFuture.get();
+    if (ec)
+    {
+      throw std::system_error(ec);
+    }
+    return;
+  }
+
+private:
+  std::promise<std::error_code> initPromise;
+  std::future<std::error_code> initFuture;
+};
+
 class NodeRpcProxy : public cn::INode {
 public:
   NodeRpcProxy(const std::string& nodeHost, unsigned short nodePort);
@@ -41,8 +70,8 @@ public:
   bool addObserver(cn::INodeObserver* observer) override;
   bool removeObserver(cn::INodeObserver* observer) override;
 
-  bool addObserver(cn::INodeRpcProxyObserver* observer);
-  bool removeObserver(cn::INodeRpcProxyObserver* observer);
+  virtual bool addObserver(cn::INodeRpcProxyObserver* observer);
+  virtual bool removeObserver(cn::INodeRpcProxyObserver* observer);
 
   void init(const Callback& callback) override;
   bool shutdown() override;
@@ -101,13 +130,13 @@ private:
   void getTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction, const Callback &callback) override;
   std::error_code doGetTransaction(const crypto::Hash &transactionHash, cn::Transaction &transaction);
 
-  void scheduleRequest(std::function<std::error_code()>&& procedure, const Callback& callback);
-template <typename Request, typename Response>
-  std::error_code binaryCommand(const std::string& url, const Request& req, Response& res);
+  void scheduleRequest(std::function<std::error_code()> &&procedure, const Callback &callback);
   template <typename Request, typename Response>
-  std::error_code jsonCommand(const std::string& url, const Request& req, Response& res);
+  std::error_code binaryCommand(const std::string &url, const Request &req, Response &res);
   template <typename Request, typename Response>
-  std::error_code jsonRpcCommand(const std::string& method, const Request& req, Response& res);
+  std::error_code jsonCommand(const std::string &url, const Request &req, Response &res);
+  template <typename Request, typename Response>
+  std::error_code jsonRpcCommand(const std::string &method, const Request &req, Response &res);
 
   enum State {
     STATE_NOT_INITIALIZED,
