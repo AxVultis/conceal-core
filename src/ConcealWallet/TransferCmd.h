@@ -15,7 +15,7 @@ using namespace logging;
 
 namespace cn
 {
-  class transfer_cmd
+  class TransferCmd
   {
     public:
       const cn::Currency& m_currency;
@@ -28,7 +28,7 @@ namespace cn
       uint64_t ttl = 0;
       std::string m_remote_address;
 
-      transfer_cmd(const cn::Currency& currency, const std::string& remote_fee_address);
+      TransferCmd(const cn::Currency& currency, const std::string& remote_fee_address);
 
       bool parseTx(const LoggerRef& logger, const std::vector<std::string> &args);
   };

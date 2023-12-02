@@ -163,14 +163,14 @@ namespace
   }
 
   template <typename Validator, typename TimeProvider>
-  class TestPool : public tx_memory_pool {
+  class TestPool : public TransactionPool {
   public:
 
     Validator validator;
     TimeProvider timeProvider;
 
     TestPool(const cn::Currency& currency, logging::ILogger& logger) :
-      tx_memory_pool(currency, validator, timeProvider, logger) {}
+      TransactionPool(currency, validator, timeProvider, logger) {}
   };
 
   class TxTestBase {
@@ -192,7 +192,7 @@ namespace
     cn::RealTimeProvider m_time;
     TestTransactionGenerator txGenerator;
     TransactionValidator validator;
-    tx_memory_pool pool;
+    TransactionPool pool;
   };
 
   void InitBlock(Block& bl, uint8_t majorVersion = BLOCK_MAJOR_VERSION_1) {
@@ -537,7 +537,7 @@ TEST_F(tx_pool, RecentlyDeletedTransactionCanBeAddedToTxPoolIfItIsReceivedInBloc
 TEST_F(tx_pool, OldTransactionIsDeletedDuringTxPoolInitialization) {
   TransactionValidator validator;
   FakeTimeProvider timeProvider;
-  std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+  std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   uint64_t startTime = timeProvider.now();
@@ -555,7 +555,7 @@ TEST_F(tx_pool, OldTransactionIsDeletedDuringTxPoolInitialization) {
   uint64_t deleteTime = startTime + currency.mempoolTxLiveTime() + 1;
   timeProvider.timeNow = deleteTime;
 
-  pool.reset(new tx_memory_pool(currency, validator, timeProvider, logger));
+  pool.reset(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
   ASSERT_EQ(0, pool->get_transactions_count());
 }
@@ -563,7 +563,7 @@ TEST_F(tx_pool, OldTransactionIsDeletedDuringTxPoolInitialization) {
 TEST_F(tx_pool, TransactionThatWasDeletedLongAgoIsForgottenDuringTxPoolInitialization) {
   TransactionValidator validator;
   FakeTimeProvider timeProvider;
-  std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+  std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   uint64_t startTime = timeProvider.now();
@@ -586,7 +586,7 @@ TEST_F(tx_pool, TransactionThatWasDeletedLongAgoIsForgottenDuringTxPoolInitializ
   uint64_t forgetDeletedTxTime = deleteTime + currency.numberOfPeriodsToForgetTxDeletedFromPool() * currency.mempoolTxLiveTime() + 1;
   timeProvider.timeNow = forgetDeletedTxTime;
 
-  pool.reset(new tx_memory_pool(currency, validator, timeProvider, logger));
+  pool.reset(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   // Try to add tx again
@@ -602,7 +602,7 @@ TEST_F(tx_pool, TransactionThatWasDeletedLongAgoIsForgottenDuringTxPoolInitializ
 TEST_F(tx_pool, RecentlyDeletedTxInfoIsSerializedAndDeserialized) {
   TransactionValidator validator;
   FakeTimeProvider timeProvider;
-  std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+  std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   uint64_t startTime = timeProvider.now();
@@ -621,7 +621,7 @@ TEST_F(tx_pool, RecentlyDeletedTxInfoIsSerializedAndDeserialized) {
 
   ASSERT_TRUE(pool->deinit());
 
-  pool.reset(new tx_memory_pool(currency, validator, timeProvider, logger));
+  pool.reset(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   uint64_t timeBeforeCleanupDeletedTx = deleteTime + currency.numberOfPeriodsToForgetTxDeletedFromPool() * currency.mempoolTxLiveTime();
@@ -652,7 +652,7 @@ TEST_F(tx_pool, RecentlyDeletedTxInfoIsSerializedAndDeserialized) {
 TEST_F(tx_pool, TxPoolAcceptsValidFusionTransaction) {
   TransactionValidator validator;
   FakeTimeProvider timeProvider;
-  std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+  std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   FusionTransactionBuilder builder(currency, 10 * currency.defaultDustThreshold());
@@ -669,7 +669,7 @@ TEST_F(tx_pool, TxPoolAcceptsValidFusionTransaction) {
 TEST_F(tx_pool, TxPoolDoesNotAcceptInvalidFusionTransaction) {
   TransactionValidator validator;
   FakeTimeProvider timeProvider;
-  std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+  std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
   ASSERT_TRUE(pool->init(m_configDir.string()));
 
   FusionTransactionBuilder builder(currency, 10 * currency.defaultDustThreshold());
@@ -737,7 +737,7 @@ public:
   void doTest(size_t poolOrdinaryTxCount, size_t poolFusionTxCount, size_t expectedBlockOrdinaryTxCount, size_t expectedBlockFusionTxCount) {
     TransactionValidator validator;
     FakeTimeProvider timeProvider;
-    std::unique_ptr<tx_memory_pool> pool(new tx_memory_pool(currency, validator, timeProvider, logger));
+    std::unique_ptr<TransactionPool> pool(new TransactionPool(currency, validator, timeProvider, logger));
     ASSERT_TRUE(pool->init(m_configDir.string()));
 
     std::unordered_map<crypto::Hash, Transaction> ordinaryTxs;

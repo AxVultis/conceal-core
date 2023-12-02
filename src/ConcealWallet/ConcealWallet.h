@@ -37,9 +37,9 @@ namespace cn
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class conceal_wallet : public IWalletObserver {
+  class ConcealWallet : public IWalletObserver {
   public:
-    conceal_wallet(platform_system::Dispatcher& dispatcher, const cn::Currency& currency, logging::LoggerManager& log);
+    ConcealWallet(platform_system::Dispatcher& dispatcher, const cn::Currency& currency, logging::LoggerManager& log);
 
     bool init(const boost::program_options::variables_map& vm);
     bool deinit();
@@ -131,12 +131,12 @@ namespace cn
     void depositUpdated(DepositId depositId) override;
     void depositsUpdated(const std::vector<DepositId> &depositIds) override;
 
-    friend class refresh_progress_reporter_t;
+    friend class RefreshProgressReporter;
 
-    class refresh_progress_reporter_t
+    class RefreshProgressReporter
     {
     public:
-      explicit refresh_progress_reporter_t(cn::conceal_wallet& conceal_wallet)
+      explicit RefreshProgressReporter(cn::ConcealWallet& conceal_wallet)
         : m_conceal_wallet(conceal_wallet)
       {
       }
@@ -164,7 +164,7 @@ namespace cn
         m_blockchain_height_update_time = std::chrono::system_clock::now();
       }
 
-      cn::conceal_wallet& m_conceal_wallet;
+      cn::ConcealWallet& m_conceal_wallet;
       uint64_t m_blockchain_height = 0;
       std::chrono::system_clock::time_point m_blockchain_height_update_time;
       std::chrono::system_clock::time_point m_print_time;
@@ -190,11 +190,11 @@ namespace cn
     platform_system::Dispatcher& m_dispatcher;
     platform_system::Event m_stopEvent;
     logging::LoggerRef logger;
-    cn::client_helper m_chelper;
+    cn::ClientHelper m_chelper;
 
     std::unique_ptr<cn::NodeRpcProxy> m_node;
     std::unique_ptr<cn::IWallet> m_wallet;
-    refresh_progress_reporter_t m_refresh_progress_reporter;
+    RefreshProgressReporter m_refresh_progress_reporter;
 
     bool m_walletSynchronized;
     std::mutex m_walletSynchronizedMutex;

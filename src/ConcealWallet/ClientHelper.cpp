@@ -25,22 +25,22 @@ using namespace common;
 
 namespace cn
 {
-  uint32_t client_helper::deposit_term(const cn::Deposit &deposit) const
+  uint32_t ClientHelper::deposit_term(const cn::Deposit &deposit) const
   {
     return deposit.term;
   }
 
-  std::string client_helper::deposit_amount(const cn::Deposit &deposit, const Currency &currency) const
+  std::string ClientHelper::deposit_amount(const cn::Deposit &deposit, const Currency &currency) const
   {
     return currency.formatAmount(deposit.amount);
   }
 
-  std::string client_helper::deposit_interest(const cn::Deposit &deposit, const Currency &currency) const
+  std::string ClientHelper::deposit_interest(const cn::Deposit &deposit, const Currency &currency) const
   {
     return currency.formatAmount(deposit.interest);
   }
 
-  std::string client_helper::deposit_status(const cn::Deposit &deposit) const
+  std::string ClientHelper::deposit_status(const cn::Deposit &deposit) const
   {
     std::string status_str = "";
 
@@ -54,17 +54,17 @@ namespace cn
     return status_str;
   }
 
-  size_t client_helper::deposit_creating_tx_id(const cn::Deposit &deposit) const
+  size_t ClientHelper::deposit_creating_tx_id(const cn::Deposit &deposit) const
   {
     return deposit.creatingTransactionId;
   }
 
-  size_t client_helper::deposit_spending_tx_id(const cn::Deposit &deposit) const
+  size_t ClientHelper::deposit_spending_tx_id(const cn::Deposit &deposit) const
   {
     return deposit.spendingTransactionId;
   }
 
-  std::string client_helper::deposit_unlock_height(const cn::Deposit &deposit, const uint32_t &blockHeight) const
+  std::string ClientHelper::deposit_unlock_height(const cn::Deposit &deposit, const uint32_t &blockHeight) const
   {
     std::string unlock_str = "";
 
@@ -86,7 +86,7 @@ namespace cn
     return unlock_str;
   }
 
-  std::string client_helper::deposit_height(const uint32_t &blockHeight) const
+  std::string ClientHelper::deposit_height(const uint32_t &blockHeight) const
   {
     std::string height_str = "";
 
@@ -109,7 +109,7 @@ namespace cn
     return height_str;
   }
 
-  std::string client_helper::get_deposit_info(const cn::Deposit &deposit, cn::DepositId did, const Currency &currency, const uint32_t &blockHeight) const
+  std::string ClientHelper::get_deposit_info(const cn::Deposit &deposit, cn::DepositId did, const Currency &currency, const uint32_t &blockHeight) const
   {
     std::stringstream full_info;
 
@@ -125,7 +125,7 @@ namespace cn
     return as_str;
   }
 
-  std::string client_helper::get_full_deposit_info(const cn::Deposit &deposit, cn::DepositId did, const Currency &currency, const uint32_t &blockHeight) const
+  std::string ClientHelper::get_full_deposit_info(const cn::Deposit &deposit, cn::DepositId did, const Currency &currency, const uint32_t &blockHeight) const
   {
     std::stringstream full_info;
 
@@ -141,7 +141,7 @@ namespace cn
     return as_str;
   }
 
-  std::string client_helper::list_deposit_item(const WalletTransaction& txInfo, const Deposit& deposit, std::string listed_deposit, DepositId id, const Currency &currency) const
+  std::string ClientHelper::list_deposit_item(const WalletTransaction& txInfo, const Deposit& deposit, std::string listed_deposit, DepositId id, const Currency &currency) const
   {
     std::string format_amount = currency.formatAmount(deposit.amount);
     std::string format_interest = currency.formatAmount(deposit.interest);
@@ -167,7 +167,7 @@ namespace cn
     return listed_deposit;
   }
 
-  std::string client_helper::list_tx_item(const WalletTransaction& txInfo, std::string listed_tx, const Currency &currency) const
+  std::string ClientHelper::list_tx_item(const WalletTransaction& txInfo, std::string listed_tx, const Currency &currency) const
   {
     std::vector<uint8_t> extraVec = asBinaryArray(txInfo.extra);
 
@@ -198,7 +198,7 @@ namespace cn
     return listed_tx;
   }
 
-  bool client_helper::confirm_deposit(uint32_t term, uint64_t amount, bool is_testnet, const Currency &currency, const logging::LoggerRef &logger) const
+  bool ClientHelper::confirm_deposit(uint32_t term, uint64_t amount, bool is_testnet, const Currency &currency, const logging::LoggerRef &logger) const
   {
     uint64_t interest = currency.calculateInterestV3(amount, term);
     uint64_t min_term = is_testnet ? parameters::TESTNET_DEPOSIT_MIN_TERM_V3 : parameters::DEPOSIT_MIN_TERM_V3;
@@ -230,7 +230,7 @@ namespace cn
     return false;
   }
 
-  JsonValue client_helper::buildLoggerConfiguration(logging::Level level, const std::string& logfile) const
+  JsonValue ClientHelper::buildLoggerConfiguration(logging::Level level, const std::string& logfile) const
   {
     using common::JsonValue;
 
@@ -252,7 +252,7 @@ namespace cn
     return loggerConfiguration;
   }
 
-  bool client_helper::parseUrlAddress(const std::string& url, std::string& address, uint16_t& port)
+  bool ClientHelper::parseUrlAddress(const std::string& url, std::string& address, uint16_t& port)
   {
     auto pos = url.find("://");
     size_t addrStart = 0;
@@ -279,7 +279,7 @@ namespace cn
     return true;
   }
 
-  std::error_code client_helper::initAndLoadWallet(cn::IWalletLegacy& wallet, std::istream& walletFile, const std::string& password)
+  std::error_code ClientHelper::initAndLoadWallet(cn::IWalletLegacy& wallet, std::istream& walletFile, const std::string& password)
   {
     WalletHelper::InitWalletResultObserver initObserver;
     std::future<std::error_code> f_initError = initObserver.initResult.get_future();
@@ -291,7 +291,7 @@ namespace cn
     return initError;
   }
 
-  std::string client_helper::tryToOpenWalletOrLoadKeysOrThrow(logging::LoggerRef& logger, std::unique_ptr<cn::IWalletLegacy>& wallet, const std::string& walletFile, const std::string& password)
+  std::string ClientHelper::tryToOpenWalletOrLoadKeysOrThrow(logging::LoggerRef& logger, std::unique_ptr<cn::IWalletLegacy>& wallet, const std::string& walletFile, const std::string& password)
   {
     std::string keys_file, walletFileName;
     WalletHelper::prepareFileNames(walletFile, keys_file, walletFileName);
@@ -387,7 +387,7 @@ namespace cn
     }
   }
 
-  std::stringstream client_helper::balances(const cn::IWallet &wallet, const Currency &currency) const
+  std::stringstream ClientHelper::balances(const cn::IWallet &wallet, const Currency &currency) const
   {
     std::stringstream balances;
 

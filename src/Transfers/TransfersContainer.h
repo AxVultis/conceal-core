@@ -227,8 +227,8 @@ private:
       boost::multi_index_container<
           TransactionInformation,
           boost::multi_index::indexed_by<
-              boost::multi_index::hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionInformation, crypto::Hash, transactionHash)>,
-              boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(TransactionInformation, uint32_t, blockHeight)>>>;
+              boost::multi_index::hashed_unique<boost::multi_index::member<TransactionInformation, crypto::Hash, &TransactionInformation::transactionHash>>,
+              boost::multi_index::ordered_non_unique<boost::multi_index::member<TransactionInformation, uint32_t, &TransactionInformation::blockHeight>>>>;
 
   using UnconfirmedTransfersMultiIndex =
       boost::multi_index_container<
@@ -317,10 +317,10 @@ private:
           boost::multi_index::indexed_by<
               boost::multi_index::ordered_non_unique<
                   boost::multi_index::tag<TransferUnlockHeightIndex>,
-                  BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, uint32_t, unlockHeight)>,
+                  boost::multi_index::member<TransferUnlockJob, uint32_t, &TransferUnlockJob::unlockHeight>>,
               boost::multi_index::hashed_unique<
                   boost::multi_index::tag<TransactionOutputKeyIndex>,
-                  BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, TransactionOutputKey, transactionOutputKey),
+                  boost::multi_index::member<TransferUnlockJob, TransactionOutputKey, &TransferUnlockJob::transactionOutputKey>,
                   TransactionOutputKeyHasher>>>;
 
   void addTransaction(const TransactionBlockInfo& block, const ITransactionReader& tx, std::vector<std::string>&& messages);

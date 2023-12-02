@@ -42,19 +42,19 @@ using namespace cn;
 
 namespace tools {
 
-const command_line::arg_descriptor<uint16_t> wallet_rpc_server::arg_rpc_bind_port = { "rpc-bind-port", "Starts wallet as rpc server for wallet operations, sets bind port for server", 0, true };
-const command_line::arg_descriptor<std::string> wallet_rpc_server::arg_rpc_bind_ip = { "rpc-bind-ip", "Specify ip to bind rpc server", "127.0.0.1" };
-const command_line::arg_descriptor<std::string> wallet_rpc_server::arg_rpc_user = { "rpc-user", "Username to use the rpc server. If authorization is not required, leave it empty", "" };
-const command_line::arg_descriptor<std::string> wallet_rpc_server::arg_rpc_password = { "rpc-password", "Password to use the rpc server. If authorization is not required, leave it empty", "" };
+const command_line::arg_descriptor<uint16_t> WalletRpcServer::arg_rpc_bind_port = { "rpc-bind-port", "Starts wallet as rpc server for wallet operations, sets bind port for server", 0, true };
+const command_line::arg_descriptor<std::string> WalletRpcServer::arg_rpc_bind_ip = { "rpc-bind-ip", "Specify ip to bind rpc server", "127.0.0.1" };
+const command_line::arg_descriptor<std::string> WalletRpcServer::arg_rpc_user = { "rpc-user", "Username to use the rpc server. If authorization is not required, leave it empty", "" };
+const command_line::arg_descriptor<std::string> WalletRpcServer::arg_rpc_password = { "rpc-password", "Password to use the rpc server. If authorization is not required, leave it empty", "" };
 
-void wallet_rpc_server::init_options(boost::program_options::options_description& desc) {
+void WalletRpcServer::init_options(boost::program_options::options_description& desc) {
   command_line::add_arg(desc, arg_rpc_bind_ip);
   command_line::add_arg(desc, arg_rpc_bind_port);
   command_line::add_arg(desc, arg_rpc_user);
   command_line::add_arg(desc, arg_rpc_password);
 }
 //------------------------------------------------------------------------------------------------------------------------------
-wallet_rpc_server::wallet_rpc_server(
+WalletRpcServer::WalletRpcServer(
   platform_system::Dispatcher& dispatcher,
   logging::ILogger& log,
   cn::IWalletLegacy&w,
@@ -72,13 +72,13 @@ wallet_rpc_server::wallet_rpc_server(
   m_node(n) {
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::run() {
+bool WalletRpcServer::run() {
   start(m_bind_ip, m_port, m_rpcUser, m_rpcPassword);
   m_stopComplete.wait();
   return true;
 }
 
-void wallet_rpc_server::send_stop_signal() {
+void WalletRpcServer::send_stop_signal() {
   m_dispatcher.remoteSpawn([this] {
     std::cout << "wallet_rpc_server::send_stop_signal()" << std::endl;
     stop();
@@ -87,7 +87,7 @@ void wallet_rpc_server::send_stop_signal() {
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::handle_command_line(const boost::program_options::variables_map& vm) {
+bool WalletRpcServer::handle_command_line(const boost::program_options::variables_map& vm) {
   m_bind_ip = command_line::get_arg(vm, arg_rpc_bind_ip);
   m_port = command_line::get_arg(vm, arg_rpc_bind_port);
   m_rpcUser = command_line::get_arg(vm, arg_rpc_user);
@@ -95,7 +95,7 @@ bool wallet_rpc_server::handle_command_line(const boost::program_options::variab
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::init(const boost::program_options::variables_map& vm) {
+bool WalletRpcServer::init(const boost::program_options::variables_map& vm) {
   if (!handle_command_line(vm)) {
     logger(ERROR) << "Failed to process command line in wallet_rpc_server";
     return false;
@@ -104,7 +104,7 @@ bool wallet_rpc_server::init(const boost::program_options::variables_map& vm) {
   return true;
 }
 
-void wallet_rpc_server::processRequest(const cn::HttpRequest& request, cn::HttpResponse& response) {
+void WalletRpcServer::processRequest(const cn::HttpRequest& request, cn::HttpResponse& response) {
 
   using namespace cn::JsonRpc;
 
@@ -116,21 +116,21 @@ void wallet_rpc_server::processRequest(const cn::HttpRequest& request, cn::HttpR
     jsonResponse.setId(jsonRequest.getId());
 
     static std::unordered_map<std::string, JsonMemberMethod> s_methods = {
-      { "create_integrated", makeMemberMethod(&wallet_rpc_server::on_create_integrated) },  
-      { "getbalance", makeMemberMethod(&wallet_rpc_server::on_getbalance) },
-      { "transfer", makeMemberMethod(&wallet_rpc_server::on_transfer) },
-      { "store", makeMemberMethod(&wallet_rpc_server::on_store) },
-      { "get_messages", makeMemberMethod(&wallet_rpc_server::on_get_messages) },
-      { "get_payments", makeMemberMethod(&wallet_rpc_server::on_get_payments) },
-      { "get_transfers", makeMemberMethod(&wallet_rpc_server::on_get_transfers) },
-      { "get_height", makeMemberMethod(&wallet_rpc_server::on_get_height) },
-      { "get_outputs", makeMemberMethod(&wallet_rpc_server::on_get_outputs) },
-      { "get_tx_proof"     , makeMemberMethod(&wallet_rpc_server::on_get_tx_proof)      },
-      { "get_reserve_proof", makeMemberMethod(&wallet_rpc_server::on_get_reserve_proof) },      
-      { "optimize", makeMemberMethod(&wallet_rpc_server::on_optimize) },
-      { "estimate_fusion"  , makeMemberMethod(&wallet_rpc_server::on_estimate_fusion) },
-      { "send_fusion"      , makeMemberMethod(&wallet_rpc_server::on_send_fusion) },
-      { "reset", makeMemberMethod(&wallet_rpc_server::on_reset) }
+      { "create_integrated", makeMemberMethod(&WalletRpcServer::on_create_integrated) },  
+      { "getbalance", makeMemberMethod(&WalletRpcServer::on_getbalance) },
+      { "transfer", makeMemberMethod(&WalletRpcServer::on_transfer) },
+      { "store", makeMemberMethod(&WalletRpcServer::on_store) },
+      { "get_messages", makeMemberMethod(&WalletRpcServer::on_get_messages) },
+      { "get_payments", makeMemberMethod(&WalletRpcServer::on_get_payments) },
+      { "get_transfers", makeMemberMethod(&WalletRpcServer::on_get_transfers) },
+      { "get_height", makeMemberMethod(&WalletRpcServer::on_get_height) },
+      { "get_outputs", makeMemberMethod(&WalletRpcServer::on_get_outputs) },
+      { "get_tx_proof"     , makeMemberMethod(&WalletRpcServer::on_get_tx_proof)      },
+      { "get_reserve_proof", makeMemberMethod(&WalletRpcServer::on_get_reserve_proof) },      
+      { "optimize", makeMemberMethod(&WalletRpcServer::on_optimize) },
+      { "estimate_fusion"  , makeMemberMethod(&WalletRpcServer::on_estimate_fusion) },
+      { "send_fusion"      , makeMemberMethod(&WalletRpcServer::on_send_fusion) },
+      { "reset", makeMemberMethod(&WalletRpcServer::on_reset) }
     };
 
     auto it = s_methods.find(jsonRequest.getMethod());
@@ -150,7 +150,7 @@ void wallet_rpc_server::processRequest(const cn::HttpRequest& request, cn::HttpR
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE::request& req, wallet_rpc::COMMAND_RPC_GET_BALANCE::response& res) {
+bool WalletRpcServer::on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE::request& req, wallet_rpc::COMMAND_RPC_GET_BALANCE::response& res) {
   res.locked_amount = m_wallet.pendingBalance();
   res.available_balance = m_wallet.actualBalance();
   res.balance = res.locked_amount + res.available_balance;
@@ -158,7 +158,7 @@ bool wallet_rpc_server::on_getbalance(const wallet_rpc::COMMAND_RPC_GET_BALANCE:
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::request& req, wallet_rpc::COMMAND_RPC_TRANSFER::response& res) {
+bool WalletRpcServer::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::request& req, wallet_rpc::COMMAND_RPC_TRANSFER::response& res) {
   std::vector<cn::WalletLegacyTransfer> transfers;
   std::vector<cn::TransactionMessage> messages;
   for (auto it = req.destinations.begin(); it != req.destinations.end(); it++) {
@@ -232,7 +232,7 @@ bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::requ
 }
 //------------------------------------------------------------------------------------------------------------------------------
 
-bool wallet_rpc_server::on_get_tx_proof(const wallet_rpc::COMMAND_RPC_GET_TX_PROOF::request& req,
+bool WalletRpcServer::on_get_tx_proof(const wallet_rpc::COMMAND_RPC_GET_TX_PROOF::request& req,
 	wallet_rpc::COMMAND_RPC_GET_TX_PROOF::response& res) {
 	crypto::Hash txid;
 	if (!parse_hash256(req.tx_hash, txid)) {
@@ -279,7 +279,7 @@ bool wallet_rpc_server::on_get_tx_proof(const wallet_rpc::COMMAND_RPC_GET_TX_PRO
 	return true;
 }
 
-bool wallet_rpc_server::on_get_reserve_proof(const wallet_rpc::COMMAND_RPC_GET_BALANCE_PROOF::request& req,
+bool WalletRpcServer::on_get_reserve_proof(const wallet_rpc::COMMAND_RPC_GET_BALANCE_PROOF::request& req,
 	wallet_rpc::COMMAND_RPC_GET_BALANCE_PROOF::response& res) {
 
 	try {
@@ -292,7 +292,7 @@ bool wallet_rpc_server::on_get_reserve_proof(const wallet_rpc::COMMAND_RPC_GET_B
 	return true;
 }
 
-bool wallet_rpc_server::on_optimize(const wallet_rpc::COMMAND_RPC_OPTIMIZE::request& req, wallet_rpc::COMMAND_RPC_OPTIMIZE::response& res) {
+bool WalletRpcServer::on_optimize(const wallet_rpc::COMMAND_RPC_OPTIMIZE::request& req, wallet_rpc::COMMAND_RPC_OPTIMIZE::response& res) {
   std::vector<cn::WalletLegacyTransfer> transfers;
   std::vector<cn::TransactionMessage> messages;
   std::string extraString;
@@ -329,7 +329,7 @@ bool wallet_rpc_server::on_optimize(const wallet_rpc::COMMAND_RPC_OPTIMIZE::requ
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_estimate_fusion(const wallet_rpc::COMMAND_RPC_ESTIMATE_FUSION::request& req, wallet_rpc::COMMAND_RPC_ESTIMATE_FUSION::response& res)
+bool WalletRpcServer::on_estimate_fusion(const wallet_rpc::COMMAND_RPC_ESTIMATE_FUSION::request& req, wallet_rpc::COMMAND_RPC_ESTIMATE_FUSION::response& res)
 {
   if (req.threshold <= m_currency.defaultDustThreshold()) {
     throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR, std::string("Fusion transaction threshold is too small. Threshold: " + 
@@ -344,7 +344,7 @@ bool wallet_rpc_server::on_estimate_fusion(const wallet_rpc::COMMAND_RPC_ESTIMAT
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_send_fusion(const wallet_rpc::COMMAND_RPC_SEND_FUSION::request& req, wallet_rpc::COMMAND_RPC_SEND_FUSION::response& res)
+bool WalletRpcServer::on_send_fusion(const wallet_rpc::COMMAND_RPC_SEND_FUSION::request& req, wallet_rpc::COMMAND_RPC_SEND_FUSION::response& res)
 {
   const size_t MAX_FUSION_OUTPUT_COUNT = 8;
 
@@ -392,7 +392,7 @@ bool wallet_rpc_server::on_send_fusion(const wallet_rpc::COMMAND_RPC_SEND_FUSION
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& req, wallet_rpc::COMMAND_RPC_STORE::response& res) {
+bool WalletRpcServer::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& req, wallet_rpc::COMMAND_RPC_STORE::response& res) {
   try {
     WalletHelper::storeWallet(m_wallet, m_walletFilename);
   } catch (std::exception& e) {
@@ -402,7 +402,7 @@ bool wallet_rpc_server::on_store(const wallet_rpc::COMMAND_RPC_STORE::request& r
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_get_messages(const wallet_rpc::COMMAND_RPC_GET_MESSAGES::request& req, wallet_rpc::COMMAND_RPC_GET_MESSAGES::response& res) {
+bool WalletRpcServer::on_get_messages(const wallet_rpc::COMMAND_RPC_GET_MESSAGES::request& req, wallet_rpc::COMMAND_RPC_GET_MESSAGES::response& res) {
   res.total_tx_count = m_wallet.getTransactionCount();
 
   for (uint64_t i = req.first_tx_id; i < res.total_tx_count && res.tx_messages.size() < req.tx_limit; ++i) {
@@ -434,7 +434,7 @@ bool wallet_rpc_server::on_get_messages(const wallet_rpc::COMMAND_RPC_GET_MESSAG
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
-bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMENTS::request& req, wallet_rpc::COMMAND_RPC_GET_PAYMENTS::response& res) {
+bool WalletRpcServer::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMENTS::request& req, wallet_rpc::COMMAND_RPC_GET_PAYMENTS::response& res) {
   PaymentId expectedPaymentId;
   cn::BinaryArray payment_id_blob;
 
@@ -466,7 +466,7 @@ bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMEN
 /* CREATE INTEGRATED */
 /* takes an address and payment ID and returns an integrated address */
 
-bool wallet_rpc_server::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::request& req, wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::response& res) 
+bool WalletRpcServer::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::request& req, wallet_rpc::COMMAND_RPC_CREATE_INTEGRATED::response& res) 
 {
 
   if (!req.payment_id.empty() && !req.address.empty()) 
@@ -506,7 +506,7 @@ bool wallet_rpc_server::on_create_integrated(const wallet_rpc::COMMAND_RPC_CREAT
 
 /* --------------------------------------------------------------------------------- */
 
-bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res) {
+bool WalletRpcServer::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res) {
   res.transfers.clear();
   size_t transactionsCount = m_wallet.getTransactionCount();
   for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
@@ -549,17 +549,17 @@ bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANS
   return true;
 }
 
-bool wallet_rpc_server::on_get_height(const wallet_rpc::COMMAND_RPC_GET_HEIGHT::request& req, wallet_rpc::COMMAND_RPC_GET_HEIGHT::response& res) {
+bool WalletRpcServer::on_get_height(const wallet_rpc::COMMAND_RPC_GET_HEIGHT::request& req, wallet_rpc::COMMAND_RPC_GET_HEIGHT::response& res) {
   res.height = m_node.getLastLocalBlockHeight();
   return true;
 }
 
-bool wallet_rpc_server::on_get_outputs(const wallet_rpc::COMMAND_RPC_GET_OUTPUTS::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUTS::response& res) {
+bool WalletRpcServer::on_get_outputs(const wallet_rpc::COMMAND_RPC_GET_OUTPUTS::request& req, wallet_rpc::COMMAND_RPC_GET_OUTPUTS::response& res) {
   res.num_unlocked_outputs = m_wallet.getNumUnlockedOutputs();
   return true;
 }
 
-bool wallet_rpc_server::on_reset(const wallet_rpc::COMMAND_RPC_RESET::request& req, wallet_rpc::COMMAND_RPC_RESET::response& res) {
+bool WalletRpcServer::on_reset(const wallet_rpc::COMMAND_RPC_RESET::request& req, wallet_rpc::COMMAND_RPC_RESET::response& res) {
   m_wallet.reset();
   return true;
 }

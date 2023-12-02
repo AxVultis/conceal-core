@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_params, arg_command);
   command_line::add_arg(desc_params, arg_log_level);
   command_line::add_arg(desc_params, arg_testnet);
-  tools::wallet_rpc_server::init_options(desc_params);
+  tools::WalletRpcServer::init_options(desc_params);
 
   po::positional_options_description positional_options;
   positional_options.add(arg_command.name, -1);
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
   po::variables_map vm;
 
-  cn::client_helper m_chelper;
+  cn::ClientHelper m_chelper;
 
   bool r = command_line::handle_error_helper(desc_all, [&]()
   {
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
   cn::Currency currency = cn::CurrencyBuilder(logManager).
     testnet(testnet).currency();
 
-  if (command_line::has_arg(vm, tools::wallet_rpc_server::arg_rpc_bind_port))
+  if (command_line::has_arg(vm, tools::WalletRpcServer::arg_rpc_bind_port))
   {
     //runs wallet with rpc interface
     if (!command_line::has_arg(vm, arg_wallet_file))
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    tools::wallet_rpc_server wrpc(dispatcher, logManager, *wallet, *node, currency, walletFileName);
+    tools::WalletRpcServer wrpc(dispatcher, logManager, *wallet, *node, currency, walletFileName);
 
     if (!wrpc.init(vm))
     {
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
   else
   {
     //runs wallet with console interface
-    cn::conceal_wallet cwal(dispatcher, currency, logManager);
+    cn::ConcealWallet cwal(dispatcher, currency, logManager);
 
     if (!cwal.init(vm))
     {

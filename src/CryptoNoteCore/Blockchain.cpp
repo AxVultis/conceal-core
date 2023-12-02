@@ -343,7 +343,7 @@ namespace cn
     bool m_loaded = false;
   };
 
-  Blockchain::Blockchain(const Currency &currency, tx_memory_pool &tx_pool, ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled) :
+  Blockchain::Blockchain(const Currency &currency, TransactionPool &tx_pool, ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled) :
     m_currency(currency),
     m_tx_pool(tx_pool),
     m_checkpoints(logger),

@@ -649,7 +649,7 @@ std::vector<Transaction> Core::getPoolTransactions() {
   return result;
 }
 
-std::list<cn::tx_memory_pool::TransactionDetails> Core::getMemoryPool() const {
+std::list<cn::TransactionPool::TransactionDetails> Core::getMemoryPool() const {
   return m_mempool.getMemoryPool();
 }
 

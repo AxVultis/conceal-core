@@ -71,9 +71,9 @@ namespace cn {
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class tx_memory_pool: private boost::noncopyable {
+  class TransactionPool: private boost::noncopyable {
   public:
-    tx_memory_pool(
+    TransactionPool(
       const cn::Currency& currency, 
       cn::ITransactionValidator& validator,
       cn::ITimeProvider& timeProvider,
@@ -141,7 +141,7 @@ namespace cn {
       time_t receiveTime;
     };
 
-    std::list<cn::tx_memory_pool::TransactionDetails> getMemoryPool() const;
+    std::list<cn::TransactionPool::TransactionDetails> getMemoryPool() const;
 
   private:
 
@@ -164,7 +164,7 @@ namespace cn {
       }
     };
 
-    using main_index_t = hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionDetails, crypto::Hash, id)>;
+    using main_index_t = hashed_unique<boost::multi_index::member<TransactionDetails, crypto::Hash, &TransactionDetails::id>>;
     using fee_index_t = ordered_non_unique<identity<TransactionDetails>, TransactionPriorityComparator>;
 
     using tx_container_t =

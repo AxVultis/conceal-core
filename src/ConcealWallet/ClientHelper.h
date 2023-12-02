@@ -19,7 +19,7 @@ using common::JsonValue;
 
 namespace cn
 {
-  class client_helper
+  class ClientHelper
   {
   public:
     /**

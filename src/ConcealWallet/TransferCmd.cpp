@@ -16,13 +16,13 @@ using namespace logging;
 
 namespace cn
 {
-  transfer_cmd::transfer_cmd(const cn::Currency& currency, const std::string& remote_fee_address) :
+  TransferCmd::TransferCmd(const cn::Currency& currency, const std::string& remote_fee_address) :
     m_currency(currency),
     fee(currency.minimumFeeV2()),
     m_remote_address(remote_fee_address) {
   }
 
-  bool transfer_cmd::parseTx(const LoggerRef& logger, const std::vector<std::string> &args)
+  bool TransferCmd::parseTx(const LoggerRef& logger, const std::vector<std::string> &args)
   {
     ArgumentReader<std::vector<std::string>::const_iterator> ar(args.begin(), args.end());
 

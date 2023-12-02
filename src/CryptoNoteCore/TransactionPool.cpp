@@ -106,7 +106,7 @@ namespace cn
   using cn::BlockInfo;
 
   //---------------------------------------------------------------------------------
-  tx_memory_pool::tx_memory_pool(
+  TransactionPool::TransactionPool(
       const cn::Currency &currency,
       cn::ITransactionValidator &validator,
       cn::ITimeProvider &timeProvider,
@@ -119,7 +119,7 @@ namespace cn
   {
   }
 
-  bool tx_memory_pool::add_tx(const Transaction &tx, /*const crypto::Hash& tx_prefix_hash,*/ const crypto::Hash &id, size_t blobSize, tx_verification_context &tvc, bool keptByBlock, uint32_t height)
+  bool TransactionPool::add_tx(const Transaction &tx, /*const crypto::Hash& tx_prefix_hash,*/ const crypto::Hash &id, size_t blobSize, tx_verification_context &tvc, bool keptByBlock, uint32_t height)
   {
     if (!check_inputs_types_supported(tx))
     {
@@ -290,7 +290,7 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::add_tx(const Transaction &tx, tx_verification_context &tvc, bool keeped_by_block, uint32_t height)
+  bool TransactionPool::add_tx(const Transaction &tx, tx_verification_context &tvc, bool keeped_by_block, uint32_t height)
   {
     crypto::Hash h = NULL_HASH;
     size_t blobSize = 0;
@@ -298,7 +298,7 @@ namespace cn
     return add_tx(tx, h, blobSize, tvc, keeped_by_block, height);
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::take_tx(const crypto::Hash &id, Transaction &tx, size_t &blobSize, uint64_t &fee)
+  bool TransactionPool::take_tx(const crypto::Hash &id, Transaction &tx, size_t &blobSize, uint64_t &fee)
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     auto it = m_transactions.find(id);
@@ -317,7 +317,7 @@ namespace cn
     return true;
   }
 
-  bool tx_memory_pool::getTransaction(const crypto::Hash &id, Transaction &tx)
+  bool TransactionPool::getTransaction(const crypto::Hash &id, Transaction &tx)
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     auto it = m_transactions.find(id);
@@ -333,13 +333,13 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  size_t tx_memory_pool::get_transactions_count() const
+  size_t TransactionPool::get_transactions_count() const
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     return m_transactions.size();
   }
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::get_transactions(std::list<Transaction> &txs) const
+  void TransactionPool::get_transactions(std::list<Transaction> &txs) const
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     for (const auto &tx_vt : m_transactions)
@@ -348,7 +348,7 @@ namespace cn
     }
   }
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::get_difference(const std::vector<crypto::Hash> &known_tx_ids, std::vector<crypto::Hash> &new_tx_ids, std::vector<crypto::Hash> &deleted_tx_ids) const
+  void TransactionPool::get_difference(const std::vector<crypto::Hash> &known_tx_ids, std::vector<crypto::Hash> &new_tx_ids, std::vector<crypto::Hash> &deleted_tx_ids) const
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     std::unordered_set<crypto::Hash> ready_tx_ids;
@@ -380,17 +380,17 @@ namespace cn
     deleted_tx_ids.assign(known_set.begin(), known_set.end());
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::on_blockchain_inc(uint64_t new_block_height, const crypto::Hash &top_block_id)
+  bool TransactionPool::on_blockchain_inc(uint64_t new_block_height, const crypto::Hash &top_block_id)
   {
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::on_blockchain_dec(uint64_t new_block_height, const crypto::Hash &top_block_id)
+  bool TransactionPool::on_blockchain_dec(uint64_t new_block_height, const crypto::Hash &top_block_id)
   {
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::have_tx(const crypto::Hash &id) const
+  bool TransactionPool::have_tx(const crypto::Hash &id) const
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     if (m_transactions.count(id))
@@ -401,23 +401,23 @@ namespace cn
     return false;
   }
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::lock() const
+  void TransactionPool::lock() const
   {
     m_transactions_lock.lock();
   }
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::unlock() const
+  void TransactionPool::unlock() const
   {
     m_transactions_lock.unlock();
   }
 
-  std::unique_lock<std::recursive_mutex> tx_memory_pool::obtainGuard() const
+  std::unique_lock<std::recursive_mutex> TransactionPool::obtainGuard() const
   {
     return std::unique_lock<std::recursive_mutex>(m_transactions_lock);
   }
 
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::is_transaction_ready_to_go(const Transaction &tx, TransactionCheckInfo &txd) const
+  bool TransactionPool::is_transaction_ready_to_go(const Transaction &tx, TransactionCheckInfo &txd) const
   {
 
     if (!m_validator.checkTransactionInputs(tx, txd.maxUsedBlock, txd.lastFailedBlock))
@@ -435,7 +435,7 @@ namespace cn
     return true;
   }
   //---------------------------------------------------------------------------------
-  std::string tx_memory_pool::print_pool(bool short_format) const
+  std::string TransactionPool::print_pool(bool short_format) const
   {
     std::stringstream ss;
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
@@ -461,7 +461,7 @@ namespace cn
     return ss.str();
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::fill_block_template(
+  bool TransactionPool::fill_block_template(
       Block &bl,
       size_t median_size,
       size_t maxCumulativeSize,
@@ -522,7 +522,7 @@ namespace cn
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::init(const std::string &config_folder)
+  bool TransactionPool::init(const std::string &config_folder)
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
 
@@ -557,7 +557,7 @@ namespace cn
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::deinit()
+  bool TransactionPool::deinit()
   {
     if (!tools::create_directories_if_necessary(m_config_folder))
     {
@@ -581,7 +581,7 @@ namespace cn
 
 #define CURRENT_MEMPOOL_ARCHIVE_VER 1
 
-  void serialize(cn::tx_memory_pool::TransactionDetails &td, ISerializer &s)
+  void serialize(cn::TransactionPool::TransactionDetails &td, ISerializer &s)
   {
     s(td.id, "id");
     s(td.blobSize, "blobSize");
@@ -596,7 +596,7 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::serialize(ISerializer &s)
+  void TransactionPool::serialize(ISerializer &s)
   {
     uint8_t version = CURRENT_MEMPOOL_ARCHIVE_VER;
 
@@ -625,13 +625,13 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  void tx_memory_pool::on_idle()
+  void TransactionPool::on_idle()
   {
     m_txCheckInterval.call([this]() { return removeExpiredTransactions(); });
   }
 
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::removeExpiredTransactions()
+  bool TransactionPool::removeExpiredTransactions()
   {
     bool somethingRemoved = false;
     {
@@ -690,7 +690,7 @@ namespace cn
     return true;
   }
 
-  tx_memory_pool::tx_container_t::iterator tx_memory_pool::removeTransaction(tx_memory_pool::tx_container_t::iterator i)
+  TransactionPool::tx_container_t::iterator TransactionPool::removeTransaction(TransactionPool::tx_container_t::iterator i)
   {
     removeTransactionInputs(i->id, i->tx, i->keptByBlock);
     m_paymentIdIndex.remove(i->tx);
@@ -699,7 +699,7 @@ namespace cn
     return m_transactions.erase(i);
   }
 
-  bool tx_memory_pool::removeTransactionInputs(const crypto::Hash &tx_id, const Transaction &tx, bool keptByBlock)
+  bool TransactionPool::removeTransactionInputs(const crypto::Hash &tx_id, const Transaction &tx, bool keptByBlock)
   {
     for (const auto &in : tx.inputs)
     {
@@ -751,7 +751,7 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::addTransactionInputs(const crypto::Hash &id, const Transaction &tx, bool keptByBlock)
+  bool TransactionPool::addTransactionInputs(const crypto::Hash &id, const Transaction &tx, bool keptByBlock)
   {
     // should not fail
     for (const auto &in : tx.inputs)
@@ -791,7 +791,7 @@ namespace cn
   }
 
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::haveSpentInputs(const Transaction &tx) const
+  bool TransactionPool::haveSpentInputs(const Transaction &tx) const
   {
     for (const auto &in : tx.inputs)
     {
@@ -815,17 +815,17 @@ namespace cn
     return false;
   }
 
-  bool tx_memory_pool::addObserver(ITxPoolObserver *observer)
+  bool TransactionPool::addObserver(ITxPoolObserver *observer)
   {
     return m_observerManager.add(observer);
   }
 
-  bool tx_memory_pool::removeObserver(ITxPoolObserver *observer)
+  bool TransactionPool::removeObserver(ITxPoolObserver *observer)
   {
     return m_observerManager.remove(observer);
   }
 
-  void tx_memory_pool::buildIndices()
+  void TransactionPool::buildIndices()
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     for (auto it = m_transactions.begin(); it != m_transactions.end(); it++)
@@ -846,21 +846,21 @@ namespace cn
     }
   }
 
-  bool tx_memory_pool::getTransactionIdsByPaymentId(const crypto::Hash &paymentId, std::vector<crypto::Hash> &transactionIds)
+  bool TransactionPool::getTransactionIdsByPaymentId(const crypto::Hash &paymentId, std::vector<crypto::Hash> &transactionIds)
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     return m_paymentIdIndex.find(paymentId, transactionIds);
   }
 
-  bool tx_memory_pool::getTransactionIdsByTimestamp(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t transactionsNumberLimit, std::vector<crypto::Hash> &hashes, uint64_t &transactionsNumberWithinTimestamps)
+  bool TransactionPool::getTransactionIdsByTimestamp(uint64_t timestampBegin, uint64_t timestampEnd, uint32_t transactionsNumberLimit, std::vector<crypto::Hash> &hashes, uint64_t &transactionsNumberWithinTimestamps)
   {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
     return m_timestampIndex.find(timestampBegin, timestampEnd, transactionsNumberLimit, hashes, transactionsNumberWithinTimestamps);
   }
   
-  std::list<cn::tx_memory_pool::TransactionDetails> tx_memory_pool::getMemoryPool() const {
+  std::list<cn::TransactionPool::TransactionDetails> TransactionPool::getMemoryPool() const {
     std::lock_guard<std::recursive_mutex> lock(m_transactions_lock);
-    std::list<tx_memory_pool::TransactionDetails> txs;
+    std::list<TransactionPool::TransactionDetails> txs;
     for (const auto& txd : m_fee_index) {
       txs.push_back(txd);
     }

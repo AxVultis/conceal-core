@@ -136,7 +136,7 @@ namespace cn {
     void print_blockchain(uint32_t start_index, uint32_t end_index);
     void print_blockchain_index(bool print_all);
     std::string print_pool(bool short_format);
-    std::list<cn::tx_memory_pool::TransactionDetails> getMemoryPool() const;
+    std::list<cn::TransactionPool::TransactionDetails> getMemoryPool() const;
     void print_blockchain_outs(const std::string &file);
     bool getPoolChanges(const crypto::Hash &tailBlockId, const std::vector<crypto::Hash> &knownTxsIds,
                                 std::vector<Transaction> &addedTxs, std::vector<crypto::Hash> &deletedTxsIds) override;
@@ -181,7 +181,7 @@ namespace cn {
     const Currency &m_currency;
     logging::LoggerRef logger;
     cn::RealTimeProvider m_timeProvider;
-    tx_memory_pool m_mempool;
+    TransactionPool m_mempool;
     Blockchain m_blockchain;
     i_cryptonote_protocol *m_pprotocol;
     std::unique_ptr<Miner> m_miner;

@@ -247,7 +247,7 @@ bool processServerFeeAddressResponse(const std::string& response, std::string& f
 
 }
 
-std::string conceal_wallet::get_commands_str(bool do_ext) {
+std::string ConcealWallet::get_commands_str(bool do_ext) {
   std::stringstream ss;
   ss << "";
 
@@ -265,23 +265,23 @@ std::string conceal_wallet::get_commands_str(bool do_ext) {
   return ss.str();
 }
 
-bool conceal_wallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
+bool ConcealWallet::help(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
   success_msg_writer() << get_commands_str(false);
   return true;
 }
 
-bool conceal_wallet::extended_help(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
+bool ConcealWallet::extended_help(const std::vector<std::string> &args/* = std::vector<std::string>()*/) {
   success_msg_writer() << get_commands_str(true);
   return true;
 }
 
-bool conceal_wallet::exit(const std::vector<std::string> &args)
+bool ConcealWallet::exit(const std::vector<std::string> &args)
 {
   stop();
   return true;
 }
 
-conceal_wallet::conceal_wallet(platform_system::Dispatcher& dispatcher, const cn::Currency& currency, logging::LoggerManager& log) :
+ConcealWallet::ConcealWallet(platform_system::Dispatcher& dispatcher, const cn::Currency& currency, logging::LoggerManager& log) :
   m_dispatcher(dispatcher),
   m_stopEvent(m_dispatcher),
   m_daemon_port(0),
@@ -291,41 +291,41 @@ conceal_wallet::conceal_wallet(platform_system::Dispatcher& dispatcher, const cn
   m_refresh_progress_reporter(*this),
   m_initResultPromise(nullptr),
   m_walletSynchronized(false) {
-  m_consoleHandler.setHandler("create_integrated", boost::bind(&conceal_wallet::create_integrated, this, boost::arg<1>()), "create_integrated <payment_id> - Create an integrated address with a payment ID");
-  m_consoleHandler.setHandler("export_keys", boost::bind(&conceal_wallet::export_keys, this, boost::arg<1>()), "Show the secret keys of the current wallet");
-  m_consoleHandler.setHandler("balance", boost::bind(&conceal_wallet::show_balance, this, boost::arg<1>()), "Show current wallet balance");
-  m_consoleHandler.setHandler("sign_message", boost::bind(&conceal_wallet::sign_message, this, boost::arg<1>()), "Sign a message with your wallet keys");
-  m_consoleHandler.setHandler("verify_signature", boost::bind(&conceal_wallet::verify_signature, this, boost::arg<1>()), "Verify a signed message");
-  m_consoleHandler.setHandler("incoming_transfers", boost::bind(&conceal_wallet::show_incoming_transfers, this, boost::arg<1>()), "Show incoming transfers");
-  m_consoleHandler.setHandler("list_transfers", boost::bind(&conceal_wallet::listTransfers, this, boost::arg<1>()), "list_transfers <height> - Show all known transfers from a certain (optional) block height");
-  m_consoleHandler.setHandler("payments", boost::bind(&conceal_wallet::show_payments, this, boost::arg<1>()), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
-  m_consoleHandler.setHandler("get_tx_proof", boost::bind(&conceal_wallet::get_tx_proof, this, boost::arg<1>()), "Generate a signature to prove payment: <txid> <address> [<txkey>]");
-  m_consoleHandler.setHandler("bc_height", boost::bind(&conceal_wallet::show_blockchain_height, this, boost::arg<1>()), "Show blockchain height");
-  m_consoleHandler.setHandler("show_dust", boost::bind(&conceal_wallet::show_dust, this, boost::arg<1>()), "Show the number of unmixable dust outputs");
-  m_consoleHandler.setHandler("outputs", boost::bind(&conceal_wallet::show_num_unlocked_outputs, this, boost::arg<1>()), "Show the number of unlocked outputs available for a transaction");
-  m_consoleHandler.setHandler("optimize", boost::bind(&conceal_wallet::optimize_outputs, this, boost::arg<1>()), "Combine many available outputs into a few by sending a transaction to self");
-  m_consoleHandler.setHandler("optimize_all", boost::bind(&conceal_wallet::optimize_all_outputs, this, boost::arg<1>()), "Optimize your wallet several times so you can send large transactions");  
-  m_consoleHandler.setHandler("transfer", boost::bind(&conceal_wallet::transfer, this, boost::arg<1>()),
+  m_consoleHandler.setHandler("create_integrated", boost::bind(&ConcealWallet::create_integrated, this, boost::arg<1>()), "create_integrated <payment_id> - Create an integrated address with a payment ID");
+  m_consoleHandler.setHandler("export_keys", boost::bind(&ConcealWallet::export_keys, this, boost::arg<1>()), "Show the secret keys of the current wallet");
+  m_consoleHandler.setHandler("balance", boost::bind(&ConcealWallet::show_balance, this, boost::arg<1>()), "Show current wallet balance");
+  m_consoleHandler.setHandler("sign_message", boost::bind(&ConcealWallet::sign_message, this, boost::arg<1>()), "Sign a message with your wallet keys");
+  m_consoleHandler.setHandler("verify_signature", boost::bind(&ConcealWallet::verify_signature, this, boost::arg<1>()), "Verify a signed message");
+  m_consoleHandler.setHandler("incoming_transfers", boost::bind(&ConcealWallet::show_incoming_transfers, this, boost::arg<1>()), "Show incoming transfers");
+  m_consoleHandler.setHandler("list_transfers", boost::bind(&ConcealWallet::listTransfers, this, boost::arg<1>()), "list_transfers <height> - Show all known transfers from a certain (optional) block height");
+  m_consoleHandler.setHandler("payments", boost::bind(&ConcealWallet::show_payments, this, boost::arg<1>()), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
+  m_consoleHandler.setHandler("get_tx_proof", boost::bind(&ConcealWallet::get_tx_proof, this, boost::arg<1>()), "Generate a signature to prove payment: <txid> <address> [<txkey>]");
+  m_consoleHandler.setHandler("bc_height", boost::bind(&ConcealWallet::show_blockchain_height, this, boost::arg<1>()), "Show blockchain height");
+  m_consoleHandler.setHandler("show_dust", boost::bind(&ConcealWallet::show_dust, this, boost::arg<1>()), "Show the number of unmixable dust outputs");
+  m_consoleHandler.setHandler("outputs", boost::bind(&ConcealWallet::show_num_unlocked_outputs, this, boost::arg<1>()), "Show the number of unlocked outputs available for a transaction");
+  m_consoleHandler.setHandler("optimize", boost::bind(&ConcealWallet::optimize_outputs, this, boost::arg<1>()), "Combine many available outputs into a few by sending a transaction to self");
+  m_consoleHandler.setHandler("optimize_all", boost::bind(&ConcealWallet::optimize_all_outputs, this, boost::arg<1>()), "Optimize your wallet several times so you can send large transactions");  
+  m_consoleHandler.setHandler("transfer", boost::bind(&ConcealWallet::transfer, this, boost::arg<1>()),
     "transfer <addr_1> <amount_1> [<addr_2> <amount_2> ... <addr_N> <amount_N>] [-p payment_id]"
     " - Transfer <amount_1>,... <amount_N> to <address_1>,... <address_N>, respectively. ");
-  m_consoleHandler.setHandler("set_log", boost::bind(&conceal_wallet::set_log, this, boost::arg<1>()), "set_log <level> - Change current log level, <level> is a number 0-4");
-  m_consoleHandler.setHandler("address", boost::bind(&conceal_wallet::print_address, this, boost::arg<1>()), "Show current wallet public address");
-  m_consoleHandler.setHandler("save", boost::bind(&conceal_wallet::save, this, boost::arg<1>()), "Save wallet synchronized data");
-  m_consoleHandler.setHandler("reset", boost::bind(&conceal_wallet::reset, this, boost::arg<1>()), "Discard cache data and start synchronizing from the start");
-  m_consoleHandler.setHandler("help", boost::bind(&conceal_wallet::help, this, boost::arg<1>()), "Show this help");
-  m_consoleHandler.setHandler("ext_help", boost::bind(&conceal_wallet::extended_help, this, boost::arg<1>()), "Show this help");
-  m_consoleHandler.setHandler("exit", boost::bind(&conceal_wallet::exit, this, boost::arg<1>()), "Close wallet");  
-  m_consoleHandler.setHandler("balance_proof", boost::bind(&conceal_wallet::get_reserve_proof, this, boost::arg<1>()), "all|<amount> [<message>] - Generate a signature proving that you own at least <amount>, optionally with a challenge string <message>. ");
-  m_consoleHandler.setHandler("save_keys", boost::bind(&conceal_wallet::save_keys_to_file, this, boost::arg<1>()), "Saves wallet private keys to \"<wallet_name>_conceal_backup.txt\"");
-  m_consoleHandler.setHandler("list_deposits", boost::bind(&conceal_wallet::list_deposits, this, boost::arg<1>()), "Show all known deposits from this wallet");
-  m_consoleHandler.setHandler("deposit", boost::bind(&conceal_wallet::deposit, this, boost::arg<1>()), "deposit <months> <amount> - Create a deposit");
-  m_consoleHandler.setHandler("withdraw", boost::bind(&conceal_wallet::withdraw, this, boost::arg<1>()), "withdraw <id> - Withdraw a deposit");
-  m_consoleHandler.setHandler("deposit_info", boost::bind(&conceal_wallet::deposit_info, this, boost::arg<1>()), "deposit_info <id> - Get infomation for deposit <id>");
-  m_consoleHandler.setHandler("save_txs_to_file", boost::bind(&conceal_wallet::save_all_txs_to_file, this, boost::arg<1>()), "save_txs_to_file - Saves all known transactions to <wallet_name>_conceal_transactions.txt");
-  m_consoleHandler.setHandler("check_address", boost::bind(&conceal_wallet::check_address, this, boost::arg<1>()), "check_address <address> - Checks to see if given wallet is valid.");
+  m_consoleHandler.setHandler("set_log", boost::bind(&ConcealWallet::set_log, this, boost::arg<1>()), "set_log <level> - Change current log level, <level> is a number 0-4");
+  m_consoleHandler.setHandler("address", boost::bind(&ConcealWallet::print_address, this, boost::arg<1>()), "Show current wallet public address");
+  m_consoleHandler.setHandler("save", boost::bind(&ConcealWallet::save, this, boost::arg<1>()), "Save wallet synchronized data");
+  m_consoleHandler.setHandler("reset", boost::bind(&ConcealWallet::reset, this, boost::arg<1>()), "Discard cache data and start synchronizing from the start");
+  m_consoleHandler.setHandler("help", boost::bind(&ConcealWallet::help, this, boost::arg<1>()), "Show this help");
+  m_consoleHandler.setHandler("ext_help", boost::bind(&ConcealWallet::extended_help, this, boost::arg<1>()), "Show this help");
+  m_consoleHandler.setHandler("exit", boost::bind(&ConcealWallet::exit, this, boost::arg<1>()), "Close wallet");  
+  m_consoleHandler.setHandler("balance_proof", boost::bind(&ConcealWallet::get_reserve_proof, this, boost::arg<1>()), "all|<amount> [<message>] - Generate a signature proving that you own at least <amount>, optionally with a challenge string <message>. ");
+  m_consoleHandler.setHandler("save_keys", boost::bind(&ConcealWallet::save_keys_to_file, this, boost::arg<1>()), "Saves wallet private keys to \"<wallet_name>_conceal_backup.txt\"");
+  m_consoleHandler.setHandler("list_deposits", boost::bind(&ConcealWallet::list_deposits, this, boost::arg<1>()), "Show all known deposits from this wallet");
+  m_consoleHandler.setHandler("deposit", boost::bind(&ConcealWallet::deposit, this, boost::arg<1>()), "deposit <months> <amount> - Create a deposit");
+  m_consoleHandler.setHandler("withdraw", boost::bind(&ConcealWallet::withdraw, this, boost::arg<1>()), "withdraw <id> - Withdraw a deposit");
+  m_consoleHandler.setHandler("deposit_info", boost::bind(&ConcealWallet::deposit_info, this, boost::arg<1>()), "deposit_info <id> - Get infomation for deposit <id>");
+  m_consoleHandler.setHandler("save_txs_to_file", boost::bind(&ConcealWallet::save_all_txs_to_file, this, boost::arg<1>()), "save_txs_to_file - Saves all known transactions to <wallet_name>_conceal_transactions.txt");
+  m_consoleHandler.setHandler("check_address", boost::bind(&ConcealWallet::check_address, this, boost::arg<1>()), "check_address <address> - Checks to see if given wallet is valid.");
 }
 
-std::string conceal_wallet::wallet_menu(bool do_ext)
+std::string ConcealWallet::wallet_menu(bool do_ext)
 {
   std::string menu_item;
 
@@ -374,14 +374,14 @@ std::string conceal_wallet::wallet_menu(bool do_ext)
 
 /* This function shows the number of outputs in the wallet
   that are below the dust threshold */
-bool conceal_wallet::show_dust(const std::vector<std::string> &)
+bool ConcealWallet::show_dust(const std::vector<std::string> &)
 {
   logger(INFO, BRIGHT_WHITE) << "Dust outputs: " << m_wallet->getDustBalance();
   return true;
 }
 
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::set_log(const std::vector<std::string> &args) {
+bool ConcealWallet::set_log(const std::vector<std::string> &args) {
   if (args.size() != 1) {
     fail_msg_writer() << "use: set_log <log_level_number_0-4>";
     return true;
@@ -405,7 +405,7 @@ bool conceal_wallet::set_log(const std::vector<std::string> &args) {
 bool key_import = true;
 
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::init(const boost::program_options::variables_map& vm) {
+bool ConcealWallet::init(const boost::program_options::variables_map& vm) {
   if (command_line::has_arg_2(vm, arg_daemon_address) && (command_line::has_arg_2(vm, arg_daemon_host) || command_line::has_arg_2(vm, arg_daemon_port)))
   {
     fail_msg_writer() << "you can't specify daemon host or port several times";
@@ -652,7 +652,7 @@ bool conceal_wallet::init(const boost::program_options::variables_map& vm) {
 }
 
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::deinit()
+bool ConcealWallet::deinit()
 {
   m_wallet->removeObserver(this);
   if (!m_wallet.get())
@@ -662,7 +662,7 @@ bool conceal_wallet::deinit()
   return close_wallet();
 }
 //----------------------------------------------------------------------------------------------------
-void conceal_wallet::handle_command_line(const boost::program_options::variables_map& vm) {
+void ConcealWallet::handle_command_line(const boost::program_options::variables_map& vm) {
   m_testnet = vm[arg_testnet.name].as<bool>();
   m_wallet_file_arg = command_line::get_arg(vm, arg_wallet_file);
   m_generate_new = command_line::get_arg(vm, arg_generate_new_wallet);
@@ -679,7 +679,7 @@ void conceal_wallet::handle_command_line(const boost::program_options::variables
   }
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::new_wallet(const std::string &wallet_file, const std::string& password) {
+bool ConcealWallet::new_wallet(const std::string &wallet_file, const std::string& password) {
   m_wallet_file = wallet_file;
 
   m_wallet.reset(new WalletGreen(m_dispatcher, m_currency, *m_node, logManager));
@@ -712,7 +712,7 @@ bool conceal_wallet::new_wallet(const std::string &wallet_file, const std::strin
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::new_wallet(const crypto::SecretKey &secret_key, const crypto::SecretKey &view_key, const std::string &wallet_file, const std::string& password) {
+bool ConcealWallet::new_wallet(const crypto::SecretKey &secret_key, const crypto::SecretKey &view_key, const std::string &wallet_file, const std::string& password) {
   m_wallet_file = wallet_file;
 
   m_wallet.reset(new WalletGreen(m_dispatcher, m_currency, *m_node, logManager));
@@ -741,7 +741,7 @@ bool conceal_wallet::new_wallet(const crypto::SecretKey &secret_key, const crypt
 }
 
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::close_wallet()
+bool ConcealWallet::close_wallet()
 {
   m_wallet->save();
   logger(logging::INFO, logging::BRIGHT_GREEN) << "Closing wallet...";
@@ -753,13 +753,13 @@ bool conceal_wallet::close_wallet()
 }
 
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::save(const std::vector<std::string> &)
+bool ConcealWallet::save(const std::vector<std::string> &)
 {
   m_wallet->save();
   return true;
 }
 
-bool conceal_wallet::reset(const std::vector<std::string> &)
+bool ConcealWallet::reset(const std::vector<std::string> &)
 {
   m_wallet->removeObserver(this);
   {
@@ -780,7 +780,7 @@ bool conceal_wallet::reset(const std::vector<std::string> &)
   return true;
 }
 
-bool conceal_wallet::get_reserve_proof(const std::vector<std::string> &args)
+bool ConcealWallet::get_reserve_proof(const std::vector<std::string> &args)
 {
 	if (args.size() != 1 && args.size() != 2)
   {
@@ -825,7 +825,7 @@ bool conceal_wallet::get_reserve_proof(const std::vector<std::string> &args)
 }
 
 
-bool conceal_wallet::get_tx_proof(const std::vector<std::string> &args)
+bool ConcealWallet::get_tx_proof(const std::vector<std::string> &args)
 {
   if(args.size() != 2 && args.size() != 3) {
     fail_msg_writer() << "Usage: get_tx_proof <txid> <dest_address> [<txkey>]";
@@ -882,14 +882,14 @@ bool conceal_wallet::get_tx_proof(const std::vector<std::string> &args)
   return true;
 }
 
-void conceal_wallet::synchronizationCompleted(std::error_code result)
+void ConcealWallet::synchronizationCompleted(std::error_code result)
 {
   std::unique_lock<std::mutex> lock(m_walletSynchronizedMutex);
   m_walletSynchronized = true;
   m_walletSynchronizedCV.notify_one();
 }
 
-void conceal_wallet::synchronizationProgressUpdated(uint32_t processedBlockCount, uint32_t totalBlockCount)
+void ConcealWallet::synchronizationProgressUpdated(uint32_t processedBlockCount, uint32_t totalBlockCount)
 {
   std::unique_lock<std::mutex> lock(m_walletSynchronizedMutex);
   if (!m_walletSynchronized)
@@ -898,7 +898,7 @@ void conceal_wallet::synchronizationProgressUpdated(uint32_t processedBlockCount
   }
 }
 
-bool conceal_wallet::show_balance(const std::vector<std::string> &args)
+bool ConcealWallet::show_balance(const std::vector<std::string> &args)
 {
   if (!args.empty())
   {
@@ -911,7 +911,7 @@ bool conceal_wallet::show_balance(const std::vector<std::string> &args)
   return true;
 }
 
-bool conceal_wallet::sign_message(const std::vector<std::string>& args)
+bool ConcealWallet::sign_message(const std::vector<std::string>& args)
 {
   if(args.size() < 1)
   {
@@ -931,7 +931,7 @@ bool conceal_wallet::sign_message(const std::vector<std::string>& args)
   return true;	
 }
 
-bool conceal_wallet::verify_signature(const std::vector<std::string>& args)
+bool ConcealWallet::verify_signature(const std::vector<std::string>& args)
 {
   if (args.size() != 3)
   {
@@ -973,7 +973,7 @@ bool conceal_wallet::verify_signature(const std::vector<std::string>& args)
 /* CREATE INTEGRATED ADDRESS */
 /* take a payment Id as an argument and generate an integrated wallet address */
 
-bool conceal_wallet::create_integrated(const std::vector<std::string>& args) 
+bool ConcealWallet::create_integrated(const std::vector<std::string>& args) 
 {
 
   /* check if there is a payment id */
@@ -1019,13 +1019,13 @@ bool conceal_wallet::create_integrated(const std::vector<std::string>& args)
 
 /* ---------------------------------------------------------------------------------------- */
 
-bool conceal_wallet::export_keys(const std::vector<std::string> &)
+bool ConcealWallet::export_keys(const std::vector<std::string> &)
 {
   std::cout << get_wallet_keys();
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::show_incoming_transfers(const std::vector<std::string> &)
+bool ConcealWallet::show_incoming_transfers(const std::vector<std::string> &)
 {
   bool hasTransfers = false;
   size_t transactionsCount = m_wallet->getTransactionCount();
@@ -1048,7 +1048,7 @@ bool conceal_wallet::show_incoming_transfers(const std::vector<std::string> &)
   return true;
 }
 
-bool conceal_wallet::listTransfers(const std::vector<std::string>& args) {
+bool ConcealWallet::listTransfers(const std::vector<std::string>& args) {
   bool haveTransfers = false;
   bool haveBlockHeight = false;
   std::string blockHeightString = ""; 
@@ -1096,7 +1096,7 @@ bool conceal_wallet::listTransfers(const std::vector<std::string>& args) {
   return true;
 }
 
-bool conceal_wallet::show_payments(const std::vector<std::string> &args) {
+bool ConcealWallet::show_payments(const std::vector<std::string> &args) {
   if (args.empty()) {
     fail_msg_writer() << "expected at least one payment ID";
     return true;
@@ -1143,7 +1143,7 @@ bool conceal_wallet::show_payments(const std::vector<std::string> &args) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::show_blockchain_height(const std::vector<std::string>& args) {
+bool ConcealWallet::show_blockchain_height(const std::vector<std::string>& args) {
   try {
     uint64_t bc_height = m_node->getLastLocalBlockHeight();
     success_msg_writer() << bc_height;
@@ -1154,7 +1154,7 @@ bool conceal_wallet::show_blockchain_height(const std::vector<std::string>& args
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::show_num_unlocked_outputs(const std::vector<std::string> &)
+bool ConcealWallet::show_num_unlocked_outputs(const std::vector<std::string> &)
 {
   try
   {
@@ -1172,7 +1172,7 @@ bool conceal_wallet::show_num_unlocked_outputs(const std::vector<std::string> &)
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::optimize_outputs(const std::vector<std::string>& args) {
+bool ConcealWallet::optimize_outputs(const std::vector<std::string>& args) {
   try
   {
     cn::TransactionId tx = m_wallet->createOptimizationTransaction(m_wallet->getAddress(0));
@@ -1201,7 +1201,7 @@ bool conceal_wallet::optimize_outputs(const std::vector<std::string>& args) {
 //----------------------------------------------------------------------------------------------------
 
 
-bool conceal_wallet::optimize_all_outputs(const std::vector<std::string>& args) {
+bool ConcealWallet::optimize_all_outputs(const std::vector<std::string>& args) {
 
   uint64_t num_unlocked_outputs = 0;
 
@@ -1223,7 +1223,7 @@ bool conceal_wallet::optimize_all_outputs(const std::vector<std::string>& args) 
 
 //----------------------------------------------------------------------------------------------------
 
-std::string conceal_wallet::resolveAlias(const std::string& aliasUrl)
+std::string ConcealWallet::resolveAlias(const std::string& aliasUrl)
 {
   std::string host;
   std::string uri;
@@ -1253,7 +1253,7 @@ std::string conceal_wallet::resolveAlias(const std::string& aliasUrl)
 //----------------------------------------------------------------------------------------------------
 
 /* This extracts the fee address from the remote node */
-std::string conceal_wallet::getFeeAddress() {
+std::string ConcealWallet::getFeeAddress() {
   
   HttpClient httpClient(m_dispatcher, m_daemon_host, m_daemon_port);
 
@@ -1281,9 +1281,9 @@ std::string conceal_wallet::getFeeAddress() {
 }
 
 
-bool conceal_wallet::transfer(const std::vector<std::string> &args) {
+bool ConcealWallet::transfer(const std::vector<std::string> &args) {
   try {
-    transfer_cmd cmd(m_currency, m_remote_node_address);
+    TransferCmd cmd(m_currency, m_remote_node_address);
 
     if (!cmd.parseTx(logger, args))
       return true;
@@ -1370,7 +1370,7 @@ bool conceal_wallet::transfer(const std::vector<std::string> &args) {
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::run()
+bool ConcealWallet::run()
 {
   {
     std::unique_lock<std::mutex> lock(m_walletSynchronizedMutex);
@@ -1389,28 +1389,28 @@ bool conceal_wallet::run()
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-void conceal_wallet::stop()
+void ConcealWallet::stop()
 {
   m_dispatcher.remoteSpawn([this]
                            { m_stopEvent.set(); });
   m_consoleHandler.requestStop();
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::print_address(const std::vector<std::string> &)
+bool ConcealWallet::print_address(const std::vector<std::string> &)
 {
   success_msg_writer() << m_wallet->getAddress(0);
   return true;
 }
 //----------------------------------------------------------------------------------------------------
-bool conceal_wallet::process_command(const std::vector<std::string> &args) {
+bool ConcealWallet::process_command(const std::vector<std::string> &args) {
   return m_consoleHandler.runCommand(args);
 }
 
-void conceal_wallet::printConnectionError() const {
+void ConcealWallet::printConnectionError() const {
   fail_msg_writer() << "wallet failed to connect to daemon (" << m_daemon_address << ").";
 }
 
-std::string conceal_wallet::get_wallet_keys() const
+std::string ConcealWallet::get_wallet_keys() const
 {
   KeyPair viewKey = m_wallet->getViewKey();
   KeyPair spendKey = m_wallet->getAddressSpendKey(0);
@@ -1439,7 +1439,7 @@ std::string conceal_wallet::get_wallet_keys() const
   return stream.str();
 }
 
-bool conceal_wallet::save_keys_to_file(const std::vector<std::string>& args)
+bool ConcealWallet::save_keys_to_file(const std::vector<std::string>& args)
 {
   if (!args.empty())
   {
@@ -1459,7 +1459,7 @@ bool conceal_wallet::save_keys_to_file(const std::vector<std::string>& args)
   return true;
 }
 
-bool conceal_wallet::save_all_txs_to_file(const std::vector<std::string> &args)
+bool ConcealWallet::save_all_txs_to_file(const std::vector<std::string> &args)
 {
   /* check args, default: include_deposits = false */
   bool include_deposits;
@@ -1602,7 +1602,7 @@ bool conceal_wallet::save_all_txs_to_file(const std::vector<std::string> &args)
   return true;
 }
 
-bool conceal_wallet::list_deposits(const std::vector<std::string> &)
+bool ConcealWallet::list_deposits(const std::vector<std::string> &)
 {
   bool haveDeposits = m_wallet->getWalletDepositCount() > 0;
 
@@ -1627,7 +1627,7 @@ bool conceal_wallet::list_deposits(const std::vector<std::string> &)
   return true;
 }
 
-bool conceal_wallet::deposit(const std::vector<std::string> &args)
+bool ConcealWallet::deposit(const std::vector<std::string> &args)
 {
   if (args.size() != 2)
   {
@@ -1704,7 +1704,7 @@ bool conceal_wallet::deposit(const std::vector<std::string> &args)
   return true;
 }
 
-bool conceal_wallet::withdraw(const std::vector<std::string> &args)
+bool ConcealWallet::withdraw(const std::vector<std::string> &args)
 {
   if (args.size() != 1)
   {
@@ -1733,7 +1733,7 @@ bool conceal_wallet::withdraw(const std::vector<std::string> &args)
   return true;
 }
 
-bool conceal_wallet::deposit_info(const std::vector<std::string> &args)
+bool ConcealWallet::deposit_info(const std::vector<std::string> &args)
 {
   if (args.size() != 1)
   {
@@ -1758,7 +1758,7 @@ bool conceal_wallet::deposit_info(const std::vector<std::string> &args)
   return true;
 }
 
-bool conceal_wallet::check_address(const std::vector<std::string> &args)
+bool ConcealWallet::check_address(const std::vector<std::string> &args)
 {
   if (args.size() != 1) 
   {
@@ -1779,55 +1779,55 @@ bool conceal_wallet::check_address(const std::vector<std::string> &args)
   return true;
 }
 
-void conceal_wallet::initCompleted(std::error_code result)
+void ConcealWallet::initCompleted(std::error_code result)
 {
   // Nothing to do here
 }
-void conceal_wallet::saveCompleted(std::error_code result)
+void ConcealWallet::saveCompleted(std::error_code result)
 {
   // Nothing to do here
 }
-void conceal_wallet::actualBalanceUpdated(uint64_t balance)
+void ConcealWallet::actualBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::pendingBalanceUpdated(uint64_t balance)
+void ConcealWallet::pendingBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::actualDepositBalanceUpdated(uint64_t balance)
+void ConcealWallet::actualDepositBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::pendingDepositBalanceUpdated(uint64_t balance)
+void ConcealWallet::pendingDepositBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::actualInvestmentBalanceUpdated(uint64_t balance)
+void ConcealWallet::actualInvestmentBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::pendingInvestmentBalanceUpdated(uint64_t balance)
+void ConcealWallet::pendingInvestmentBalanceUpdated(uint64_t balance)
 {
   // Nothing to do here
 }
-void conceal_wallet::externalTransactionCreated(TransactionId transactionId)
+void ConcealWallet::externalTransactionCreated(TransactionId transactionId)
 {
   // Nothing to do here
 }
-void conceal_wallet::sendTransactionCompleted(TransactionId transactionId, std::error_code result)
+void ConcealWallet::sendTransactionCompleted(TransactionId transactionId, std::error_code result)
 {
   // Nothing to do here
 }
-void conceal_wallet::transactionUpdated(TransactionId transactionId)
+void ConcealWallet::transactionUpdated(TransactionId transactionId)
 {
   // Nothing to do here
 }
-void conceal_wallet::depositUpdated(DepositId depositId)
+void ConcealWallet::depositUpdated(DepositId depositId)
 {
   // Nothing to do here
 }
-void conceal_wallet::depositsUpdated(const std::vector<DepositId> &depositIds)
+void ConcealWallet::depositsUpdated(const std::vector<DepositId> &depositIds)
 {
   // Nothing to do here
 }

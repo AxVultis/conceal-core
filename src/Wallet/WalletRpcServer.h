@@ -22,11 +22,11 @@ namespace tools
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class wallet_rpc_server : public cn::HttpServer
+  class WalletRpcServer : public cn::HttpServer
   {
   public:
 
-    wallet_rpc_server(
+    WalletRpcServer(
       platform_system::Dispatcher& dispatcher,
       logging::ILogger& log,
       cn::IWalletLegacy &w,

@@ -46,7 +46,7 @@ namespace cn
   class Blockchain : public cn::ITransactionValidator
   {
   public:
-    Blockchain(const Currency &currency, tx_memory_pool &tx_pool, logging::ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled);
+    Blockchain(const Currency &currency, TransactionPool &tx_pool, logging::ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled);
 
     bool addObserver(IBlockchainStorageObserver *observer);
     bool removeObserver(IBlockchainStorageObserver *observer);
@@ -78,8 +78,8 @@ namespace cn
     bool getBlockByHash(const crypto::Hash &h, Block &blk);
     bool getBlockHeight(const crypto::Hash &blockId, uint32_t &blockHeight);
 
-    template <class archive_t>
-    void serialize(archive_t &ar, const unsigned int version);
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int version);
 
     bool haveTransaction(const crypto::Hash &id);
     bool haveTransactionKeyImagesAsSpent(const Transaction &tx);
@@ -273,7 +273,7 @@ namespace cn
     using MultisignatureOutputsContainer = parallel_flat_hash_map<uint64_t, std::vector<MultisignatureOutputUsage>>;
 
     const Currency &m_currency;
-    tx_memory_pool &m_tx_pool;
+    TransactionPool &m_tx_pool;
     mutable std::recursive_mutex m_blockchain_lock; // TODO: add here reader/writer lock
     crypto::cn_context m_cn_context;
     tools::ObserverManager<IBlockchainStorageObserver> m_observerManager;
