@@ -52,7 +52,7 @@ namespace cn {
     }
   }
 
-void HttpParser::receiveRequest(std::istream& stream, HttpRequest& request) {
+void HttpParser::receiveRequest(std::istream& stream, HttpRequest& request) const {
   readWord(stream, request.method);
   readWord(stream, request.url);
 
@@ -69,7 +69,7 @@ void HttpParser::receiveRequest(std::istream& stream, HttpRequest& request) {
 }
 
 
-void HttpParser::receiveResponse(std::istream& stream, HttpResponse& response) {
+void HttpParser::receiveResponse(std::istream& stream, HttpResponse& response) const {
   std::string httpVersion;
   readWord(stream, httpVersion);
   
@@ -138,7 +138,7 @@ void HttpParser::readWord(std::istream& stream, std::string& word) const {
   }
 }
 
-void HttpParser::readHeaders(std::istream& stream, HttpRequest::Headers& headers) {
+void HttpParser::readHeaders(std::istream& stream, HttpRequest::Headers& headers) const {
   std::string name;
   std::string value;
 
@@ -191,7 +191,7 @@ bool HttpParser::readHeader(std::istream& stream, std::string& name, std::string
 
   std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
-  c = stream.peek();
+  c = static_cast<char>(stream.peek());
   if (c == '\r') {
     stream.get(c).get(c);
     if (c != '\n') {
@@ -218,7 +218,7 @@ void HttpParser::readBody(std::istream& stream, std::string& body, const size_t 
   size_t read = 0;
 
   while (stream.good() && read < bodyLen) {
-    body += stream.get();
+    body += static_cast<char>(stream.get());
     ++read;
   }
 
