@@ -66,7 +66,6 @@ namespace cn {
   };
 
   using cn::BlockInfo;
-  using namespace boost::multi_index;
 
   /************************************************************************/
   /*                                                                      */
@@ -164,12 +163,12 @@ namespace cn {
       }
     };
 
-    using main_index_t = hashed_unique<boost::multi_index::member<TransactionDetails, crypto::Hash, &TransactionDetails::id>>;
-    using fee_index_t = ordered_non_unique<identity<TransactionDetails>, TransactionPriorityComparator>;
+    using main_index_t = boost::multi_index::hashed_unique<boost::multi_index::member<TransactionDetails, crypto::Hash, &TransactionDetails::id>>;
+    using fee_index_t = boost::multi_index::ordered_non_unique<boost::multi_index::identity<TransactionDetails>, TransactionPriorityComparator>;
 
     using tx_container_t =
-        multi_index_container<TransactionDetails,
-                              indexed_by<main_index_t, fee_index_t>>;
+        boost::multi_index::multi_index_container<TransactionDetails,
+                              boost::multi_index::indexed_by<main_index_t, fee_index_t>>;
 
     using GlobalOutput = std::pair<uint64_t, uint64_t>;
     using GlobalOutputsContainer = std::set<GlobalOutput>;

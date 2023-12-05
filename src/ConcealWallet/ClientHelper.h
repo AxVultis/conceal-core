@@ -14,7 +14,6 @@
 
 #include <Logging/LoggerRef.h>
 
-using namespace common;
 using common::JsonValue;
 
 namespace cn

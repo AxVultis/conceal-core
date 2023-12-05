@@ -60,7 +60,7 @@ private:
   friend class Core;
 };
 
-Core::Core(const Currency &currency, i_cryptonote_protocol *pprotocol, logging::ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled) : m_currency(currency),
+Core::Core(const Currency &currency, ICryptonoteProtocol *pprotocol, logging::ILogger &logger, bool blockchainIndexesEnabled, bool blockchainAutosaveEnabled) : m_currency(currency),
                                                                                                                                                                   logger(logger, "core"),
                                                                                                                                                                   m_mempool(currency, m_blockchain, m_timeProvider, logger),
                                                                                                                                                                   m_blockchain(currency, m_mempool, logger, blockchainIndexesEnabled, blockchainAutosaveEnabled),
@@ -77,7 +77,7 @@ Core::Core(const Currency &currency, i_cryptonote_protocol *pprotocol, logging::
   m_blockchain.removeObserver(this);
 }
 
-void Core::set_cryptonote_protocol(i_cryptonote_protocol* pprotocol) {
+void Core::set_cryptonote_protocol(ICryptonoteProtocol* pprotocol) {
   if (pprotocol) {
     m_pprotocol = pprotocol;
   } else {

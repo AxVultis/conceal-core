@@ -33,7 +33,7 @@ namespace cn
   class Currency;
 
   class CryptoNoteProtocolHandler :
-    public i_cryptonote_protocol,
+    public ICryptonoteProtocol,
     public ICryptoNoteProtocolQuery
   {
   public:
@@ -86,7 +86,7 @@ namespace cn
     int handle_notify_missing_txs(int command, NOTIFY_MISSING_TXS::request &arg, CryptoNoteConnectionContext &context);
 
 
-    //----------------- i_cryptonote_protocol ----------------------------------
+    //----------------- ICryptonoteProtocol ----------------------------------
     void relay_block(NOTIFY_NEW_BLOCK::request& arg) override;
     void relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg) override;
 
@@ -105,7 +105,7 @@ namespace cn
     ICore& m_core;
     const Currency& m_currency;
 
-    p2p_endpoint_stub m_p2p_stub;
+    P2pEndpointStub m_p2p_stub;
     IP2pEndpoint* m_p2p;
     std::atomic<bool> m_synchronized;
     std::atomic<bool> m_stop;

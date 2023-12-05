@@ -8,21 +8,19 @@
 #include <vector>
 #include <CryptoNote.h>
 
-using namespace cn;
-
 namespace common
 {
 
     template <class It>
-    inline BinaryArray::iterator append(BinaryArray &ba, It be, It en)
+    inline cn::BinaryArray::iterator append(cn::BinaryArray &ba, It be, It en)
     {
         return ba.insert(ba.end(), be, en);
     }
-    inline BinaryArray::iterator append(BinaryArray &ba, size_t add, BinaryArray::value_type va)
+    inline cn::BinaryArray::iterator append(cn::BinaryArray &ba, size_t add, cn::BinaryArray::value_type va)
     {
         return ba.insert(ba.end(), add, va);
     }
-    inline BinaryArray::iterator append(BinaryArray &ba, const BinaryArray &other)
+    inline cn::BinaryArray::iterator append(cn::BinaryArray &ba, const cn::BinaryArray &other)
     {
         return ba.insert(ba.end(), other.begin(), other.end());
     }

@@ -30,46 +30,45 @@ class INode;
 class TransfersSyncronizer : public ITransfersSynchronizer, public IBlockchainConsumerObserver {
 public:
   TransfersSyncronizer(const cn::Currency& currency, logging::ILogger& logger, IBlockchainSynchronizer& sync, INode& node);
-  virtual ~TransfersSyncronizer();
+  ~TransfersSyncronizer() override;
 
   void initTransactionPool(const std::unordered_set<crypto::Hash>& uncommitedTransactions);
 
   // ITransfersSynchronizer
-  virtual ITransfersSubscription& addSubscription(const AccountSubscription& acc) override;
-  virtual bool removeSubscription(const AccountPublicAddress& acc) override;
-  virtual void getSubscriptions(std::vector<AccountPublicAddress>& subscriptions) override;
-  virtual ITransfersSubscription* getSubscription(const AccountPublicAddress& acc) override;
-  virtual std::vector<crypto::Hash> getViewKeyKnownBlocks(const crypto::PublicKey& publicViewKey) override;
+  ITransfersSubscription& addSubscription(const AccountSubscription& acc) override;
+  bool removeSubscription(const AccountPublicAddress& acc) override;
+  void getSubscriptions(std::vector<AccountPublicAddress>& subscriptions) override;
+  ITransfersSubscription* getSubscription(const AccountPublicAddress& acc) override;
+  std::vector<crypto::Hash> getViewKeyKnownBlocks(const crypto::PublicKey& publicViewKey) override;
 
   void subscribeConsumerNotifications(const crypto::PublicKey& viewPublicKey, ITransfersSynchronizerObserver* observer);
   void unsubscribeConsumerNotifications(const crypto::PublicKey& viewPublicKey, ITransfersSynchronizerObserver* observer);
   void addPublicKeysSeen(const AccountPublicAddress& acc, const crypto::Hash& transactionHash, const crypto::PublicKey& outputKey);
   
   // IStreamSerializable
-  virtual void save(std::ostream& os) override;
-  virtual void load(std::istream& in) override;
+  void save(std::ostream& os) override;
+  void load(std::istream& in) override;
 
 private:
   logging::LoggerRef m_logger;
 
   // map { view public key -> consumer }
-  typedef std::unordered_map<crypto::PublicKey, std::unique_ptr<TransfersConsumer>> ConsumersContainer;
+  using ConsumersContainer = std::unordered_map<crypto::PublicKey, std::unique_ptr<TransfersConsumer>>;
   ConsumersContainer m_consumers;
 
-  typedef tools::ObserverManager<ITransfersSynchronizerObserver> SubscribersNotifier;
-  typedef std::unordered_map<crypto::PublicKey, std::unique_ptr<SubscribersNotifier>> SubscribersContainer;
+  using SubscribersNotifier = tools::ObserverManager<ITransfersSynchronizerObserver>;
+  using SubscribersContainer = std::unordered_map<crypto::PublicKey, std::unique_ptr<SubscribersNotifier>>;
   SubscribersContainer m_subscribers;
 
-  // std::unordered_map<AccountAddress, std::unique_ptr<TransfersConsumer>> m_subscriptions;
   IBlockchainSynchronizer& m_sync;
   INode& m_node;
   const cn::Currency& m_currency;
 
-  virtual void onBlocksAdded(IBlockchainConsumer* consumer, const std::vector<crypto::Hash>& blockHashes) override;
-  virtual void onBlockchainDetach(IBlockchainConsumer* consumer, uint32_t blockIndex) override;
-  virtual void onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
-  virtual void onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
-  virtual void onTransactionUpdated(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash,
+  void onBlocksAdded(IBlockchainConsumer* consumer, const std::vector<crypto::Hash>& blockHashes) override;
+  void onBlockchainDetach(IBlockchainConsumer* consumer, uint32_t blockIndex) override;
+  void onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
+  void onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
+  void onTransactionUpdated(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash,
     const std::vector<ITransfersContainer*>& containers) override;
 
   bool findViewKeyForConsumer(IBlockchainConsumer* consumer, crypto::PublicKey& viewKey) const;

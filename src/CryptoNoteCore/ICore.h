@@ -35,7 +35,7 @@ struct block_verification_context;
 struct BlockFullInfo;
 struct BlockShortInfo;
 struct core_stat_info;
-struct i_cryptonote_protocol;
+struct ICryptonoteProtocol;
 struct Transaction;
 struct MultisignatureInput;
 struct KeyInput;
@@ -71,7 +71,7 @@ public:
   virtual bool get_random_outs_for_amounts(const COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request& req, COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response& res) = 0;
   virtual bool get_tx_outputs_gindexs(const crypto::Hash& tx_id, std::vector<uint32_t>& indexs) = 0;
   virtual bool getOutByMSigGIndex(uint64_t amount, uint64_t gindex, MultisignatureOutput& out) = 0;
-  virtual i_cryptonote_protocol* get_protocol() = 0;
+  virtual ICryptonoteProtocol* get_protocol() = 0;
   virtual bool handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) = 0; //Deprecated. Should be removed with CryptoNoteProtocolHandler.
   virtual std::vector<Transaction> getPoolTransactions() = 0;
   virtual bool getPoolTransaction(const crypto::Hash &tx_hash, Transaction &transaction) = 0;

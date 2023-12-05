@@ -105,7 +105,7 @@ void printListTransfersItem(LoggerRef& logger, const WalletTransaction& txInfo, 
   crypto::Hash paymentId;
   std::string paymentIdStr = (getPaymentIdFromTxExtra(extraVec, paymentId) && paymentId != NULL_HASH ? common::podToHex(paymentId) : "");
 
-  std::string timeString = formatTimestamp(static_cast<time_t>(txInfo.timestamp));
+  std::string timeString = common::formatTimestamp(static_cast<time_t>(txInfo.timestamp));
 
   std::string rowColor = txInfo.totalAmount < 0 ? MAGENTA : GREEN;
   logger(INFO, rowColor)

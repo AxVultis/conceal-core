@@ -11,8 +11,6 @@
 
 #include <Logging/LoggerRef.h>
 
-using namespace logging;
-
 namespace cn
 {
   class TransferCmd
@@ -30,7 +28,7 @@ namespace cn
 
       TransferCmd(const cn::Currency& currency, const std::string& remote_fee_address);
 
-      bool parseTx(const LoggerRef& logger, const std::vector<std::string> &args);
+      bool parseTx(const logging::LoggerRef& logger, const std::vector<std::string> &args);
   };
 
   template <typename IterT, typename ValueT = typename IterT::value_type>

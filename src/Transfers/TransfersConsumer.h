@@ -38,19 +38,19 @@ public:
   void addPublicKeysSeen(const crypto::Hash& transactionHash, const crypto::PublicKey& outputKey);
   
   // IBlockchainConsumer
-  virtual SynchronizationStart getSyncStart() override;
-  virtual void onBlockchainDetach(uint32_t height) override;
-  virtual bool onNewBlocks(const CompleteBlock* blocks, uint32_t startHeight, uint32_t count) override;
-  virtual std::error_code onPoolUpdated(const std::vector<std::unique_ptr<ITransactionReader>>& addedTransactions, const std::vector<crypto::Hash>& deletedTransactions) override;
-  virtual const std::unordered_set<crypto::Hash>& getKnownPoolTxIds() const override;
+  SynchronizationStart getSyncStart() override;
+  void onBlockchainDetach(uint32_t height) override;
+  bool onNewBlocks(const CompleteBlock* blocks, uint32_t startHeight, uint32_t count) override;
+  std::error_code onPoolUpdated(const std::vector<std::unique_ptr<ITransactionReader>>& addedTransactions, const std::vector<crypto::Hash>& deletedTransactions) override;
+  const std::unordered_set<crypto::Hash>& getKnownPoolTxIds() const override;
 
-  virtual std::error_code addUnconfirmedTransaction(const ITransactionReader& transaction) override;
-  virtual void removeUnconfirmedTransaction(const crypto::Hash& transactionHash) override;
+  std::error_code addUnconfirmedTransaction(const ITransactionReader& transaction) override;
+  void removeUnconfirmedTransaction(const crypto::Hash& transactionHash) override;
 
 private:
 
   template <typename F>
-  void forEachSubscription(F action) {
+  void forEachSubscription(F action) const {
     for (const auto& kv : m_subscriptions) {
       action(*kv.second);
     }

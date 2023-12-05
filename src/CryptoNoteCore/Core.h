@@ -35,13 +35,13 @@ namespace cn {
 
   class Core : public ICore, public IMinerHandler, public IBlockchainStorageObserver, public ITxPoolObserver {
    public:
-     Core(const Currency &currency, i_cryptonote_protocol *pprotocol, logging::ILogger &logger, bool blockchainIndexesEnabled = false, bool blockchainAutosaveEnabled = false);
+     Core(const Currency &currency, ICryptonoteProtocol *pprotocol, logging::ILogger &logger, bool blockchainIndexesEnabled = false, bool blockchainAutosaveEnabled = false);
      ~Core() override;
 
      bool on_idle() override;
      bool handle_incoming_tx(const BinaryArray& tx_blob, tx_verification_context& tvc, bool keeped_by_block) override; //Deprecated. Should be removed with CryptoNoteProtocolHandler.
      bool handle_incoming_block_blob(const BinaryArray& block_blob, block_verification_context& bvc, bool control_miner, bool relay_block) override;
-     i_cryptonote_protocol* get_protocol() override {return m_pprotocol;}
+     ICryptonoteProtocol* get_protocol() override {return m_pprotocol;}
      const Currency& currency() const override { return m_currency; }
 
      //-------------------- IMinerHandler -----------------------
@@ -115,7 +115,7 @@ namespace cn {
     uint64_t coinsEmittedAtHeight(uint64_t height);
     uint64_t difficultyAtHeight(uint64_t height);
 
-    void set_cryptonote_protocol(i_cryptonote_protocol *pprotocol);
+    void set_cryptonote_protocol(ICryptonoteProtocol *pprotocol);
     void set_checkpoints(Checkpoints &&chk_pts);
 
     std::vector<Transaction> getPoolTransactions() override;
@@ -183,10 +183,10 @@ namespace cn {
     cn::RealTimeProvider m_timeProvider;
     TransactionPool m_mempool;
     Blockchain m_blockchain;
-    i_cryptonote_protocol *m_pprotocol;
+    ICryptonoteProtocol *m_pprotocol;
     std::unique_ptr<Miner> m_miner;
     std::string m_config_folder;
-    cryptonote_protocol_stub m_protocol_stub;
+    CryptonoteProtocolStub m_protocol_stub;
     friend class tx_validate_inputs;
     std::atomic<bool> m_starter_message_showed;
     tools::ObserverManager<ICoreObserver> m_observerManager;

@@ -31,7 +31,7 @@ namespace cn
     virtual void externalRelayNotifyToList(int command, const BinaryArray &data_buff, const std::list<boost::uuids::uuid> &relayList) = 0;
   };
 
-  struct p2p_endpoint_stub : public IP2pEndpoint
+  struct P2pEndpointStub : public IP2pEndpoint
   {
     void relay_notify_to_all(int command, const BinaryArray &data_buff, const net_connection_id *excludeConnection) override {}
     bool invoke_notify_to_peer(int command, const BinaryArray &req_buff, const cn::CryptoNoteConnectionContext &context) override { return true; }

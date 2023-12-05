@@ -58,7 +58,7 @@ class IBlockchainSynchronizer :
   public IObservable<IBlockchainSynchronizerObserver>,
   public IStreamSerializable {
 public:
-  virtual ~IBlockchainSynchronizer() = default;
+  ~IBlockchainSynchronizer() override = default;
   virtual void addConsumer(IBlockchainConsumer* consumer) = 0;
   virtual bool removeConsumer(IBlockchainConsumer* consumer) = 0;
   virtual IStreamSerializable* getConsumerState(IBlockchainConsumer* consumer) const = 0;

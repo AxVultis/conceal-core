@@ -33,7 +33,7 @@ public:
   virtual bool get_random_outs_for_amounts(const cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request& req,
       cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response& res) override;
   virtual bool get_tx_outputs_gindexs(const crypto::Hash& tx_id, std::vector<uint32_t>& indexs) override;
-  virtual cn::i_cryptonote_protocol* get_protocol() override;
+  virtual cn::ICryptonoteProtocol* get_protocol() override;
   virtual bool handle_incoming_tx(cn::BinaryArray const& tx_blob, cn::tx_verification_context& tvc, bool keeped_by_block) override;
   virtual std::vector<cn::Transaction> getPoolTransactions() override;
   virtual bool getPoolTransaction(const crypto::Hash &tx_hash, cn::Transaction &transaction) override;

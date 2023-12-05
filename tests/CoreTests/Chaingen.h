@@ -403,7 +403,7 @@ inline bool do_replay_events(std::vector<test_event_entry>& events, t_test_class
   cn::CoreConfig coreConfig;
   coreConfig.init(vm);
   cn::MinerConfig emptyMinerConfig;
-  cn::cryptonote_protocol_stub pr; //TODO: stub only for this kind of test, make real validation of relayed objects
+  cn::CryptonoteProtocolStub pr; //TODO: stub only for this kind of test, make real validation of relayed objects
   cn::Core c(validator.currency(), &pr, logger);
   if (!c.init(coreConfig, emptyMinerConfig, false))
   {
