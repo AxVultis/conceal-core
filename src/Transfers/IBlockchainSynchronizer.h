@@ -33,7 +33,7 @@ class IBlockchainConsumerObserver;
 
 class IBlockchainConsumer : public IObservable<IBlockchainConsumerObserver> {
 public:
-  virtual ~IBlockchainConsumer() {}
+  virtual ~IBlockchainConsumer() = default;
   virtual SynchronizationStart getSyncStart() = 0;
   virtual const std::unordered_set<crypto::Hash>& getKnownPoolTxIds() const = 0;
   virtual void onBlockchainDetach(uint32_t height) = 0;
@@ -46,10 +46,11 @@ public:
 
 class IBlockchainConsumerObserver {
 public:
+  virtual ~IBlockchainConsumerObserver() = default;
   virtual void onBlocksAdded(IBlockchainConsumer* consumer, const std::vector<crypto::Hash>& blockHashes) {}
   virtual void onBlockchainDetach(IBlockchainConsumer* consumer, uint32_t blockIndex) {}
-  virtual void onTransactionDeleteBegin(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {}
-  virtual void onTransactionDeleteEnd(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {}
+  virtual void onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {}
+  virtual void onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {}
   virtual void onTransactionUpdated(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash, const std::vector<ITransfersContainer*>& containers) {}
 };
 
@@ -57,6 +58,7 @@ class IBlockchainSynchronizer :
   public IObservable<IBlockchainSynchronizerObserver>,
   public IStreamSerializable {
 public:
+  virtual ~IBlockchainSynchronizer() = default;
   virtual void addConsumer(IBlockchainConsumer* consumer) = 0;
   virtual bool removeConsumer(IBlockchainConsumer* consumer) = 0;
   virtual IStreamSerializable* getConsumerState(IBlockchainConsumer* consumer) const = 0;

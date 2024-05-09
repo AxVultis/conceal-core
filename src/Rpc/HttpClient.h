@@ -32,7 +32,7 @@ namespace cn {
 
 class ConnectException : public std::runtime_error  {
 public:
-  ConnectException(const std::string& whatArg);
+  explicit ConnectException(const std::string& whatArg);
 };
 
 class HttpClient {
@@ -102,12 +102,10 @@ void invokeJsonRpcCommand(HttpClient& client, const std::string& method, const R
 
     JsonRpc::JsonRpcResponse jsRes;
 
-    //if (httpRes.getStatus() == HttpResponse::STATUS_200) {
-      jsRes.parse(httpRes.getBody());
-      if (!jsRes.getResult(res)) {
-        throw std::runtime_error("HTTP status: " + std::to_string(httpRes.getStatus()));
-      }
-    //}
+    jsRes.parse(httpRes.getBody());
+    if (!jsRes.getResult(res)) {
+      throw std::runtime_error("HTTP status: " + std::to_string(httpRes.getStatus()));
+    }
 
   } catch (const ConnectException&) {
     throw std::runtime_error("HTTP status: CONNECT_ERROR");

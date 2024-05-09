@@ -67,8 +67,8 @@ private:
 
   virtual void onBlocksAdded(IBlockchainConsumer* consumer, const std::vector<crypto::Hash>& blockHashes) override;
   virtual void onBlockchainDetach(IBlockchainConsumer* consumer, uint32_t blockIndex) override;
-  virtual void onTransactionDeleteBegin(IBlockchainConsumer* consumer, crypto::Hash transactionHash) override;
-  virtual void onTransactionDeleteEnd(IBlockchainConsumer* consumer, crypto::Hash transactionHash) override;
+  virtual void onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
+  virtual void onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) override;
   virtual void onTransactionUpdated(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash,
     const std::vector<ITransfersContainer*>& containers) override;
 

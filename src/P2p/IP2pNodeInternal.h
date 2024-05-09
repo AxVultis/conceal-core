@@ -16,6 +16,7 @@ class P2pContext;
 
 class IP2pNodeInternal {
 public:
+  virtual ~IP2pNodeInternal() = default;
   virtual const CORE_SYNC_DATA& getGenesisPayload() const = 0;
   virtual std::list<PeerlistEntry> getLocalPeerList() const = 0;
   virtual basic_node_data getNodeData() const = 0;

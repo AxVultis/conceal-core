@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <CryptoNote.h>
@@ -15,7 +16,7 @@ namespace cn {
 
 class NewBlockMessage {
 public:
-  NewBlockMessage(const crypto::Hash& hash);
+  explicit NewBlockMessage(const crypto::Hash& hash);
   NewBlockMessage() = default;
   void get(crypto::Hash& hash) const;
 private:
@@ -24,7 +25,7 @@ private:
 
 class NewAlternativeBlockMessage {
 public:
-  NewAlternativeBlockMessage(const crypto::Hash& hash);
+  explicit NewAlternativeBlockMessage(const crypto::Hash& hash);
   NewAlternativeBlockMessage() = default;
   void get(crypto::Hash& hash) const;
 private:
@@ -33,8 +34,7 @@ private:
 
 class ChainSwitchMessage {
 public:
-  ChainSwitchMessage(std::vector<crypto::Hash>&& hashes);
-  ChainSwitchMessage(const ChainSwitchMessage& other);
+  explicit ChainSwitchMessage(std::vector<crypto::Hash>&& hashes);
   void get(std::vector<crypto::Hash>& hashes) const;
 private:
   std::vector<crypto::Hash> blocksFromCommonRoot;
@@ -48,13 +48,9 @@ public:
     CHAIN_SWITCH_MESSAGE
   };
 
-  BlockchainMessage(NewBlockMessage&& message);
-  BlockchainMessage(NewAlternativeBlockMessage&& message);
-  BlockchainMessage(ChainSwitchMessage&& message);
-
-  BlockchainMessage(const BlockchainMessage& other);
-
-  ~BlockchainMessage();
+  explicit BlockchainMessage(NewBlockMessage&& message);
+  explicit BlockchainMessage(NewAlternativeBlockMessage&& message);
+  explicit BlockchainMessage(ChainSwitchMessage&& message);
 
   MessageType getType() const;
 
@@ -64,11 +60,11 @@ public:
 private:
   const MessageType type;
 
-  union {
-    NewBlockMessage newBlockMessage;
-    NewAlternativeBlockMessage newAlternativeBlockMessage;
-    ChainSwitchMessage* chainSwitchMessage;
-  };
+  using Message = boost::variant<
+      NewBlockMessage,
+      NewAlternativeBlockMessage,
+      std::shared_ptr<ChainSwitchMessage>>;
+  Message message;
 };
 
 }

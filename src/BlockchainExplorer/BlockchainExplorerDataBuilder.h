@@ -33,9 +33,9 @@ public:
   static bool getPaymentId(const Transaction& transaction, crypto::Hash& paymentId);
 
 private:
-  bool getMixin(const Transaction& transaction, uint64_t& mixin);
-  bool fillTxExtra(const std::vector<uint8_t>& rawExtra, TransactionExtraDetails& extraDetails);
-  size_t median(std::vector<size_t>& v);
+  bool getMixin(const Transaction& transaction, uint64_t& mixin) const;
+  bool fillTxExtra(const std::vector<uint8_t>& rawExtra, TransactionExtraDetails& extraDetails) const;
+  size_t median(std::vector<size_t>& v) const;
 
   cn::ICore& core;
   cn::ICryptoNoteProtocolQuery& protocol;

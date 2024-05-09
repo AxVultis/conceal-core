@@ -14,9 +14,6 @@ namespace logging {
 
 using common::JsonValue;
 
-LoggerManager::LoggerManager() {
-}
-
 void LoggerManager::operator()(const std::string& category, Level level, boost::posix_time::ptime time, const std::string& body) {
   std::unique_lock<std::mutex> lock(reconfigureLock);
   LoggerGroup::operator()(category, level, time, body);
@@ -73,12 +70,12 @@ void LoggerManager::configure(const JsonValue& val) {
         std::unique_ptr<logging::CommonLogger> logger;
 
         if (type == "console") {
-          logger.reset(new ConsoleLogger(level));
+          logger = std::make_unique<ConsoleLogger>(level);
         } else if (type == "file") {
           std::string filename = loggerConfiguration("filename").getString();
-          auto fileLogger = new FileLogger(level);
+          auto fileLogger = std::make_unique<FileLogger>(level);
           fileLogger->init(filename);
-          logger.reset(fileLogger);
+          logger = std::move(fileLogger);
         } else {
           throw std::runtime_error("Unknown logger type: " + type);
         }
@@ -98,9 +95,7 @@ void LoggerManager::configure(const JsonValue& val) {
             }
           }
         }
-
-        loggers.emplace_back(std::move(logger));
-        addLogger(*loggers.back());
+        addLogger(std::move(logger));
       }
     } else {
       throw std::runtime_error("loggers parameter has wrong type");

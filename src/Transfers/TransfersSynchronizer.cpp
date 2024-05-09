@@ -41,8 +41,7 @@ ITransfersSubscription& TransfersSyncronizer::addSubscription(const AccountSubsc
   auto it = m_consumers.find(acc.keys.address.viewPublicKey);
 
   if (it == m_consumers.end()) {
-    std::unique_ptr<TransfersConsumer> consumer(
-      new TransfersConsumer(m_currency, m_node, m_logger.getLogger(), acc.keys.viewSecretKey));
+    auto consumer = std::make_unique<TransfersConsumer>(m_currency, m_node, m_logger.getLogger(), acc.keys.viewSecretKey);
 
     m_sync.addConsumer(consumer.get());
     consumer->addObserver(this);
@@ -110,14 +109,14 @@ void TransfersSyncronizer::onBlockchainDetach(IBlockchainConsumer* consumer, uin
   }
 }
 
-void TransfersSyncronizer::onTransactionDeleteBegin(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {
+void TransfersSyncronizer::onTransactionDeleteBegin(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {
   auto it = findSubscriberForConsumer(consumer);
   if (it != m_subscribers.end()) {
     it->second->notify(&ITransfersSynchronizerObserver::onTransactionDeleteBegin, it->first, transactionHash);
   }
 }
 
-void TransfersSyncronizer::onTransactionDeleteEnd(IBlockchainConsumer* consumer, crypto::Hash transactionHash) {
+void TransfersSyncronizer::onTransactionDeleteEnd(IBlockchainConsumer* consumer, const crypto::Hash& transactionHash) {
   auto it = findSubscriberForConsumer(consumer);
   if (it != m_subscribers.end()) {
     it->second->notify(&ITransfersSynchronizerObserver::onTransactionDeleteEnd, it->first, transactionHash);
@@ -140,7 +139,7 @@ void TransfersSyncronizer::subscribeConsumerNotifications(const crypto::PublicKe
     return;
   }
 
-  auto insertedIt = m_subscribers.emplace(viewPublicKey, std::unique_ptr<SubscribersNotifier>(new SubscribersNotifier())).first;
+  auto insertedIt = m_subscribers.emplace(viewPublicKey, std::make_unique<SubscribersNotifier>()).first;
   insertedIt->second->add(observer);
 }
 

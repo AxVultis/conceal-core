@@ -1019,6 +1019,7 @@ namespace cn
 
     Deposit deposit;
     bool r = m_transactionsCache.getDeposit(depositId, deposit);
+    static_cast<void>(r);
     assert(r);
 
     foundMoney += deposit.amount + deposit.interest;
@@ -1046,6 +1047,7 @@ namespace cn
 
       Deposit deposit;
       bool r = m_transactionsCache.getDeposit(id, deposit);
+      static_cast<void>(r);
       assert(r);
 
       foundMoney += deposit.amount + deposit.interest;

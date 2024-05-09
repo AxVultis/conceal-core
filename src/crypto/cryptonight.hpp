@@ -13,7 +13,7 @@
 #include "pow_hash/aux_hash.h"
 
 #if defined(__ARM_FEATURE_SIMD32) || defined(__ARM_NEON)
-	#include "sse2neon.h"
+	#include <sse2neon/sse2neon.h>
 #endif
 
 // #if !defined(_LP64) && !defined(_WIN64)

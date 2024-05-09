@@ -10,8 +10,7 @@
 namespace cn {
   class IBlockchainStorageObserver {
   public:
-    virtual ~IBlockchainStorageObserver() {
-    }
+    virtual ~IBlockchainStorageObserver() = default;
 
     virtual void blockchainUpdated() = 0;
   };

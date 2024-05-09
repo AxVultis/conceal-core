@@ -136,7 +136,7 @@ auto DepositIndex::depositInterestAtHeight(DepositHeight height) const -> Deposi
 
 void DepositIndex::serialize(ISerializer& s) {
   s(blockCount, "blockCount");
-  if (s.type() == ISerializer::INPUT) {
+  if (s.type() == ISerializer::SerializerType::INPUT) {
     readSequence<DepositIndexEntry>(std::back_inserter(index), "index", s);
   } else {
     writeSequence<DepositIndexEntry>(index.begin(), index.end(), "index", s);

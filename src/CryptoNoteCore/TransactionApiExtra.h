@@ -14,8 +14,8 @@ namespace cn {
 
   class TransactionExtra {
   public:
-    TransactionExtra() {}
-    TransactionExtra(const std::vector<uint8_t>& extra) {
+    TransactionExtra() = default;
+    explicit TransactionExtra(const std::vector<uint8_t>& extra) {
       parse(extra);        
     }
 

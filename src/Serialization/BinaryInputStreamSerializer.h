@@ -15,32 +15,32 @@ namespace cn {
 
 class BinaryInputStreamSerializer : public ISerializer {
 public:
-  BinaryInputStreamSerializer(common::IInputStream& strm) : stream(strm) {}
-  virtual ~BinaryInputStreamSerializer() {}
+  explicit BinaryInputStreamSerializer(common::IInputStream& strm) : stream(strm) {};
+  ~BinaryInputStreamSerializer() override= default;
 
-  virtual ISerializer::SerializerType type() const override;
+  ISerializer::SerializerType type() const override;
 
-  virtual bool beginObject(common::StringView name) override;
-  virtual void endObject() override;
+  bool beginObject(std::string_view name) override;
+  void endObject() override;
 
-  virtual bool beginArray(size_t& size, common::StringView name) override;
-  virtual void endArray() override;
+  bool beginArray(size_t& size, std::string_view name) override;
+  void endArray() override;
 
-  virtual bool operator()(uint8_t& value, common::StringView name) override;
-  virtual bool operator()(int16_t& value, common::StringView name) override;
-  virtual bool operator()(uint16_t& value, common::StringView name) override;
-  virtual bool operator()(int32_t& value, common::StringView name) override;
-  virtual bool operator()(uint32_t& value, common::StringView name) override;
-  virtual bool operator()(int64_t& value, common::StringView name) override;
-  virtual bool operator()(uint64_t& value, common::StringView name) override;
-  virtual bool operator()(double& value, common::StringView name) override;
-  virtual bool operator()(bool& value, common::StringView name) override;
-  virtual bool operator()(std::string& value, common::StringView name) override;
-  virtual bool binary(void* value, size_t size, common::StringView name) override;
-  virtual bool binary(std::string& value, common::StringView name) override;
+  bool operator()(uint8_t& value, std::string_view name) override;
+  bool operator()(int16_t& value, std::string_view name) override;
+  bool operator()(uint16_t& value, std::string_view name) override;
+  bool operator()(int32_t& value, std::string_view name) override;
+  bool operator()(uint32_t& value, std::string_view name) override;
+  bool operator()(int64_t& value, std::string_view name) override;
+  bool operator()(uint64_t& value, std::string_view name) override;
+  bool operator()(double& value, std::string_view name) override;
+  bool operator()(bool& value, std::string_view name) override;
+  bool operator()(std::string& value, std::string_view name) override;
+  bool binary(uint8_t* value, size_t size, std::string_view name) override;
+  bool binary(std::string& value, std::string_view name) override;
 
   template<typename T>
-  bool operator()(T& value, common::StringView name) {
+  bool operator()(T& value, std::string_view name) {
     return ISerializer::operator()(value, name);
   }
 

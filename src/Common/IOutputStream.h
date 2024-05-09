@@ -8,13 +8,14 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace common {
 
 class IOutputStream {
 public:
-  virtual ~IOutputStream() { }
-  virtual size_t writeSome(const void* data, size_t size) = 0;
+  virtual ~IOutputStream() = default;
+  virtual size_t writeSome(const uint8_t* data, size_t size) = 0;
 };
 
 }

@@ -17,15 +17,15 @@ namespace common {
 
 class JsonValue {
 public:
-  typedef std::string Key;
+  using Key = std::string;
 
-  typedef std::vector<JsonValue> Array;
-  typedef bool Bool;
-  typedef int64_t Integer;
-  typedef std::nullptr_t Nil;
-  typedef std::map<Key, JsonValue> Object;
-  typedef double Real;
-  typedef std::string String;
+  using Array = std::vector<JsonValue>;
+  using Bool = bool;
+  using Integer = int64_t;
+  using Nil = std::nullptr_t;
+  using Object = std::map<Key, JsonValue>;
+  using Real = double;
+  using String = std::string;
 
   enum Type {
     ARRAY,
@@ -51,9 +51,9 @@ public:
   JsonValue(Real value);
   JsonValue(const String& value);
   JsonValue(String&& value);
-  template<size_t size> JsonValue(const char(&value)[size]) {
+  template<size_t size>
+  JsonValue(const char(&value)[size]): type(STRING) {
     new(valueString)String(value, size - 1);
-    type = STRING;
   }
 
   ~JsonValue();
@@ -62,7 +62,6 @@ public:
   JsonValue& operator=(JsonValue&& other);
   JsonValue& operator=(const Array& value);
   JsonValue& operator=(Array&& value);
-  //JsonValue& operator=(Bool value);
   JsonValue& operator=(Integer value);
   JsonValue& operator=(Nil value);
   JsonValue& operator=(const Object& value);

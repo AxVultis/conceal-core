@@ -55,7 +55,7 @@ void LevinProtocol::sendMessage(uint32_t command, const BinaryArray& out, bool n
   writeBuffer.reserve(sizeof(head) + out.size());
 
   common::VectorOutputStream stream(writeBuffer);
-  stream.writeSome(&head, sizeof(head));
+  stream.writeSome(reinterpret_cast<const uint8_t*>(&head), sizeof(head));
   stream.writeSome(out.data(), out.size());
 
   writeStrict(writeBuffer.data(), writeBuffer.size());
@@ -107,7 +107,7 @@ void LevinProtocol::sendReply(uint32_t command, const BinaryArray& out, int32_t 
   writeBuffer.reserve(sizeof(head) + out.size());
 
   common::VectorOutputStream stream(writeBuffer);
-  stream.writeSome(&head, sizeof(head));
+  stream.writeSome(reinterpret_cast<const uint8_t*>(&head), sizeof(head));
   stream.writeSome(out.data(), out.size());
 
   writeStrict(writeBuffer.data(), writeBuffer.size());

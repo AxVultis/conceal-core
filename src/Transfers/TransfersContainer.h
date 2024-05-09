@@ -63,8 +63,8 @@ struct TransactionOutputKeyHasher {
 class SpentOutputDescriptor {
 public:
   SpentOutputDescriptor();
-  SpentOutputDescriptor(const TransactionOutputInformationIn& transactionInfo);
-  SpentOutputDescriptor(const crypto::KeyImage* keyImage);
+  explicit SpentOutputDescriptor(const TransactionOutputInformationIn& transactionInfo);
+  explicit SpentOutputDescriptor(const crypto::KeyImage* keyImage);
   SpentOutputDescriptor(uint64_t amount, uint32_t globalOutputIndex);
 
   void assign(const crypto::KeyImage* keyImage);
@@ -199,22 +199,22 @@ public:
   std::vector<TransactionOutputInformation> advanceHeight(uint32_t height);
 
   // ITransfersContainer
-  virtual size_t transfersCount() const override;
-  virtual size_t transactionsCount() const override;
-  virtual uint64_t balance(uint32_t flags) const override;
-  virtual void getOutputs(std::vector<TransactionOutputInformation>& transfers, uint32_t flags) const override;
-  virtual bool getTransactionInformation(const crypto::Hash& transactionHash, TransactionInformation& info,
+  size_t transfersCount() const override;
+  size_t transactionsCount() const override;
+  uint64_t balance(uint32_t flags) const override;
+  void getOutputs(std::vector<TransactionOutputInformation>& transfers, uint32_t flags) const override;
+  bool getTransactionInformation(const crypto::Hash& transactionHash, TransactionInformation& info,
     uint64_t* amountIn = nullptr, uint64_t* amountOut = nullptr) const override;
-  virtual std::vector<TransactionOutputInformation> getTransactionOutputs(const crypto::Hash& transactionHash, uint32_t flags) const override;
+  std::vector<TransactionOutputInformation> getTransactionOutputs(const crypto::Hash& transactionHash, uint32_t flags) const override;
   //only type flags are feasible for this function
-  virtual std::vector<TransactionOutputInformation> getTransactionInputs(const crypto::Hash& transactionHash, uint32_t flags) const override;
-  virtual void getUnconfirmedTransactions(std::vector<crypto::Hash>& transactions) const override;
-  virtual std::vector<TransactionSpentOutputInformation> getSpentOutputs() const override;
-  virtual bool getTransfer(const crypto::Hash& transactionHash, uint32_t outputInTransaction, TransactionOutputInformation& transfer, TransferState& transferState) const override;
+  std::vector<TransactionOutputInformation> getTransactionInputs(const crypto::Hash& transactionHash, uint32_t flags) const override;
+  void getUnconfirmedTransactions(std::vector<crypto::Hash>& transactions) const override;
+  std::vector<TransactionSpentOutputInformation> getSpentOutputs() const override;
+  bool getTransfer(const crypto::Hash& transactionHash, uint32_t outputInTransaction, TransactionOutputInformation& transfer, TransferState& transferState) const override;
 
   // IStreamSerializable
-  virtual void save(std::ostream& os) override;
-  virtual void load(std::istream& in) override;
+  void save(std::ostream& os) override;
+  void load(std::istream& in) override;
 
 private:
   struct ContainingTransactionIndex { };
@@ -223,124 +223,106 @@ private:
   struct TransferUnlockHeightIndex { };
   struct TransactionOutputKeyIndex { };
 
-  typedef boost::multi_index_container<
-    TransactionInformation,
-    boost::multi_index::indexed_by<
-    boost::multi_index::hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionInformation, crypto::Hash, transactionHash)>,
-    boost::multi_index::ordered_non_unique < BOOST_MULTI_INDEX_MEMBER(TransactionInformation, uint32_t, blockHeight) >
-    >
-  > TransactionMultiIndex;
+  using TransactionMultiIndex =
+      boost::multi_index_container<
+          TransactionInformation,
+          boost::multi_index::indexed_by<
+              boost::multi_index::hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionInformation, crypto::Hash, transactionHash)>,
+              boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(TransactionInformation, uint32_t, blockHeight)>>>;
 
-  typedef boost::multi_index_container<
-    TransactionOutputInformationEx,
-    boost::multi_index::indexed_by<
-      boost::multi_index::hashed_non_unique<
-        boost::multi_index::tag<SpentOutputDescriptorIndex>,
-        boost::multi_index::const_mem_fun<
+  using UnconfirmedTransfersMultiIndex =
+      boost::multi_index_container<
           TransactionOutputInformationEx,
-          SpentOutputDescriptor,
-          &TransactionOutputInformationEx::getSpentOutputDescriptor>,
-        SpentOutputDescriptorHasher
-      >,
-      boost::multi_index::hashed_non_unique<
-        boost::multi_index::tag<ContainingTransactionIndex>,
-        boost::multi_index::const_mem_fun<
-          TransactionOutputInformationEx,
-          const crypto::Hash&,
-          &TransactionOutputInformationEx::getTransactionHash>
-      >,
-      boost::multi_index::hashed_unique <
-        boost::multi_index::tag<TransactionOutputKeyIndex>,
-        boost::multi_index::const_mem_fun <
-          TransactionOutputInformationEx,
-          TransactionOutputKey,
-          &TransactionOutputInformationEx::getTransactionOutputKey>,
-        TransactionOutputKeyHasher
-      >
-    >
-  > UnconfirmedTransfersMultiIndex;
+          boost::multi_index::indexed_by<
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<SpentOutputDescriptorIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      SpentOutputDescriptor,
+                      &TransactionOutputInformationEx::getSpentOutputDescriptor>,
+                  SpentOutputDescriptorHasher>,
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<ContainingTransactionIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      const crypto::Hash &,
+                      &TransactionOutputInformationEx::getTransactionHash>>,
+              boost::multi_index::hashed_unique<
+                  boost::multi_index::tag<TransactionOutputKeyIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      TransactionOutputKey,
+                      &TransactionOutputInformationEx::getTransactionOutputKey>,
+                  TransactionOutputKeyHasher>>>;
 
-  typedef boost::multi_index_container<
-    TransactionOutputInformationEx,
-    boost::multi_index::indexed_by<
-      boost::multi_index::hashed_non_unique<
-        boost::multi_index::tag<SpentOutputDescriptorIndex>,
-        boost::multi_index::const_mem_fun<
+  using AvailableTransfersMultiIndex =
+      boost::multi_index_container<
           TransactionOutputInformationEx,
-          SpentOutputDescriptor,
-          &TransactionOutputInformationEx::getSpentOutputDescriptor>,
-        SpentOutputDescriptorHasher
-      >,
-      boost::multi_index::hashed_non_unique<
-        boost::multi_index::tag<ContainingTransactionIndex>,
-        boost::multi_index::const_mem_fun<
-          TransactionOutputInformationEx,
-          const crypto::Hash&,
-          &TransactionOutputInformationEx::getTransactionHash>
-      >,
-      boost::multi_index::hashed_unique <
-        boost::multi_index::tag<TransactionOutputKeyIndex>,
-        boost::multi_index::const_mem_fun <
-          TransactionOutputInformationEx,
-          TransactionOutputKey,
-          &TransactionOutputInformationEx::getTransactionOutputKey>,
-        TransactionOutputKeyHasher
-      >
-    >
-  > AvailableTransfersMultiIndex;
+          boost::multi_index::indexed_by<
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<SpentOutputDescriptorIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      SpentOutputDescriptor,
+                      &TransactionOutputInformationEx::getSpentOutputDescriptor>,
+                  SpentOutputDescriptorHasher>,
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<ContainingTransactionIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      const crypto::Hash &,
+                      &TransactionOutputInformationEx::getTransactionHash>>,
+              boost::multi_index::hashed_unique<
+                  boost::multi_index::tag<TransactionOutputKeyIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      TransactionOutputKey,
+                      &TransactionOutputInformationEx::getTransactionOutputKey>,
+                  TransactionOutputKeyHasher>>>;
 
-  typedef boost::multi_index_container<
-    SpentTransactionOutput,
-    boost::multi_index::indexed_by<
-      boost::multi_index::hashed_unique<
-        boost::multi_index::tag<SpentOutputDescriptorIndex>,
-        boost::multi_index::const_mem_fun<
-    TransactionOutputInformationEx,
-          SpentOutputDescriptor,
-          &TransactionOutputInformationEx::getSpentOutputDescriptor>,
-        SpentOutputDescriptorHasher
-      >,
-      boost::multi_index::hashed_non_unique<
-        boost::multi_index::tag<ContainingTransactionIndex>,
-        boost::multi_index::const_mem_fun<
-          TransactionOutputInformationEx,
-          const crypto::Hash&,
-          &SpentTransactionOutput::getTransactionHash>
-      >,
-      boost::multi_index::hashed_non_unique <
-        boost::multi_index::tag<SpendingTransactionIndex>,
-        boost::multi_index::const_mem_fun <
+  using SpentTransfersMultiIndex =
+      boost::multi_index_container<
           SpentTransactionOutput,
-          const crypto::Hash&,
-          &SpentTransactionOutput::getSpendingTransactionHash>
-      >,
-      boost::multi_index::hashed_unique <
-        boost::multi_index::tag<TransactionOutputKeyIndex>,
-        boost::multi_index::const_mem_fun <
-          TransactionOutputInformationEx,
-          TransactionOutputKey,
-          &TransactionOutputInformationEx::getTransactionOutputKey>,
-        TransactionOutputKeyHasher
-      >
-    >
-  > SpentTransfersMultiIndex;
+          boost::multi_index::indexed_by<
+              boost::multi_index::hashed_unique<
+                  boost::multi_index::tag<SpentOutputDescriptorIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      SpentOutputDescriptor,
+                      &TransactionOutputInformationEx::getSpentOutputDescriptor>,
+                  SpentOutputDescriptorHasher>,
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<ContainingTransactionIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      const crypto::Hash &,
+                      &SpentTransactionOutput::getTransactionHash>>,
+              boost::multi_index::hashed_non_unique<
+                  boost::multi_index::tag<SpendingTransactionIndex>,
+                  boost::multi_index::const_mem_fun<
+                      SpentTransactionOutput,
+                      const crypto::Hash &,
+                      &SpentTransactionOutput::getSpendingTransactionHash>>,
+              boost::multi_index::hashed_unique<
+                  boost::multi_index::tag<TransactionOutputKeyIndex>,
+                  boost::multi_index::const_mem_fun<
+                      TransactionOutputInformationEx,
+                      TransactionOutputKey,
+                      &TransactionOutputInformationEx::getTransactionOutputKey>,
+                  TransactionOutputKeyHasher>>>;
 
-  typedef boost::multi_index_container<
-    TransferUnlockJob,
-    boost::multi_index::indexed_by<
-      boost::multi_index::ordered_non_unique<
-        boost::multi_index::tag<TransferUnlockHeightIndex>,
-        BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, uint32_t, unlockHeight)
-      >,
-      boost::multi_index::hashed_unique<
-        boost::multi_index::tag<TransactionOutputKeyIndex>,
-        BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, TransactionOutputKey, transactionOutputKey),
-        TransactionOutputKeyHasher
-      >
-    >
-  > TransfersUnlockMultiIndex;
+  using TransfersUnlockMultiIndex =
+      boost::multi_index_container<
+          TransferUnlockJob,
+          boost::multi_index::indexed_by<
+              boost::multi_index::ordered_non_unique<
+                  boost::multi_index::tag<TransferUnlockHeightIndex>,
+                  BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, uint32_t, unlockHeight)>,
+              boost::multi_index::hashed_unique<
+                  boost::multi_index::tag<TransactionOutputKeyIndex>,
+                  BOOST_MULTI_INDEX_MEMBER(TransferUnlockJob, TransactionOutputKey, transactionOutputKey),
+                  TransactionOutputKeyHasher>>>;
 
-private:
   void addTransaction(const TransactionBlockInfo& block, const ITransactionReader& tx, std::vector<std::string>&& messages);
   bool addTransactionOutputs(const TransactionBlockInfo& block, const ITransactionReader& tx,
                              const std::vector<TransactionOutputInformationIn>& transfers);
@@ -363,13 +345,11 @@ private:
                                   const SpentTransfersMultiIndex& spentTransfers);
   std::vector<TransactionOutputInformation> doAdvanceHeight(uint32_t height);
 
-private:
   TransactionMultiIndex m_transactions;
   UnconfirmedTransfersMultiIndex m_unconfirmedTransfers;
   AvailableTransfersMultiIndex m_availableTransfers;
   SpentTransfersMultiIndex m_spentTransfers;
   TransfersUnlockMultiIndex m_transfersUnlockJobs;
-  //std::unordered_map<KeyImage, KeyOutputInfo, boost::hash<KeyImage>> m_keyImages;
 
   uint32_t m_currentHeight; // current height is needed to check if a transfer is unlocked
   size_t m_transactionSpendableAge;

@@ -18,39 +18,39 @@ class KVBinaryOutputStreamSerializer : public ISerializer {
 public:
 
   KVBinaryOutputStreamSerializer();
-  virtual ~KVBinaryOutputStreamSerializer() {}
+  ~KVBinaryOutputStreamSerializer() override = default;
 
   void dump(common::IOutputStream& target);
 
-  virtual ISerializer::SerializerType type() const override;
+  ISerializer::SerializerType type() const override;
 
-  virtual bool beginObject(common::StringView name) override;
-  virtual void endObject() override;
+  bool beginObject(std::string_view name) override;
+  void endObject() override;
 
-  virtual bool beginArray(size_t& size, common::StringView name) override;
-  virtual void endArray() override;
+  bool beginArray(size_t& size, std::string_view name) override;
+  void endArray() override;
 
-  virtual bool operator()(uint8_t& value, common::StringView name) override;
-  virtual bool operator()(int16_t& value, common::StringView name) override;
-  virtual bool operator()(uint16_t& value, common::StringView name) override;
-  virtual bool operator()(int32_t& value, common::StringView name) override;
-  virtual bool operator()(uint32_t& value, common::StringView name) override;
-  virtual bool operator()(int64_t& value, common::StringView name) override;
-  virtual bool operator()(uint64_t& value, common::StringView name) override;
-  virtual bool operator()(double& value, common::StringView name) override;
-  virtual bool operator()(bool& value, common::StringView name) override;
-  virtual bool operator()(std::string& value, common::StringView name) override;
-  virtual bool binary(void* value, size_t size, common::StringView name) override;
-  virtual bool binary(std::string& value, common::StringView name) override;
+  bool operator()(uint8_t& value, std::string_view name) override;
+  bool operator()(int16_t& value, std::string_view name) override;
+  bool operator()(uint16_t& value, std::string_view name) override;
+  bool operator()(int32_t& value, std::string_view name) override;
+  bool operator()(uint32_t& value, std::string_view name) override;
+  bool operator()(int64_t& value, std::string_view name) override;
+  bool operator()(uint64_t& value, std::string_view name) override;
+  bool operator()(double& value, std::string_view name) override;
+  bool operator()(bool& value, std::string_view name) override;
+  bool operator()(std::string& value, std::string_view name) override;
+  bool binary(uint8_t* value, size_t size, std::string_view name) override;
+  bool binary(std::string& value, std::string_view name) override;
 
   template<typename T>
-  bool operator()(T& value, common::StringView name) {
+  bool operator()(T& value, std::string_view name) {
     return ISerializer::operator()(value, name);
   }
 
 private:
 
-  void writeElementPrefix(uint8_t type, common::StringView name);
+  void writeElementPrefix(uint8_t type, std::string_view name);
   void checkArrayPreamble(uint8_t type);
   void updateState(uint8_t type);
   MemoryStream& stream();
@@ -63,22 +63,15 @@ private:
   };
 
   struct Level {
-    State state;
+    State state = State::Object;
     std::string name;
-    size_t count;
+    size_t count = 0;
 
-    Level(common::StringView nm) :
-      name(nm), state(State::Object), count(0) {}
+    explicit Level(std::string_view nm) :
+      name(nm) {}
 
-    Level(common::StringView nm, size_t arraySize) :
-      name(nm), state(State::ArrayPrefix), count(arraySize) {}
-
-    Level(Level&& rv) {
-      state = rv.state;
-      name = std::move(rv.name);
-      count = rv.count;
-    }
-
+    Level(std::string_view nm, size_t arraySize) :
+      state(State::ArrayPrefix), name(nm), count(arraySize) {}
   };
 
   std::vector<MemoryStream> m_objectsStack;

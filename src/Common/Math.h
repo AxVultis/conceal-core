@@ -21,8 +21,7 @@ T medianValue(std::vector<T> &v) {
     return v[0];
 
   auto n = (v.size()) / 2;
-  std::sort(v.begin(), v.end());
-  //nth_element(v.begin(), v.begin()+n-1, v.end());
+  std::ranges::sort(v);
   if (v.size() % 2) { //1, 3, 5...
     return v[n];
   } else { //2, 4, 6...

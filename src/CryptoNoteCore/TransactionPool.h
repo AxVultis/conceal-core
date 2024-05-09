@@ -44,7 +44,6 @@ namespace cn {
   public:
     OnceInTimeInterval(unsigned interval, cn::ITimeProvider& timeProvider)
       : m_interval(interval), m_timeProvider(timeProvider) {
-      m_lastWorkedTime = 0;
     }
 
     template<class functor_t>
@@ -61,7 +60,7 @@ namespace cn {
     }
 
   private:
-    time_t m_lastWorkedTime;
+    time_t m_lastWorkedTime = 0;
     unsigned m_interval;
     cn::ITimeProvider& m_timeProvider;
   };
@@ -72,7 +71,7 @@ namespace cn {
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  class tx_memory_pool: boost::noncopyable {
+  class tx_memory_pool: private boost::noncopyable {
   public:
     tx_memory_pool(
       const cn::Currency& currency, 
@@ -149,12 +148,10 @@ namespace cn {
     struct TransactionPriorityComparator {
       // lhs > hrs
       bool operator()(const TransactionDetails& lhs, const TransactionDetails& rhs) const {
-        // price(lhs) = lhs.fee / lhs.blobSize
-        // price(lhs) > price(rhs) -->
-        // lhs.fee / lhs.blobSize > rhs.fee / rhs.blobSize -->
-        // lhs.fee * rhs.blobSize > rhs.fee * lhs.blobSize
-        uint64_t lhs_hi, lhs_lo = mul128(lhs.fee, rhs.blobSize, &lhs_hi);
-        uint64_t rhs_hi, rhs_lo = mul128(rhs.fee, lhs.blobSize, &rhs_hi);
+        uint64_t lhs_hi;
+        uint64_t lhs_lo = mul128(lhs.fee, rhs.blobSize, &lhs_hi);
+        uint64_t rhs_hi;
+        uint64_t rhs_lo = mul128(rhs.fee, lhs.blobSize, &rhs_hi);
 
         return
           // prefer more profitable transactions
@@ -167,17 +164,16 @@ namespace cn {
       }
     };
 
-    typedef hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionDetails, crypto::Hash, id)> main_index_t;
-    typedef ordered_non_unique<identity<TransactionDetails>, TransactionPriorityComparator> fee_index_t;
+    using main_index_t = hashed_unique<BOOST_MULTI_INDEX_MEMBER(TransactionDetails, crypto::Hash, id)>;
+    using fee_index_t = ordered_non_unique<identity<TransactionDetails>, TransactionPriorityComparator>;
 
-    typedef multi_index_container<TransactionDetails,
-      indexed_by<main_index_t, fee_index_t>
-    > tx_container_t;
+    using tx_container_t =
+        multi_index_container<TransactionDetails,
+                              indexed_by<main_index_t, fee_index_t>>;
 
-    typedef std::pair<uint64_t, uint64_t> GlobalOutput;
-    typedef std::set<GlobalOutput> GlobalOutputsContainer;
-    typedef std::unordered_map<crypto::KeyImage, std::unordered_set<crypto::Hash> > key_images_container;
-
+    using GlobalOutput = std::pair<uint64_t, uint64_t>;
+    using GlobalOutputsContainer = std::set<GlobalOutput>;
+    using key_images_container = std::unordered_map<crypto::KeyImage, std::unordered_set<crypto::Hash>>;
 
     // double spending checking
     bool addTransactionInputs(const crypto::Hash& id, const Transaction& tx, bool keptByBlock);

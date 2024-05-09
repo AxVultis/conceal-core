@@ -27,7 +27,7 @@ namespace
   }
 } // namespace
 
-DaemonCommandsHandler::DaemonCommandsHandler(cn::core &core, cn::NodeServer &srv, logging::LoggerManager &log) : m_core(core), m_srv(srv), logger(log, "daemon"), m_logManager(log)
+DaemonCommandsHandler::DaemonCommandsHandler(cn::Core &core, cn::NodeServer &srv, logging::LoggerManager &log) : m_core(core), m_srv(srv), logger(log, "daemon"), m_logManager(log)
 {
   m_consoleHandler.setHandler("exit", boost::bind(&DaemonCommandsHandler::exit, this, boost::arg<1>()), "Shutdown the daemon");
   m_consoleHandler.setHandler("help", boost::bind(&DaemonCommandsHandler::help, this, boost::arg<1>()), "Show this help");

@@ -35,7 +35,7 @@ const int32_t LEVIN_PROTOCOL_RETCODE_SUCCESS = 1;
 class LevinProtocol {
 public:
 
-  LevinProtocol(platform_system::TcpConnection& connection);
+  explicit LevinProtocol(platform_system::TcpConnection& connection);
 
   template <typename Request, typename Response>
   bool invoke(uint32_t command, const Request& request, Response& response) {

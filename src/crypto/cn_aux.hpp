@@ -14,7 +14,7 @@
 #endif
 
 #if defined(__ARM_FEATURE_SIMD32) || defined(__ARM_NEON)
-#include "sse2neon.h"
+#include <sse2neon/sse2neon.h>
 inline uint64_t _umul128(uint64_t multiplier, uint64_t multiplicand, uint64_t* product_hi)
 {
   uint64_t a = multiplier >> 32;

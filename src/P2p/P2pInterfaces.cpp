@@ -6,10 +6,3 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "P2pInterfaces.h"
-
-namespace cn {
-
-IP2pConnection::~IP2pConnection() {
-}
-
-}

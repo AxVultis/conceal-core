@@ -44,7 +44,7 @@ struct tx_verification_context;
 
 class ICore {
 public:
-  virtual ~ICore() {}
+  virtual ~ICore() = default;
 
   virtual const Currency& currency() const = 0;
 

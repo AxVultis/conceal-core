@@ -26,7 +26,7 @@ namespace transaction_types {
     uint32_t outputIndex;
   };
 
-  typedef std::vector<GlobalOutput> GlobalOutputsContainer;
+  using GlobalOutputsContainer = std::vector<GlobalOutput>;
 
   struct OutputKeyInfo {
     crypto::PublicKey transactionPublicKey;
@@ -46,7 +46,7 @@ namespace transaction_types {
 // 
 class ITransactionReader {
 public:
-  virtual ~ITransactionReader() { }
+  virtual ~ITransactionReader() = default;
 
   virtual crypto::Hash getTransactionHash() const = 0;
   virtual crypto::Hash getTransactionPrefixHash() const = 0;
@@ -94,7 +94,7 @@ public:
 class ITransactionWriter {
 public: 
 
-  virtual ~ITransactionWriter() { }
+  virtual ~ITransactionWriter() = default;
 
   // transaction parameters
   virtual void setUnlockTime(uint64_t unlockTime) = 0;
@@ -110,7 +110,7 @@ public:
   virtual size_t addInput(const AccountKeys& senderKeys, const transaction_types::InputKeyInfo& info, KeyPair& ephKeys) = 0;
 
   virtual size_t addOutput(uint64_t amount, const AccountPublicAddress& to) = 0;
-  virtual size_t addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint32_t requiredSignatures, uint32_t term = 0) = 0;
+  virtual size_t addOutput(uint64_t amount, const std::vector<AccountPublicAddress>& to, uint8_t requiredSignatures, uint32_t term = 0) = 0;
   virtual size_t addOutput(uint64_t amount, const KeyOutput& out) = 0;
   virtual size_t addOutput(uint64_t amount, const MultisignatureOutput& out) = 0;
 
@@ -128,8 +128,7 @@ class ITransaction :
   public ITransactionReader, 
   public ITransactionWriter {
 public:
-  virtual ~ITransaction() { }
-
+  ~ITransaction() override = default;
 };
 
 }

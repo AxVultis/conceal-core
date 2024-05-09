@@ -29,24 +29,23 @@ class PeerlistManager {
   struct by_id{};
   struct by_addr{};
 
-  typedef boost::multi_index_container<
-    PeerlistEntry,
-    boost::multi_index::indexed_by<
-    // access by peerlist_entry::net_adress
-    boost::multi_index::ordered_unique<boost::multi_index::tag<by_addr>, boost::multi_index::member<PeerlistEntry, NetworkAddress, &PeerlistEntry::adr> >,
-    // sort by peerlist_entry::last_seen<
-    boost::multi_index::ordered_non_unique<boost::multi_index::tag<by_time>, boost::multi_index::member<PeerlistEntry, uint64_t, &PeerlistEntry::last_seen> >
-    >
-  > peers_indexed;
+  using peers_indexed =
+      boost::multi_index_container<
+          PeerlistEntry,
+          boost::multi_index::indexed_by<
+              // access by peerlist_entry::net_adress
+              boost::multi_index::ordered_unique<boost::multi_index::tag<by_addr>, boost::multi_index::member<PeerlistEntry, NetworkAddress, &PeerlistEntry::adr>>,
+              // sort by peerlist_entry::last_seen<
+              boost::multi_index::ordered_non_unique<boost::multi_index::tag<by_time>, boost::multi_index::member<PeerlistEntry, uint64_t, &PeerlistEntry::last_seen>>>>;
 
-  typedef boost::multi_index_container<
-      AnchorPeerlistEntry,
-      boost::multi_index::indexed_by<
-          // access by anchor_peerlist_entry::net_adress
-          boost::multi_index::ordered_unique<boost::multi_index::tag<by_addr>, boost::multi_index::member<AnchorPeerlistEntry, NetworkAddress, &AnchorPeerlistEntry::adr>>,
-          // sort by anchor_peerlist_entry::first_seen
-          boost::multi_index::ordered_non_unique<boost::multi_index::tag<by_time>, boost::multi_index::member<AnchorPeerlistEntry, int64_t, &AnchorPeerlistEntry::first_seen>>>>
-      anchor_peers_indexed;
+  using anchor_peers_indexed =
+      boost::multi_index_container<
+          AnchorPeerlistEntry,
+          boost::multi_index::indexed_by<
+              // access by anchor_peerlist_entry::net_adress
+              boost::multi_index::ordered_unique<boost::multi_index::tag<by_addr>, boost::multi_index::member<AnchorPeerlistEntry, NetworkAddress, &AnchorPeerlistEntry::adr>>,
+              // sort by anchor_peerlist_entry::first_seen
+              boost::multi_index::ordered_non_unique<boost::multi_index::tag<by_time>, boost::multi_index::member<AnchorPeerlistEntry, int64_t, &AnchorPeerlistEntry::first_seen>>>>;
 
 public:
 

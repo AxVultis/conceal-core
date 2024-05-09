@@ -11,7 +11,7 @@ namespace cn {
 
 class ICoreObserver {
 public:
-  virtual ~ICoreObserver() {};
+  virtual ~ICoreObserver() = default;
   virtual void blockchainUpdated() {};
   virtual void poolUpdated() {};
 };

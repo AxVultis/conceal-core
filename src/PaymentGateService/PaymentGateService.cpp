@@ -49,8 +49,11 @@ bool PaymentGateService::init(int argc, char** argv) {
     return false;
   }
 
+  std::unique_ptr<logging::StreamLogger> fileLogger = std::make_unique<logging::StreamLogger>();
+  std::unique_ptr<logging::ConsoleLogger> consoleLogger = std::make_unique<logging::ConsoleLogger>();
+
   logger.setMaxLevel(static_cast<logging::Level>(config.gateConfiguration.logLevel));
-  logger.addLogger(consoleLogger);
+  logger.addLogger(std::move(consoleLogger));
 
   logging::LoggerRef log(logger, "main");
 
@@ -70,8 +73,8 @@ bool PaymentGateService::init(int argc, char** argv) {
     throw std::runtime_error("Couldn't open log file");
   }
 
-  fileLogger.attachToStream(fileStream);
-  logger.addLogger(fileLogger);
+  fileLogger->attachToStream(fileStream);
+  logger.addLogger(std::move(fileLogger));
 
   return true;
 }
@@ -139,7 +142,7 @@ void PaymentGateService::runInProcess(const logging::LoggerRef& log) {
   log(logging::INFO) << "Starting Payment Gate with local node";
 
   cn::Currency currency = currencyBuilder.currency();
-  cn::core core(currency, nullptr, logger, false, false);
+  cn::Core core(currency, nullptr, logger, false, false);
 
   cn::CryptoNoteProtocolHandler protocol(currency, *dispatcher, core, nullptr, logger);
   cn::NodeServer p2pNode(*dispatcher, protocol, logger);
@@ -160,7 +163,7 @@ void PaymentGateService::runInProcess(const logging::LoggerRef& log) {
   std::promise<std::error_code> initPromise;
   auto initFuture = initPromise.get_future();
 
-  std::unique_ptr<cn::INode> node(new cn::InProcessNode(core, protocol));
+  auto node = std::make_unique<cn::InProcessNode>(core, protocol);
 
   node->init([&initPromise, &log](std::error_code ec) {
     if (ec) {
@@ -222,10 +225,9 @@ void PaymentGateService::runWalletService(const cn::Currency& currency, cn::INod
     config.gateConfiguration.containerPassword
   };
 
-  std::unique_ptr<cn::WalletGreen> wallet(new cn::WalletGreen(*dispatcher, currency, node, logger));
+  auto wallet = std::make_unique<cn::WalletGreen>(*dispatcher, currency, node, logger);
 
-  service = new payment_service::WalletService(currency, *dispatcher, node, *wallet, *wallet, walletConfiguration, logger, config.gateConfiguration.testnet);
-  std::unique_ptr<payment_service::WalletService> serviceGuard(service);
+  service = std::make_unique<payment_service::WalletService>(currency, *dispatcher, node, *wallet, *wallet, walletConfiguration, logger, config.gateConfiguration.testnet);
   try {
     service->init();
   } catch (std::exception& e) {

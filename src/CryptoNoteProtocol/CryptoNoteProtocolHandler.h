@@ -37,26 +37,25 @@ namespace cn
     public ICryptoNoteProtocolQuery
   {
   public:
-
+    virtual ~CryptoNoteProtocolHandler() = default;
     struct parsed_block_entry
     {
       Block block;
       std::vector<BinaryArray> txs;
 
       void serialize(ISerializer& s) {
-        KV_MEMBER(block);
-        KV_MEMBER(txs);
+        KV_MEMBER(block)
+        KV_MEMBER(txs)
       }
     };
 
     CryptoNoteProtocolHandler(const Currency& currency, platform_system::Dispatcher& dispatcher, ICore& rcore, IP2pEndpoint* p_net_layout, logging::ILogger& log);
 
-    virtual bool addObserver(ICryptoNoteProtocolObserver* observer) override;
-    virtual bool removeObserver(ICryptoNoteProtocolObserver* observer) override;
+    bool addObserver(ICryptoNoteProtocolObserver* observer) override;
+    bool removeObserver(ICryptoNoteProtocolObserver* observer) override;
 
     void set_p2p_endpoint(IP2pEndpoint* p2p);
-    // ICore& get_core() { return m_core; }
-    virtual bool isSynchronized() const override { return m_synchronized; }
+    bool isSynchronized() const override { return m_synchronized; }
     void log_connections();
     std::vector<std::string> all_connections();
 
@@ -70,8 +69,8 @@ namespace cn
     bool get_payload_sync_data(CORE_SYNC_DATA& hshd);
     bool process_payload_sync_data(const CORE_SYNC_DATA& hshd, CryptoNoteConnectionContext& context, bool is_inital);
     int handleCommand(bool is_notify, int command, const BinaryArray& in_buff, BinaryArray& buff_out, CryptoNoteConnectionContext& context, bool& handled);
-    virtual size_t getPeerCount() const override;
-    virtual uint32_t getObservedHeight() const override;
+    size_t getPeerCount() const override;
+    uint32_t getObservedHeight() const override;
     void requestMissingPoolTransactions(const CryptoNoteConnectionContext& context);
 
   private:
@@ -88,8 +87,8 @@ namespace cn
 
 
     //----------------- i_cryptonote_protocol ----------------------------------
-    virtual void relay_block(NOTIFY_NEW_BLOCK::request& arg) override;
-    virtual void relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg) override;
+    void relay_block(NOTIFY_NEW_BLOCK::request& arg) override;
+    void relay_transactions(NOTIFY_NEW_TRANSACTIONS::request& arg) override;
 
     //----------------------------------------------------------------------------------
     uint32_t get_current_blockchain_height();
@@ -100,7 +99,6 @@ namespace cn
     int processObjects(CryptoNoteConnectionContext& context, const std::vector<parsed_block_entry>& blocks);
     logging::LoggerRef logger;
 
-  private:
     int doPushLiteBlock(NOTIFY_NEW_LITE_BLOCK::request block, CryptoNoteConnectionContext &context, std::vector<BinaryArray> missingTxs);
 
     platform_system::Dispatcher& m_dispatcher;

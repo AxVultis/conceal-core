@@ -31,7 +31,7 @@ namespace common {
 
 template<class T>
 struct EnableIfPod {
-  typedef typename std::enable_if<std::is_pod<T>::value, EnableIfPod>::type type;
+  typedef typename std::enable_if<std::is_standard_layout<T>::value && std::is_trivial<T>::value, EnableIfPod>::type type;
 };
 
 enum class FileMappedVectorOpenMode {
@@ -43,18 +43,18 @@ enum class FileMappedVectorOpenMode {
 template<class T>
 class FileMappedVector : public EnableIfPod<T>::type {
 public:
-  typedef T value_type;
+  using value_type = T;
 
   const static uint64_t metadataSize = static_cast<uint64_t>(2 * sizeof(uint64_t));
   const static uint64_t valueSize = static_cast<uint64_t>(sizeof(T));
 
   class const_iterator {
   public:
-    typedef std::random_access_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef ptrdiff_t difference_type;
-    typedef const T* pointer;
-    typedef const T& reference;
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = T;
+    using difference_type = ptrdiff_t;
+    using pointer = const T *;
+    using reference = const T &;
 
     const_iterator() : m_fileMappedVector(nullptr) {
     }
@@ -159,11 +159,11 @@ public:
 
   class iterator : public const_iterator {
   public:
-    typedef std::random_access_iterator_tag iterator_category;
-    typedef T value_type;
-    typedef ptrdiff_t difference_type;
-    typedef T* pointer;
-    typedef T& reference;
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = T;
+    using difference_type = ptrdiff_t;
+    using pointer = T *;
+    using reference = T &;
 
     iterator() : const_iterator() {
     }
@@ -232,7 +232,7 @@ public:
     }
   };
 
-  FileMappedVector();
+  FileMappedVector() = default;
   FileMappedVector(const std::string& path, FileMappedVectorOpenMode mode = FileMappedVectorOpenMode::OPEN_OR_CREATE, uint64_t prefixSize = 0);
   FileMappedVector(const FileMappedVector&) = delete;
   FileMappedVector& operator=(const FileMappedVector&) = delete;
@@ -274,7 +274,7 @@ public:
   iterator insert(const_iterator position, InputIterator first, InputIterator last);
   void pop_back();
   void push_back(const T& val);
-  void swap(FileMappedVector& other);
+  void swap(FileMappedVector& other) noexcept;
 
   bool getAutoFlush() const;
   void setAutoFlush(bool autoFlush);
@@ -302,9 +302,8 @@ private:
   platform_system::MemoryMappedFile m_file;
   uint64_t m_prefixSize;
   uint64_t m_suffixSize;
-  bool m_autoFlush;
+  bool m_autoFlush = true;
 
-private:
   template<class F>
   void atomicUpdate(uint64_t newSize, uint64_t newCapacity, uint64_t newPrefixSize, uint64_t newSuffixSize, F&& func);
   template<class F>
@@ -333,14 +332,7 @@ private:
 };
 
 template<class T>
-FileMappedVector<T>::FileMappedVector() :
-  m_autoFlush(true)
-{
-}
-
-template<class T>
-FileMappedVector<T>::FileMappedVector(const std::string& path, FileMappedVectorOpenMode mode, uint64_t prefixSize) :
-  m_autoFlush(true)
+FileMappedVector<T>::FileMappedVector(const std::string& path, FileMappedVectorOpenMode mode, uint64_t prefixSize)
 {
   open(path, mode, prefixSize);
 }
@@ -654,7 +646,7 @@ void FileMappedVector<T>::push_back(const T& val) {
 }
 
 template<class T>
-void FileMappedVector<T>::swap(FileMappedVector& other) {
+void FileMappedVector<T>::swap(FileMappedVector& other) noexcept {
   m_path.swap(other.m_path);
   m_file.swap(other.m_file);
   std::swap(m_prefixSize, other.m_prefixSize);
@@ -759,7 +751,7 @@ void FileMappedVector<T>::rename(const std::string& newPath) {
 template<class T>
 template<class F>
 void FileMappedVector<T>::atomicUpdate(F&& func) {
-  atomicUpdate0(capacity(), prefixSize(), suffixSize(), std::move(func));
+  atomicUpdate0(capacity(), prefixSize(), suffixSize(), std::forward<F>(func));
 }
 
 template<class T>

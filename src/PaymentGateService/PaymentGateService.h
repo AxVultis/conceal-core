@@ -44,11 +44,9 @@ private:
   platform_system::Dispatcher* dispatcher = nullptr;
   platform_system::Event* stopEvent = nullptr;
   payment_service::ConfigurationManager config;
-  payment_service::WalletService* service = nullptr;
+  std::unique_ptr<payment_service::WalletService> service;
   cn::CurrencyBuilder currencyBuilder;
   
   logging::LoggerGroup logger;
   std::ofstream fileStream;
-  logging::StreamLogger fileLogger;
-  logging::ConsoleLogger consoleLogger;
 };

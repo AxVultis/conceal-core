@@ -23,9 +23,9 @@ struct DepositTestsBase : public test_chain_unit_base {
   }
   cn::Transaction createDepositTransaction(std::vector<test_event_entry>& events);
 
-  bool mark_invalid_tx(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_invalid_tx(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
-  bool check_emission(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_emission(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
   // TransactionBuilder::MultisignatureSource createSource(uint32_t term = 0) const;
   TransactionBuilder::MultisignatureSource createSource(uint32_t term, cn::KeyPair key) const;
@@ -42,7 +42,7 @@ struct DepositTestsBase : public test_chain_unit_base {
     }
   }
 
-  bool mark_invalid_block(cn::core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
+  bool mark_invalid_block(cn::Core& /*c*/, size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
     blockId = ev_index + 1;
     return true;
   }
@@ -61,7 +61,7 @@ struct DepositTestsBase : public test_chain_unit_base {
 
 struct DepositIndexTest : public DepositTestsBase {
   using Block = cn::Block;
-  using Core = cn::core;
+  using Core = cn::Core;
   using Events = std::vector<test_event_entry>;
   DepositIndexTest() {
     m_currency = cn::CurrencyBuilder(m_logger).upgradeHeightV2(0).depositMinTerm(10).depositMinTotalRateFactor(100).minimumFee(1000).currency();
@@ -112,13 +112,13 @@ struct EmissionTest : public DepositTestsBase {
     return emission_after == emission_before + cn::START_BLOCK_REWARD + m_currency.calculateInterest(m_currency.depositMinAmount(), m_currency.depositMinTerm(), 0);
   }
 
-  bool save_emission_before(cn::core& c, std::size_t /*ev_index*/,
+  bool save_emission_before(cn::Core& c, std::size_t /*ev_index*/,
                             const std::vector<test_event_entry>& /*events*/) {
     emission_before = c.getTotalGeneratedAmount();
     return emission_before > 0;
   }
 
-  bool save_emission_after(cn::core& c, std::size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
+  bool save_emission_after(cn::Core& c, std::size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
     emission_after = c.getTotalGeneratedAmount();
     return emission_after > 0;
   }

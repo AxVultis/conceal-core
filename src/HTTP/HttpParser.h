@@ -19,17 +19,17 @@ namespace cn {
 //Blocking HttpParser
 class HttpParser {
 public:
-  HttpParser() {};
+  HttpParser() = default;
 
-  void receiveRequest(std::istream& stream, HttpRequest& request);
-  void receiveResponse(std::istream& stream, HttpResponse& response);
+  void receiveRequest(std::istream& stream, HttpRequest& request) const;
+  void receiveResponse(std::istream& stream, HttpResponse& response) const;
   static HttpResponse::HTTP_STATUS parseResponseStatusFromString(const std::string& status);
 private:
-  void readWord(std::istream& stream, std::string& word);
-  void readHeaders(std::istream& stream, HttpRequest::Headers &headers);
-  bool readHeader(std::istream& stream, std::string& name, std::string& value);
-  size_t getBodyLen(const HttpRequest::Headers& headers);
-  void readBody(std::istream& stream, std::string& body, const size_t bodyLen);
+  void readWord(std::istream& stream, std::string& word) const;
+  void readHeaders(std::istream& stream, HttpRequest::Headers &headers) const;
+  bool readHeader(std::istream& stream, std::string& name, std::string& value) const;
+  size_t getBodyLen(const HttpRequest::Headers& headers) const;
+  void readBody(std::istream& stream, std::string& body, const size_t bodyLen) const;
 };
 
 } //namespace cn

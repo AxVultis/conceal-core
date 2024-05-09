@@ -16,7 +16,7 @@ namespace cn {
 
 class IBlockchainObserver {
 public:
-  virtual ~IBlockchainObserver() {}
+  virtual ~IBlockchainObserver() = default;
 
   virtual void blockchainUpdated(const std::vector<BlockDetails>& newBlocks, const std::vector<BlockDetails>& orphanedBlocks) {}
   virtual void poolUpdated(const std::vector<TransactionDetails>& newTransactions, const std::vector<std::pair<crypto::Hash, TransactionRemoveReason>>& removedTransactions) {}
@@ -26,7 +26,7 @@ public:
 
 class IBlockchainExplorer {
 public:
-  virtual ~IBlockchainExplorer() {};
+  virtual ~IBlockchainExplorer() = default;
 
   virtual bool addObserver(IBlockchainObserver* observer) = 0;
   virtual bool removeObserver(IBlockchainObserver* observer) = 0;

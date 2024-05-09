@@ -120,7 +120,7 @@ ITransfersSubscription& TransfersConsumer::addSubscription(const AccountSubscrip
   auto& res = m_subscriptions[subscription.keys.address.spendPublicKey];
 
   if (res.get() == nullptr) {
-    res.reset(new TransfersSubscription(m_currency, subscription));
+    res = std::make_unique<TransfersSubscription>(m_currency, subscription);
     m_spendKeys.insert(subscription.keys.address.spendPublicKey);
     updateSyncStart();
   }

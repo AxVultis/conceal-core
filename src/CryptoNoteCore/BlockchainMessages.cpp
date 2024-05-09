@@ -23,47 +23,15 @@ void NewAlternativeBlockMessage::get(crypto::Hash& hash) const {
 
 ChainSwitchMessage::ChainSwitchMessage(std::vector<crypto::Hash>&& hashes) : blocksFromCommonRoot(std::move(hashes)) {}
 
-ChainSwitchMessage::ChainSwitchMessage(const ChainSwitchMessage& other) : blocksFromCommonRoot(other.blocksFromCommonRoot) {}
-
 void ChainSwitchMessage::get(std::vector<crypto::Hash>& hashes) const {
   hashes = blocksFromCommonRoot;
 }
 
-BlockchainMessage::BlockchainMessage(NewBlockMessage&& message) : type(MessageType::NEW_BLOCK_MESSAGE), newBlockMessage(std::move(message)) {}
+BlockchainMessage::BlockchainMessage(NewBlockMessage&& message) : type(MessageType::NEW_BLOCK_MESSAGE), message(std::move(message)) {}
 
-BlockchainMessage::BlockchainMessage(NewAlternativeBlockMessage&& message) : type(MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE), newAlternativeBlockMessage(std::move(message)) {}
+BlockchainMessage::BlockchainMessage(NewAlternativeBlockMessage&& message) : type(MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE), message(std::move(message)) {}
 
-BlockchainMessage::BlockchainMessage(ChainSwitchMessage&& message) : type(MessageType::CHAIN_SWITCH_MESSAGE) {
-	chainSwitchMessage = new ChainSwitchMessage(std::move(message));
-}
-
-BlockchainMessage::BlockchainMessage(const BlockchainMessage& other) : type(other.type) {
-  switch (type) {
-    case MessageType::NEW_BLOCK_MESSAGE:
-      new (&newBlockMessage) NewBlockMessage(other.newBlockMessage);
-      break;
-    case MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE:
-      new (&newAlternativeBlockMessage) NewAlternativeBlockMessage(other.newAlternativeBlockMessage);
-      break;
-    case MessageType::CHAIN_SWITCH_MESSAGE:
-	  chainSwitchMessage = new ChainSwitchMessage(*other.chainSwitchMessage);
-      break;
-  }
-}
-
-BlockchainMessage::~BlockchainMessage() {
-  switch (type) {
-    case MessageType::NEW_BLOCK_MESSAGE:
-      newBlockMessage.~NewBlockMessage();
-      break;
-    case MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE:
-      newAlternativeBlockMessage.~NewAlternativeBlockMessage();
-      break;
-    case MessageType::CHAIN_SWITCH_MESSAGE:
-	  delete chainSwitchMessage;
-      break;
-  }
-}
+BlockchainMessage::BlockchainMessage(ChainSwitchMessage&& message) : type(MessageType::CHAIN_SWITCH_MESSAGE), message(std::make_shared<ChainSwitchMessage>(std::move(message))) {}
 
 BlockchainMessage::MessageType BlockchainMessage::getType() const {
   return type;
@@ -71,7 +39,7 @@ BlockchainMessage::MessageType BlockchainMessage::getType() const {
 
 bool BlockchainMessage::getNewBlockHash(crypto::Hash& hash) const {
   if (type == MessageType::NEW_BLOCK_MESSAGE) {
-    newBlockMessage.get(hash);
+    boost::get<NewBlockMessage>(message).get(hash);
     return true;
   } else {
     return false;
@@ -80,7 +48,7 @@ bool BlockchainMessage::getNewBlockHash(crypto::Hash& hash) const {
 
 bool BlockchainMessage::getNewAlternativeBlockHash(crypto::Hash& hash) const {
   if (type == MessageType::NEW_ALTERNATIVE_BLOCK_MESSAGE) {
-    newAlternativeBlockMessage.get(hash);
+    boost::get<NewAlternativeBlockMessage>(message).get(hash);
     return true;
   } else {
     return false;
@@ -89,7 +57,7 @@ bool BlockchainMessage::getNewAlternativeBlockHash(crypto::Hash& hash) const {
 
 bool BlockchainMessage::getChainSwitch(std::vector<crypto::Hash>& hashes) const {
   if (type == MessageType::CHAIN_SWITCH_MESSAGE) {
-    chainSwitchMessage->get(hashes);
+    boost::get<std::shared_ptr<ChainSwitchMessage>>(message)->get(hashes);
     return true;
   } else {
     return false;

@@ -556,7 +556,7 @@ namespace cn
 
     serializer(publicKey, "publicKey");
     serializer(secretKey, "secretKey");
-    serializer.binary(&creationTimestamp, sizeof(uint64_t), "creationTimestamp");
+    serializer.binary(reinterpret_cast<uint8_t*>(&creationTimestamp), sizeof(uint64_t), "creationTimestamp");
   }
 
   void WalletGreen::decryptKeyPair(const EncryptedWalletRecord &cipher, PublicKey &publicKey, SecretKey &secretKey, uint64_t &creationTimestamp) const
@@ -575,7 +575,7 @@ namespace cn
 
     serializer(const_cast<PublicKey &>(publicKey), "publicKey");
     serializer(const_cast<SecretKey &>(secretKey), "secretKey");
-    serializer.binary(&creationTimestamp, sizeof(uint64_t), "creationTimestamp");
+    serializer.binary(reinterpret_cast<uint8_t*>(&creationTimestamp), sizeof(uint64_t), "creationTimestamp");
 
     assert(serializedKeys.size() == sizeof(result.data));
 
@@ -2167,7 +2167,7 @@ namespace cn
         updated = true;
       }
     });
-    (void)r;
+    static_cast<void>(r);
     assert(r);
 
     return updated;
@@ -2237,7 +2237,7 @@ namespace cn
         updated = true;
       }
     });
-    (void)r;
+    static_cast<void>(r);
     assert(r);
 
     return updated;

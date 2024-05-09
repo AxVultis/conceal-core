@@ -16,7 +16,7 @@
 
 
 namespace cn {
-class core;
+class Core;
 class CryptoNoteProtocolHandler;
 class NodeServer;
 class Currency;
@@ -42,7 +42,7 @@ private:
 
   void workerThread(std::promise<std::string>& initPromise);
 
-  std::unique_ptr<cn::core> core;
+  std::unique_ptr<cn::Core> core;
   std::unique_ptr<cn::CryptoNoteProtocolHandler> protocol;
   std::unique_ptr<cn::NodeServer> p2pNode;
 

@@ -12,8 +12,8 @@ namespace common {
 StdInputStream::StdInputStream(std::istream& in) : in(in) {
 }
 
-size_t StdInputStream::readSome(void* data, size_t size) {
-  in.read(static_cast<char*>(data), size);
+size_t StdInputStream::readSome(uint8_t* data, size_t size) {
+  in.read(reinterpret_cast<char*>(data), size);
   return in.gcount();
 }
 

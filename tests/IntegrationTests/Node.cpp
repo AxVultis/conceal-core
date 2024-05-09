@@ -36,7 +36,7 @@ void serialize(BlockShortEntry &v, ISerializer &s)
 {
   s(v.blockHash, "hash");
 
-  if (s.type() == ISerializer::INPUT)
+  if (s.type() == ISerializer::SerializerType::INPUT)
   {
     std::string blockBinary;
     if (s.binary(blockBinary, "block"))
@@ -61,19 +61,6 @@ void serialize(TransactionShortInfo &v, ISerializer &s)
 {
   s(v.txId, "hash");
   s(v.txPrefix, "prefix");
-}
-
-bool operator==(const BlockShortEntry &a, const BlockShortEntry &b)
-{
-  return a.blockHash == b.blockHash &&
-         a.hasBlock == b.hasBlock &&
-         // a.block == b.block &&
-         a.txsShortInfo == b.txsShortInfo;
-}
-
-bool operator==(const TransactionShortInfo &a, const TransactionShortInfo &b)
-{
-  return a.txId == b.txId;
 }
 } // namespace cn
 
