@@ -28,17 +28,17 @@ void readVarintAs(IInputStream& s, T &i) {
 }
 
 ISerializer::SerializerType BinaryInputStreamSerializer::type() const {
-  return ISerializer::INPUT;
+  return ISerializer::SerializerType::INPUT;
 }
 
-bool BinaryInputStreamSerializer::beginObject(common::StringView name) {
+bool BinaryInputStreamSerializer::beginObject(std::string_view name) {
   return true;
 }
 
 void BinaryInputStreamSerializer::endObject() {
 }
 
-bool BinaryInputStreamSerializer::beginArray(size_t& size, common::StringView name) {
+bool BinaryInputStreamSerializer::beginArray(size_t& size, std::string_view name) {
   readVarintAs<uint64_t>(stream, size);
 
   if (size > 128*1024*1024) {
@@ -51,47 +51,47 @@ bool BinaryInputStreamSerializer::beginArray(size_t& size, common::StringView na
 void BinaryInputStreamSerializer::endArray() {
 }
 
-bool BinaryInputStreamSerializer::operator()(uint8_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(uint8_t& value, std::string_view name) {
   readVarint(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(uint16_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(uint16_t& value, std::string_view name) {
   readVarint(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(int16_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(int16_t& value, std::string_view name) {
   readVarintAs<uint16_t>(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(uint32_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(uint32_t& value, std::string_view name) {
   readVarint(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(int32_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(int32_t& value, std::string_view name) {
   readVarintAs<uint32_t>(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(int64_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(int64_t& value, std::string_view name) {
   readVarintAs<uint64_t>(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(uint64_t& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(uint64_t& value, std::string_view name) {
   readVarint(stream, value);
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(bool& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(bool& value, std::string_view name) {
   value = read<uint8_t>(stream) != 0;
   return true;
 }
 
-bool BinaryInputStreamSerializer::operator()(std::string& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(std::string& value, std::string_view name) {
   uint64_t size;
   readVarint(stream, size);
 
@@ -110,23 +110,23 @@ bool BinaryInputStreamSerializer::operator()(std::string& value, common::StringV
   return true;
 }
 
-bool BinaryInputStreamSerializer::binary(void* value, size_t size, common::StringView name) {
-  checkedRead(static_cast<char*>(value), size);
+bool BinaryInputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
+  checkedRead(reinterpret_cast<char*>(value), size);
   return true;
 }
 
-bool BinaryInputStreamSerializer::binary(std::string& value, common::StringView name) {
+bool BinaryInputStreamSerializer::binary(std::string& value, std::string_view name) {
   return (*this)(value, name);
 }
 
-bool BinaryInputStreamSerializer::operator()(double& value, common::StringView name) {
+bool BinaryInputStreamSerializer::operator()(double& value, std::string_view name) {
   assert(false); //the method is not supported for this type of serialization
   throw std::runtime_error("BinaryInputStreamSerializer does not support double serialization");
   return false;
 }
 
 void BinaryInputStreamSerializer::checkedRead(char* buf, size_t size) {
-  read(stream, buf, size);
+  read(stream, reinterpret_cast<uint8_t *>(buf), size);
 }
 
 }

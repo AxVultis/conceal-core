@@ -24,7 +24,7 @@ namespace cn {
 
 class INodeObserver {
 public:
-  virtual ~INodeObserver() {}
+  virtual ~INodeObserver() = default;
   virtual void peerCountUpdated(size_t count) {}
   virtual void localBlockchainUpdated(uint32_t height) {}
   virtual void lastKnownBlockHeightUpdated(uint32_t height) {}
@@ -56,9 +56,9 @@ struct BlockShortEntry {
 
 class INode {
 public:
-  typedef std::function<void(std::error_code)> Callback;
+  using Callback = std::function<void(std::error_code)>;
 
-  virtual ~INode() {}
+  virtual ~INode() = default;
   virtual bool addObserver(INodeObserver* observer) = 0;
   virtual bool removeObserver(INodeObserver* observer) = 0;
 

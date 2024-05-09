@@ -71,7 +71,7 @@ namespace cn
 {
 
   // custom serialization to speedup cache loading
-  bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>> &value, common::StringView name, cn::ISerializer &s)
+  bool serialize(std::vector<std::pair<Blockchain::TransactionIndex, uint16_t>> &value, std::string_view name, cn::ISerializer &s)
   {
     const size_t elementSize = sizeof(std::pair<Blockchain::TransactionIndex, uint16_t>);
     size_t size = value.size() * elementSize;
@@ -81,7 +81,7 @@ namespace cn
       return false;
     }
 
-    if (s.type() == cn::ISerializer::INPUT)
+    if (s.type() == cn::ISerializer::SerializerType::INPUT)
     {
       if (size % elementSize != 0)
       {
@@ -92,7 +92,7 @@ namespace cn
 
     if (size)
     {
-      s.binary(value.data(), size, "");
+      s.binary(reinterpret_cast<uint8_t*>(value.data()), size, "");
     }
 
     s.endArray();
@@ -169,7 +169,7 @@ namespace cn
       }
 
       std::string operation;
-      if (s.type() == ISerializer::INPUT)
+      if (s.type() == ISerializer::SerializerType::INPUT)
       {
         operation = "loading ";
         crypto::Hash blockHash;
@@ -190,7 +190,7 @@ namespace cn
       s(m_bs.m_blockIndex, "block_index");
 
       logger(INFO) << operation << "transaction map";
-      if (s.type() == ISerializer::INPUT)
+      if (s.type() == ISerializer::SerializerType::INPUT)
       {
         phmap::BinaryInputArchive ar_in(appendPath(m_bs.m_config_folder, "transactionsmap.dat").c_str());
         m_bs.m_transactionMap.phmap_load(ar_in);
@@ -202,7 +202,7 @@ namespace cn
       }
 
       logger(INFO) << operation << "spent keys";
-      if (s.type() == ISerializer::INPUT)
+      if (s.type() == ISerializer::SerializerType::INPUT)
       {
         phmap::BinaryInputArchive ar_in(appendPath(m_bs.m_config_folder, "spentkeys.dat").c_str());
         m_bs.m_spent_keys.phmap_load(ar_in);
@@ -263,7 +263,7 @@ namespace cn
 
       std::string operation;
 
-      if (s.type() == ISerializer::INPUT)
+      if (s.type() == ISerializer::SerializerType::INPUT)
       {
         operation = "loading ";
 

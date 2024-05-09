@@ -22,7 +22,7 @@ namespace {
 template <typename T>
 T readPod(common::IInputStream& s) {
   T v;
-  read(s, &v, sizeof(T));
+  read(s, reinterpret_cast<uint8_t*>(&v), sizeof(T));
   return v;
 }
 
@@ -78,7 +78,7 @@ std::string readString(common::IInputStream& s) {
   std::string str;
   str.resize(size);
   if (size) {
-    read(s, &str[0], size);
+    read(s, reinterpret_cast<uint8_t *>(&str[0]), size);
   }
   return str;
 }
@@ -91,7 +91,7 @@ void readName(common::IInputStream& s, std::string& name) {
   uint8_t len = readPod<uint8_t>(s);
   if (len) {
     name.resize(len);
-    read(s, &name[0], len);
+    read(s, reinterpret_cast<uint8_t *>(&name[0]), len);
   }
 }
 
@@ -178,7 +178,7 @@ JsonValue parseBinary(common::IInputStream& stream) {
 KVBinaryInputStreamSerializer::KVBinaryInputStreamSerializer(common::IInputStream& strm) : JsonInputValueSerializer(parseBinary(strm)) {
 }
 
-bool KVBinaryInputStreamSerializer::binary(void* value, size_t size, common::StringView name) {
+bool KVBinaryInputStreamSerializer::binary(uint8_t* value, size_t size, std::string_view name) {
   std::string str;
 
   if (!(*this)(str, name)) {
@@ -193,7 +193,7 @@ bool KVBinaryInputStreamSerializer::binary(void* value, size_t size, common::Str
   return true;
 }
 
-bool KVBinaryInputStreamSerializer::binary(std::string& value, common::StringView name) {
+bool KVBinaryInputStreamSerializer::binary(std::string& value, std::string_view name) {
   return (*this)(value, name); // load as string
 }
 

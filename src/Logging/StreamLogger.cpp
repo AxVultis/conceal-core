@@ -17,8 +17,8 @@ StreamLogger::StreamLogger(Level level) : CommonLogger(level), stream(nullptr) {
 StreamLogger::StreamLogger(std::ostream& stream, Level level) : CommonLogger(level), stream(&stream) {
 }
 
-void StreamLogger::attachToStream(std::ostream& stream) {
-  this->stream = &stream;
+void StreamLogger::attachToStream(std::ostream& stream_) {
+  stream = &stream_;
 }
 
 void StreamLogger::doLogString(const std::string& message) {

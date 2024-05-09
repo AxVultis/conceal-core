@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
     }
 
     cn::Currency currency = currencyBuilder.currency();
-    cn::core ccore(currency, nullptr, logManager, vm["enable-blockchain-indexes"].as<bool>(), vm["enable-autosave"].as<bool>());
+    cn::Core ccore(currency, nullptr, logManager, vm["enable-blockchain-indexes"].as<bool>(), vm["enable-autosave"].as<bool>());
 
     cn::Checkpoints checkpoints(logManager);
     checkpoints.set_testnet(coreConfig.testnet);

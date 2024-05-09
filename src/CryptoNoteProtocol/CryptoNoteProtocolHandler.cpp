@@ -229,7 +229,7 @@ template <typename Command, typename Handler>
 int notifyAdaptor(const BinaryArray &reqBuf, CryptoNoteConnectionContext &ctx, Handler handler)
 {
 
-  typedef typename Command::request Request;
+  using Request = typename Command::request;
   int command = Command::ID;
 
   Request req = boost::value_initialized<Request>();
@@ -292,8 +292,6 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
     cn::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
 
     auto transactionBinary = asBinaryArray(*tx_blob_it);
-    //crypto::Hash transactionHash = crypto::cn_fast_hash(transactionBinary.data(), transactionBinary.size());
-    //logger(DEBUGGING) << "transaction " << transactionHash << " came in NOTIFY_NEW_BLOCK";
 
     m_core.handle_incoming_tx(transactionBinary, tvc, true);
     if (tvc.m_verification_failed)
@@ -315,10 +313,7 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
   if (bvc.m_added_to_main_chain)
   {
     ++arg.hop;
-    //TODO: Add here announce protocol usage
-    //relay_post_notify<NOTIFY_NEW_BLOCK>(*m_p2p, arg, &context.m_connection_id);
     relay_block(arg);
-    // relay_block(arg, context);
 
     if (bvc.m_switched_to_alt_chain)
     {
@@ -381,7 +376,6 @@ int CryptoNoteProtocolHandler::handle_notify_new_transactions(int command, NOTIF
 
     if (arg.txs.size())
     {
-      //TODO: add announce usage here
       relay_post_notify<NOTIFY_NEW_TRANSACTIONS>(*m_p2p, arg, &context.m_connection_id);
     }
   }
@@ -741,7 +735,7 @@ int CryptoNoteProtocolHandler::handle_response_chain_entry(int command, NOTIFY_R
     context.m_state = CryptoNoteConnectionContext::state_shutdown;
   }
 
-  for (auto &bl_id : arg.m_block_ids)
+  for (const auto &bl_id : arg.m_block_ids)
   {
     if (!m_core.have_block(bl_id))
       context.m_needed_objects.push_back(bl_id);
@@ -784,7 +778,7 @@ int CryptoNoteProtocolHandler::handle_notify_missing_txs(int command, NOTIFY_MIS
   }
   else
   {
-    for (auto &tx : txs)
+    for (const auto &tx : txs)
     {
       req.txs.push_back(asString(toBinaryArray(tx)));
     }
@@ -817,7 +811,7 @@ int CryptoNoteProtocolHandler::handle_request_tx_pool(int command, NOTIFY_REQUES
   if (!addedTransactions.empty())
   {
     NOTIFY_NEW_TRANSACTIONS::request notification;
-    for (auto &tx : addedTransactions)
+    for (const auto &tx : addedTransactions)
     {
       notification.txs.push_back(asString(toBinaryArray(tx)));
     }
@@ -848,7 +842,8 @@ void CryptoNoteProtocolHandler::relay_block(NOTIFY_NEW_BLOCK::request &arg)
   logger(logging::DEBUGGING) << "NOTIFY_NEW_BLOCK - MSG_SIZE = " << buf.size();
   logger(logging::DEBUGGING) << "NOTIFY_NEW_LITE_BLOCK - MSG_SIZE = " << lite_buf.size();
 
-  std::list<boost::uuids::uuid> liteBlockConnections, normalBlockConnections;
+  std::list<boost::uuids::uuid> liteBlockConnections;
+  std::list<boost::uuids::uuid> normalBlockConnections;
 
   // sort the peers into their support categories
   m_p2p->for_each_connection([this, &liteBlockConnections, &normalBlockConnections](
@@ -894,7 +889,7 @@ void CryptoNoteProtocolHandler::requestMissingPoolTransactions(const CryptoNoteC
   auto poolTxs = m_core.getPoolTransactions();
 
   NOTIFY_REQUEST_TX_POOL::request notification;
-  for (auto &tx : poolTxs)
+  for (const auto &tx : poolTxs)
   {
     notification.txs.emplace_back(getObjectHash(tx));
   }
@@ -1049,7 +1044,7 @@ int CryptoNoteProtocolHandler::doPushLiteBlock(NOTIFY_NEW_LITE_BLOCK::request ar
   {
     context.m_pending_lite_block = boost::none;
 
-    for (auto transactionBinary : have_txs)
+    for (const auto& transactionBinary : have_txs)
     {
       cn::tx_verification_context tvc = boost::value_initialized<decltype(tvc)>();
 
@@ -1073,7 +1068,6 @@ int CryptoNoteProtocolHandler::doPushLiteBlock(NOTIFY_NEW_LITE_BLOCK::request ar
     if (bvc.m_added_to_main_chain)
     {
       ++arg.hop;
-      //TODO: Add here announce protocol usage
       relay_post_notify<NOTIFY_NEW_LITE_BLOCK>(*m_p2p, arg, &context.m_connection_id);
 
       if (bvc.m_switched_to_alt_chain)

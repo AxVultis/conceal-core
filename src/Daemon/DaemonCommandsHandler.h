@@ -14,7 +14,7 @@
 #include <Logging/LoggerManager.h>
 
 namespace cn {
-class core;
+class Core;
 class Currency;
 class NodeServer;
 }
@@ -22,7 +22,7 @@ class NodeServer;
 class DaemonCommandsHandler
 {
 public:
-  DaemonCommandsHandler(cn::core& core, cn::NodeServer& srv, logging::LoggerManager& log);
+  DaemonCommandsHandler(cn::Core& core, cn::NodeServer& srv, logging::LoggerManager& log);
 
   bool start_handling() {
     m_consoleHandler.start();
@@ -36,7 +36,7 @@ public:
 private:
 
   common::ConsoleHandler m_consoleHandler;
-  cn::core& m_core;
+  cn::Core& m_core;
   cn::NodeServer& m_srv;
   logging::LoggerRef logger;
   logging::LoggerManager& m_logManager;

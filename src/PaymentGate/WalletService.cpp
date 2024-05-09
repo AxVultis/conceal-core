@@ -98,6 +98,7 @@ namespace payment_service
 
       crypto::Hash paymentId;
       bool r = common::podFromHex(paymentIdStr, paymentId);
+      static_cast<void>(r);
       assert(r);
 
       return paymentId;
@@ -416,11 +417,9 @@ namespace payment_service
   {
     logging::LoggerRef log(logger, "generateNewWallet");
 
-    cn::INode *nodeStub = NodeFactory::createNodeStub();
-    std::unique_ptr<cn::INode> nodeGuard(nodeStub);
+    std::unique_ptr<cn::INode> nodeStub(NodeFactory::createNodeStub());
 
-    cn::IWallet *wallet = new cn::WalletGreen(dispatcher, currency, *nodeStub, logger);
-    std::unique_ptr<cn::IWallet> walletGuard(wallet);
+    auto wallet = std::make_unique<cn::WalletGreen>(dispatcher, currency, *nodeStub, logger);
 
     std::string address;
 
@@ -463,15 +462,14 @@ namespace payment_service
       log(logging::INFO, logging::BRIGHT_WHITE) << "Attemping to create container from keys";
       crypto::Hash private_spend_key_hash;
       crypto::Hash private_view_key_hash;
-      size_t size;
 
       /* Check if both keys are valid */
-      if (!common::fromHex(conf.secretSpendKey, &private_spend_key_hash, sizeof(private_spend_key_hash), size) || size != sizeof(private_spend_key_hash))
+      if (!common::podFromHex(conf.secretSpendKey, private_spend_key_hash))
       {
         log(logging::ERROR, logging::BRIGHT_RED) << "Spend key is invalid";
         return;
       }
-      if (!common::fromHex(conf.secretViewKey, &private_view_key_hash, sizeof(private_view_key_hash), size) || size != sizeof(private_spend_key_hash))
+      if (!common::podFromHex(conf.secretViewKey, private_view_key_hash))
       {
         log(logging::ERROR, logging::BRIGHT_RED) << "View key is invalid";
         return;
@@ -1949,7 +1947,7 @@ namespace payment_service
       transactionInfo.unlockTime = transactionWithTransfers.transaction.unlockTime;
       transactionInfo.amount = transactionWithTransfers.transaction.totalAmount;
       transactionInfo.fee = transactionWithTransfers.transaction.fee;
-      transactionInfo.extra = common::toHex(transactionWithTransfers.transaction.extra.data(), transactionWithTransfers.transaction.extra.size());
+      transactionInfo.extra = common::toHex(reinterpret_cast<const uint8_t*>(transactionWithTransfers.transaction.extra.data()), transactionWithTransfers.transaction.extra.size());
       transactionInfo.paymentId = getPaymentIdStringFromExtra(transactionWithTransfers.transaction.extra);
 
       std::vector<uint8_t> extraBin = common::fromHex(transactionInfo.extra);

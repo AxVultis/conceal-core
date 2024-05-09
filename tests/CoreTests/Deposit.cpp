@@ -15,12 +15,12 @@ namespace DepositTests {
 
 using namespace cn;
 
-bool DepositTestsBase::check_emission(core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
+bool DepositTestsBase::check_emission(Core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
   emission = c.getTotalGeneratedAmount();
   return true;
 }
 
-bool DepositTestsBase::mark_invalid_tx(core& /*c*/, std::size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
+bool DepositTestsBase::mark_invalid_tx(Core& /*c*/, std::size_t ev_index, const std::vector<test_event_entry>& /*events*/) {
   blockId = ev_index + 1;
   return true;
 }

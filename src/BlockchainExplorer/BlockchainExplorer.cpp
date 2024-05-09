@@ -25,7 +25,7 @@ namespace cn {
 class ContextCounterHolder
 {
 public:
-  ContextCounterHolder(BlockchainExplorer::AsyncContextCounter& counter) : counter(counter) {}
+  explicit ContextCounterHolder(BlockchainExplorer::AsyncContextCounter& counter) : counter(counter) {}
   ~ContextCounterHolder() { counter.delAsyncContext(); }
 
 private:
@@ -35,9 +35,9 @@ private:
 class NodeRequest {
 public:
 
-  NodeRequest(const std::function<void(const INode::Callback&)>& request) : requestFunc(request) {}
+  explicit NodeRequest(const std::function<void(const INode::Callback&)>& request) : requestFunc(request) {}
 
-  std::error_code performBlocking() {
+  std::error_code performBlocking() const {
     std::promise<std::error_code> promise;
     std::future<std::error_code> future = promise.get_future();
     requestFunc([&](std::error_code c){
@@ -46,13 +46,13 @@ public:
     return future.get();
   }
 
-  void performAsync(BlockchainExplorer::AsyncContextCounter& asyncContextCounter, const INode::Callback& callback) {
+  void performAsync(BlockchainExplorer::AsyncContextCounter& asyncContextCounter, const INode::Callback& callback) const {
     asyncContextCounter.addAsyncContext();
     requestFunc(std::bind(&NodeRequest::asyncCompleteionCallback, callback, std::ref(asyncContextCounter), std::placeholders::_1));
   }
 
 private:
-  void blockingCompleteionCallback(std::promise<std::error_code> promise, std::error_code ec) {
+  void blockingCompleteionCallback(std::promise<std::error_code> promise, std::error_code ec) const {
     promise.set_value(ec);
   }
 
@@ -111,7 +111,7 @@ bool BlockchainExplorer::PoolUpdateGuard::endUpdate() {
 
 class ScopeExitHandler {
 public:
-  ScopeExitHandler(std::function<void()>&& handler) :
+  explicit ScopeExitHandler(std::function<void()>&& handler) :
     m_handler(std::move(handler)),
     m_cancelled(false) {
   }
@@ -138,8 +138,6 @@ BlockchainExplorer::BlockchainExplorer(INode& node, logging::ILogger& logger) :
   logger(logger, "BlockchainExplorer"),
   state(NOT_INITIALIZED) {
 }
-
-BlockchainExplorer::~BlockchainExplorer() {}
 
 bool BlockchainExplorer::addObserver(IBlockchainObserver* observer) {
   if (state.load() != INITIALIZED) {
@@ -304,7 +302,7 @@ bool BlockchainExplorer::getBlockchainTop(BlockDetails& topBlock) {
   uint32_t lastHeight = node.getLastLocalBlockHeight();
 
   std::vector<uint32_t> heights;
-  heights.push_back(std::move(lastHeight));
+  heights.push_back(lastHeight);
 
   std::vector<std::vector<BlockDetails>> blocks;
   if (!getBlocks(heights, blocks)) {
@@ -513,9 +511,9 @@ void BlockchainExplorer::poolChanged() {
 
   std::unique_lock<std::mutex> lock(mutex);
 
-  std::shared_ptr<std::vector<std::unique_ptr<ITransactionReader>>> rawNewTransactionsPtr = std::make_shared<std::vector<std::unique_ptr<ITransactionReader>>>();
-  std::shared_ptr<std::vector<Hash>> removedTransactionsPtr = std::make_shared<std::vector<Hash>>();
-  std::shared_ptr<bool> isBlockchainActualPtr = std::make_shared<bool>(false);
+  auto rawNewTransactionsPtr = std::make_shared<std::vector<std::unique_ptr<ITransactionReader>>>();
+  auto removedTransactionsPtr = std::make_shared<std::vector<Hash>>();
+  auto isBlockchainActualPtr = std::make_shared<bool>(false);
 
   NodeRequest request(
     [this, rawNewTransactionsPtr, removedTransactionsPtr, isBlockchainActualPtr](const INode::Callback& callback) {
@@ -545,7 +543,7 @@ void BlockchainExplorer::poolChanged() {
 
       std::unique_lock<std::mutex> lock(mutex);
 
-      std::shared_ptr<std::vector<Hash>> newTransactionsHashesPtr = std::make_shared<std::vector<Hash>>();
+      auto newTransactionsHashesPtr = std::make_shared<std::vector<Hash>>();
       for (const auto& rawTransaction : *rawNewTransactionsPtr) {
         auto hash = rawTransaction->getTransactionHash();
         Hash transactionHash = reinterpret_cast<const Hash&>(hash);
@@ -555,7 +553,7 @@ void BlockchainExplorer::poolChanged() {
         }
       }
 
-      std::shared_ptr<std::vector<std::pair<Hash, TransactionRemoveReason>>> removedTransactionsHashesPtr = std::make_shared<std::vector<std::pair<Hash, TransactionRemoveReason>>>();
+      auto removedTransactionsHashesPtr = std::make_shared<std::vector<std::pair<Hash, TransactionRemoveReason>>>();
       for (const Hash hash : *removedTransactionsPtr) {
         auto iter = knownPoolState.find(hash);
         if (iter != knownPoolState.end()) {
@@ -567,7 +565,7 @@ void BlockchainExplorer::poolChanged() {
         }
       }
 
-      std::shared_ptr<std::vector<TransactionDetails>> newTransactionsPtr = std::make_shared<std::vector<TransactionDetails>>();
+      auto newTransactionsPtr = std::make_shared<std::vector<TransactionDetails>>();
       NodeRequest request(
         std::bind(
           static_cast<
@@ -622,8 +620,8 @@ void BlockchainExplorer::blockchainSynchronized(uint32_t topHeight) {
     return;
   }
 
-  std::shared_ptr<std::vector<uint32_t>> blockHeightsPtr = std::make_shared<std::vector<uint32_t>>();
-  std::shared_ptr<std::vector<std::vector<BlockDetails>>> blocksPtr = std::make_shared<std::vector<std::vector<BlockDetails>>>();
+  auto blockHeightsPtr = std::make_shared<std::vector<uint32_t>>();
+  auto blocksPtr = std::make_shared<std::vector<std::vector<BlockDetails>>>();
 
   blockHeightsPtr->push_back(topHeight);
 
@@ -684,8 +682,8 @@ void BlockchainExplorer::localBlockchainUpdated(uint32_t height) {
 
   assert(height >= knownBlockchainTopHeight);
 
-  std::shared_ptr<std::vector<uint32_t>> blockHeightsPtr = std::make_shared<std::vector<uint32_t>>();
-  std::shared_ptr<std::vector<std::vector<BlockDetails>>> blocksPtr = std::make_shared<std::vector<std::vector<BlockDetails>>>();
+  auto blockHeightsPtr = std::make_shared<std::vector<uint32_t>>();
+  auto blocksPtr = std::make_shared<std::vector<std::vector<BlockDetails>>>();
 
   for (uint32_t i = knownBlockchainTopHeight; i <= height; ++i) {
     blockHeightsPtr->push_back(i);

@@ -24,7 +24,7 @@ namespace cn {
 bool parseAndValidateTransactionFromBinaryArray(const BinaryArray& transactionBinaryArray, Transaction& transaction, crypto::Hash& transactionHash, crypto::Hash& transactionPrefixHash);
 
 struct TransactionSourceEntry {
-  typedef std::pair<uint32_t, crypto::PublicKey> OutputEntry;
+  using OutputEntry = std::pair<uint32_t, crypto::PublicKey>;
 
   std::vector<OutputEntry> outputs;           //index + key
   size_t realOutput;                          //index in outputs vector of real output_entry
@@ -62,7 +62,7 @@ inline bool constructTransaction(
   const AccountKeys& sender_account_keys,
   const std::vector<TransactionSourceEntry>& sources,
   const std::vector<TransactionDestinationEntry>& destinations,
-  std::vector<uint8_t> extra, Transaction& tx, uint64_t unlock_time, logging::ILogger& log, crypto::SecretKey& transactionSK) {
+  const std::vector<uint8_t>& extra, Transaction& tx, uint64_t unlock_time, logging::ILogger& log, crypto::SecretKey& transactionSK) {
 
   return constructTransaction(sender_account_keys, sources, destinations, std::vector<tx_message_entry>(), 0, extra, tx, unlock_time, log, transactionSK);
 }

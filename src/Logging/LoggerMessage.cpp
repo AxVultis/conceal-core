@@ -12,10 +12,10 @@ namespace logging {
 LoggerMessage::LoggerMessage(ILogger& logger, const std::string& category, Level level, const std::string& color)
   : std::ostream(this)
   , std::streambuf()
-  , logger(logger)
+  , message(color)
   , category(category)
   , logLevel(level)
-  , message(color)
+  , logger(logger)
   , timestamp(boost::posix_time::microsec_clock::local_time())
   , gotText(false) {
 }
@@ -42,10 +42,10 @@ LoggerMessage::LoggerMessage(LoggerMessage&& other)
 LoggerMessage::LoggerMessage(LoggerMessage&& other)
   : std::ostream(nullptr)
   , std::streambuf()
+  , message(other.message)
   , category(other.category)
   , logLevel(other.logLevel)
   , logger(other.logger)
-  , message(other.message)
   , timestamp(boost::posix_time::microsec_clock::local_time())
   , gotText(false) {
   if (this != &other) {

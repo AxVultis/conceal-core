@@ -82,7 +82,7 @@ NodeFactory::NodeFactory() = default;
 NodeFactory::~NodeFactory() = default;
 
 cn::INode* NodeFactory::createNode(const std::string& daemonAddress, uint16_t daemonPort) {
-  std::unique_ptr<cn::INode> node(new cn::NodeRpcProxy(daemonAddress, daemonPort));
+  auto node = std::make_unique<cn::NodeRpcProxy>(daemonAddress, daemonPort);
 
   cn::NodeInitObserver initObserver;
   node->init(std::bind(&cn::NodeInitObserver::initCompleted, &initObserver, std::placeholders::_1));

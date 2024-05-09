@@ -24,7 +24,7 @@ core(core),
 protocol(protocol) {
 }
 
-bool BlockchainExplorerDataBuilder::getMixin(const Transaction& transaction, uint64_t& mixin) {
+bool BlockchainExplorerDataBuilder::getMixin(const Transaction& transaction, uint64_t& mixin) const {
   mixin = 0;
   for (const TransactionInput& txin : transaction.inputs) {
     if (txin.type() != typeid(KeyInput)) {
@@ -48,7 +48,7 @@ bool BlockchainExplorerDataBuilder::getPaymentId(const Transaction& transaction,
   return getPaymentIdFromTransactionExtraNonce(extraNonce.nonce, paymentId);
 }
 
-bool BlockchainExplorerDataBuilder::fillTxExtra(const std::vector<uint8_t>& rawExtra, TransactionExtraDetails& extraDetails) {
+bool BlockchainExplorerDataBuilder::fillTxExtra(const std::vector<uint8_t>& rawExtra, TransactionExtraDetails& extraDetails) const {
   extraDetails.raw = rawExtra;
   std::vector<TransactionExtraField> txExtraFields;
   parseTransactionExtra(rawExtra, txExtraFields);
@@ -64,15 +64,14 @@ bool BlockchainExplorerDataBuilder::fillTxExtra(const std::vector<uint8_t>& rawE
   return true;
 }
 
-size_t BlockchainExplorerDataBuilder::median(std::vector<size_t>& v) {
+size_t BlockchainExplorerDataBuilder::median(std::vector<size_t>& v) const {
   if (v.empty())
     return boost::value_initialized<size_t>();
   if (v.size() == 1)
     return v[0];
 
   size_t n = (v.size()) / 2;
-  std::sort(v.begin(), v.end());
-  //nth_element(v.begin(), v.begin()+n-1, v.end());
+  std::ranges::sort(v);
   if (v.size() % 2) {//1, 3, 5...
     return v[n];
   } else {//2, 4, 6...
@@ -132,10 +131,9 @@ bool BlockchainExplorerDataBuilder::fillBlockDetails(const Block &block, BlockDe
   }
 
   uint64_t prevBlockGeneratedCoins = 0;
-  if (blockDetails.height > 0) {
-    if (!core.getAlreadyGeneratedCoins(block.previousBlockHash, prevBlockGeneratedCoins)) {
-      return false;
-    }
+  if (blockDetails.height > 0 && !core.getAlreadyGeneratedCoins(block.previousBlockHash, prevBlockGeneratedCoins))
+  {
+    return false;
   }
   uint64_t maxReward = 0;
   uint64_t currentReward = 0;
@@ -303,7 +301,7 @@ bool BlockchainExplorerDataBuilder::fillTransactionDetails(const Transaction& tr
     }
   }
 
-  typedef boost::tuple<TransactionOutput, uint32_t> outputWithIndex;
+  using outputWithIndex = boost::tuple<TransactionOutput, uint32_t>;
   auto range = boost::combine(transaction.outputs, globalIndices);
   for (const outputWithIndex& txOutput : range) {
     TransactionOutputDetails txOutDetails;

@@ -165,24 +165,24 @@ bool gen_upgrade::check_block_verification_context(const cn::block_verification_
   }
 }
 
-bool gen_upgrade::markInvalidBlock(cn::core& /*c*/, size_t evIndex, const std::vector<test_event_entry>& /*events*/) {
+bool gen_upgrade::markInvalidBlock(cn::Core& /*c*/, size_t evIndex, const std::vector<test_event_entry>& /*events*/) {
   m_invalidBlockIndex = evIndex + 1;
   return true;
 }
 
-bool gen_upgrade::checkBlockTemplateVersionIsV1(cn::core& c, size_t /*evIndex*/, const std::vector<test_event_entry>& /*events*/) {
+bool gen_upgrade::checkBlockTemplateVersionIsV1(cn::Core& c, size_t /*evIndex*/, const std::vector<test_event_entry>& /*events*/) {
   DEFINE_TESTS_ERROR_CONTEXT("gen_upgrade::checkBlockTemplateVersionIsV1");
   CHECK_TEST_CONDITION(checkBlockTemplateVersion(c, BLOCK_MAJOR_VERSION_1, BLOCK_MINOR_VERSION_1));
   return true;
 }
 
-bool gen_upgrade::checkBlockTemplateVersionIsV2(cn::core& c, size_t /*evIndex*/, const std::vector<test_event_entry>& /*events*/) {
+bool gen_upgrade::checkBlockTemplateVersionIsV2(cn::Core& c, size_t /*evIndex*/, const std::vector<test_event_entry>& /*events*/) {
   DEFINE_TESTS_ERROR_CONTEXT("gen_upgrade::checkBlockTemplateVersionIsV2");
   CHECK_TEST_CONDITION(checkBlockTemplateVersion(c, BLOCK_MAJOR_VERSION_2, BLOCK_MINOR_VERSION_0));
   return true;
 }
 
-bool gen_upgrade::checkBlockTemplateVersion(cn::core& c, uint8_t expectedMajorVersion, uint8_t expectedMinorVersion) {
+bool gen_upgrade::checkBlockTemplateVersion(cn::Core& c, uint8_t expectedMajorVersion, uint8_t expectedMinorVersion) {
   DEFINE_TESTS_ERROR_CONTEXT("gen_upgrade::checkBlockTemplateVersion");
 
   AccountBase account;

@@ -928,7 +928,7 @@ bool TransfersContainer::isSpendTimeUnlocked(const TransactionOutputInformationE
     isOuputUnlocked = m_currentHeight + m_currency.lockedTxAllowedDeltaBlocks() >= info.unlockTime;
   } else {
     //interpret as time
-    uint64_t current_time = static_cast<uint64_t>(time(NULL));
+    uint64_t current_time = static_cast<uint64_t>(time(nullptr));
     isOuputUnlocked = current_time + m_currency.lockedTxAllowedDeltaSeconds() >= info.unlockTime;
   }
 
@@ -972,6 +972,7 @@ void TransfersContainer::addUnlockJob(const TransactionOutputInformationEx& outp
   TransferUnlockJob job = makeTransferUnlockJob(output, static_cast<uint32_t>(m_transactionSpendableAge));
 
   auto r = m_transfersUnlockJobs.emplace(std::move(job));
+  static_cast<void>(r);
   assert(r.second);
 }
 

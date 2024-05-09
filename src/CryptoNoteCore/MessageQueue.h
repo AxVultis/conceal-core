@@ -18,7 +18,7 @@ namespace cn {
 
 template<class MessageType> class MessageQueue {
 public:
-  MessageQueue(platform_system::Dispatcher& dispatcher);
+  explicit MessageQueue(platform_system::Dispatcher& dispatcher);
 
   const MessageType& front();
   void pop();

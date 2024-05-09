@@ -23,15 +23,15 @@ class P2pConnectionProxy : public IP2pConnection {
 public:
 
   P2pConnectionProxy(P2pContextOwner&& ctx, IP2pNodeInternal& node);
-  ~P2pConnectionProxy();
+  ~P2pConnectionProxy() override;
 
   bool processIncomingHandshake();
 
   // IP2pConnection
-  virtual void read(P2pMessage& message) override;
-  virtual void write(const P2pMessage &message) override;
-  virtual void ban() override;
-  virtual void stop() override;
+  void read(P2pMessage& message) override;
+  void write(const P2pMessage &message) override;
+  void ban() override;
+  void stop() override;
 
 private:
 

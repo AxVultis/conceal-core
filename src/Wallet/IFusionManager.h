@@ -8,7 +8,8 @@
 #pragma once
 
 #include <cstdint>
-#include <utility>
+#include <string>
+#include <vector>
 
 namespace cn {
 
@@ -19,7 +20,7 @@ public:
     size_t totalOutputCount;
   };
 
-  virtual ~IFusionManager() {}
+  virtual ~IFusionManager() = default;
 
   virtual size_t createFusionTransaction(uint64_t threshold, uint64_t mixin, const std::vector<std::string>& sourceAddresses = {}, const std::string& destinationAddress = "") = 0;
   virtual bool isFusionTransaction(size_t transactionId) const = 0;

@@ -18,10 +18,9 @@ namespace cn {
 class MemoryStream: public common::IOutputStream {
 public:
 
-  MemoryStream() : m_writePos(0) {
-  }
+  MemoryStream() = default;
 
-  virtual size_t writeSome(const void* data, size_t size) override {
+  size_t writeSome(const uint8_t* data, size_t size) override {
     if (size == 0) {
       return 0;
     }
@@ -35,7 +34,7 @@ public:
     return size;
   }
 
-  size_t size() {
+  size_t size() const {
     return m_buffer.size();
   }
 
@@ -49,7 +48,7 @@ public:
   }
 
 private:
-  size_t m_writePos;
+  size_t m_writePos = 0;
   std::vector<uint8_t> m_buffer;
 };
 

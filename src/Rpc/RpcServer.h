@@ -16,14 +16,14 @@
 
 namespace cn {
 
-class core;
+class Core;
 class NodeServer;
 class ICryptoNoteProtocolQuery;
 
 class RpcServer : public HttpServer {
 public:
-  RpcServer(platform_system::Dispatcher& dispatcher, logging::ILogger& log, core& c, NodeServer& p2p, const ICryptoNoteProtocolQuery& protocolQuery);
-  typedef std::function<bool(RpcServer*, const HttpRequest& request, HttpResponse& response)> HandlerFunction;
+  RpcServer(platform_system::Dispatcher& dispatcher, logging::ILogger& log, Core& c, NodeServer& p2p, const ICryptoNoteProtocolQuery& protocolQuery);
+  using HandlerFunction = std::function<bool(RpcServer *, const HttpRequest &request, HttpResponse &response)>;
   bool setFeeAddress(const std::string& fee_address, const AccountPublicAddress& fee_acc);
   bool setViewKey(const std::string& view_key);
   bool restrictRPC(const bool is_resctricted);
@@ -41,7 +41,6 @@ private:
     const bool allowBusyCore;
   };
 
-  typedef void (RpcServer::*HandlerPtr)(const HttpRequest& request, HttpResponse& response);
   static std::unordered_map<std::string, RpcHandler<HandlerFunction>> s_handlers;
 
   void processRequest(const HttpRequest& request, HttpResponse& response) override;
@@ -95,7 +94,7 @@ private:
   bool fill_f_block_details_response(const crypto::Hash& hash, f_block_details_response& block);
 
   logging::LoggerRef logger;
-  core& m_core;
+  Core& m_core;
   NodeServer& m_p2p;
   const ICryptoNoteProtocolQuery& m_protocolQuery;
   bool m_restricted_rpc;

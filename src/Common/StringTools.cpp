@@ -34,8 +34,8 @@ const uint8_t characterValues[256] = {
 
 }
 
-std::string asString(const void* data, size_t size) {
-  return std::string(static_cast<const char*>(data), size);
+std::string asString(const uint8_t* data, size_t size) {
+  return std::string(reinterpret_cast<const char*>(data), size);
 }
 
 std::string asString(const std::vector<uint8_t>& data) {
@@ -65,7 +65,7 @@ bool fromHex(char character, uint8_t& value) {
   return true;
 }
 
-size_t fromHex(const std::string& text, void* data, size_t bufferSize) {
+size_t fromHex(const std::string& text, uint8_t* data, size_t bufferSize) {
   if ((text.size() & 1) != 0) {
     throw std::runtime_error("incorrect string size in fromHex");
   }
@@ -75,13 +75,13 @@ size_t fromHex(const std::string& text, void* data, size_t bufferSize) {
   }
 
   for (size_t i = 0; i < text.size() >> 1; ++i) {
-    static_cast<uint8_t*>(data)[i] = fromHex(text[i << 1]) << 4 | fromHex(text[(i << 1) + 1]);
+    data[i] = fromHex(text[i << 1]) << 4 | fromHex(text[(i << 1) + 1]);
   }
 
   return text.size() >> 1;
 }
 
-bool fromHex(const std::string& text, void* data, size_t bufferSize, size_t& size) {
+bool fromHex(const std::string& text, uint8_t* data, size_t bufferSize, size_t& size) {
   if ((text.size() & 1) != 0) {
     return false;
   }
@@ -101,7 +101,7 @@ bool fromHex(const std::string& text, void* data, size_t bufferSize, size_t& siz
       return false;
     }
 
-    static_cast<uint8_t*>(data)[i] = value1 << 4 | value2;
+    data[i] = value1 << 4 | value2;
   }
 
   size = text.size() >> 1;
@@ -143,20 +143,20 @@ bool fromHex(const std::string& text, std::vector<uint8_t>& data) {
   return true;
 }
 
-std::string toHex(const void* data, size_t size) {
+std::string toHex(const uint8_t* data, size_t size) {
   std::string text;
   for (size_t i = 0; i < size; ++i) {
-    text += "0123456789abcdef"[static_cast<const uint8_t*>(data)[i] >> 4];
-    text += "0123456789abcdef"[static_cast<const uint8_t*>(data)[i] & 15];
+    text += "0123456789abcdef"[data[i] >> 4];
+    text += "0123456789abcdef"[data[i] & 15];
   }
 
   return text;
 }
 
-void toHex(const void* data, size_t size, std::string& text) {
+void toHex(const uint8_t* data, size_t size, std::string& text) {
   for (size_t i = 0; i < size; ++i) {
-    text += "0123456789abcdef"[static_cast<const uint8_t*>(data)[i] >> 4];
-    text += "0123456789abcdef"[static_cast<const uint8_t*>(data)[i] & 15];
+    text += "0123456789abcdef"[data[i] >> 4];
+    text += "0123456789abcdef"[data[i] & 15];
   }
 }
 

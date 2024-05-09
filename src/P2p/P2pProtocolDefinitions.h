@@ -22,8 +22,9 @@
 
 namespace cn
 {
-  inline bool serialize(uuid& v, common::StringView name, ISerializer& s) {
-    return s.binary(&v, sizeof(v), name);
+  const std::string PING_OK_RESPONSE_STATUS_TEXT = "OK";
+  inline bool serialize(uuid& v, std::string_view name, ISerializer& s) {
+    return s.binary(reinterpret_cast<uint8_t*>(&v), sizeof(v), name);
   }
 
   struct network_config
@@ -54,7 +55,7 @@ namespace cn
 
     void serialize(ISerializer& s) {
       KV_MEMBER(network_id)
-      if (s.type() == ISerializer::INPUT) {
+      if (s.type() == ISerializer::SerializerType::INPUT) {
         version = 0;
       }
       KV_MEMBER(version)
@@ -75,14 +76,14 @@ namespace cn
     }
   };
 
-#define P2P_COMMANDS_POOL_BASE 1000
+  const static int P2P_COMMANDS_POOL_BASE = 1000;
 
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
   struct COMMAND_HANDSHAKE
   {
-    enum { ID = P2P_COMMANDS_POOL_BASE + 1 };
+    const static int ID = P2P_COMMANDS_POOL_BASE + 1;
 
     struct request
     {
@@ -116,7 +117,7 @@ namespace cn
   /************************************************************************/
   struct COMMAND_TIMED_SYNC
   {
-    enum { ID = P2P_COMMANDS_POOL_BASE + 2 };
+    const static int ID = P2P_COMMANDS_POOL_BASE + 2;
 
     struct request
     {
@@ -153,14 +154,13 @@ namespace cn
       have accessible connection point. Only other nodes can add peer to peerlist,
       and ONLY in case when peer has accepted connection and answered to ping.
     */
-    enum { ID = P2P_COMMANDS_POOL_BASE + 3 };
-
-#define PING_OK_RESPONSE_STATUS_TEXT "OK"
-
+    const static int ID = P2P_COMMANDS_POOL_BASE + 3;
     struct request
     {
       /*actually we don't need to send any real data*/
-      void serialize(ISerializer& s) {}
+      void serialize(const ISerializer&) const {
+        // Nothing to do here.
+      }
     };
 
     struct response

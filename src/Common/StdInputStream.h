@@ -14,9 +14,9 @@ namespace common {
 
 class StdInputStream : public IInputStream {
 public:
-  StdInputStream(std::istream& in);
+  explicit StdInputStream(std::istream& in);
   StdInputStream& operator=(const StdInputStream&) = delete;
-  size_t readSome(void* data, size_t size) override;
+  size_t readSome(uint8_t* data, size_t size) override;
 
 private:
   std::istream& in;

@@ -20,7 +20,7 @@
 namespace cn
 {
 
-#define BC_COMMANDS_POOL_BASE 2000
+const static int BC_COMMANDS_POOL_BASE = 2000;
 
   /************************************************************************/
   /*                                                                      */
@@ -31,8 +31,8 @@ namespace cn
     std::vector<std::string> txs;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(block);
-      KV_MEMBER(txs);
+      KV_MEMBER(block)
+      KV_MEMBER(txs)
     }
 
   };
@@ -42,9 +42,9 @@ namespace cn
     crypto::Hash block_id;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(block_id);
-      KV_MEMBER(block);
-      KV_MEMBER(txs);
+      KV_MEMBER(block_id)
+      KV_MEMBER(block)
+      KV_MEMBER(txs)
     }
   };
 
@@ -53,8 +53,8 @@ namespace cn
     TransactionPrefix txPrefix;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(txHash);
-      KV_MEMBER(txPrefix);
+      KV_MEMBER(txHash)
+      KV_MEMBER(txPrefix)
     }
   };
 
@@ -64,9 +64,9 @@ namespace cn
     std::vector<TransactionPrefixInfo> txPrefixes;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(blockId);
-      KV_MEMBER(block);
-      KV_MEMBER(txPrefixes);
+      KV_MEMBER(blockId)
+      KV_MEMBER(block)
+      KV_MEMBER(txPrefixes)
     }
   };
 
@@ -89,7 +89,7 @@ namespace cn
   struct NOTIFY_NEW_BLOCK
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 1;
-    typedef NOTIFY_NEW_BLOCK_request request;
+    using request = NOTIFY_NEW_BLOCK_request;
   };
 
   /************************************************************************/
@@ -100,7 +100,7 @@ namespace cn
     std::vector<std::string> txs;
 
     void serialize(ISerializer& s) {
-      KV_MEMBER(txs);
+      KV_MEMBER(txs)
     }
 
   };
@@ -108,7 +108,7 @@ namespace cn
   struct NOTIFY_NEW_TRANSACTIONS
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 2;
-    typedef NOTIFY_NEW_TRANSACTIONS_request request;
+    using request = NOTIFY_NEW_TRANSACTIONS_request;
   };
 
   /************************************************************************/
@@ -128,7 +128,7 @@ namespace cn
   struct NOTIFY_REQUEST_GET_OBJECTS
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 3;
-    typedef NOTIFY_REQUEST_GET_OBJECTS_request request;
+    using request = NOTIFY_REQUEST_GET_OBJECTS_request;
   };
 
   struct NOTIFY_RESPONSE_GET_OBJECTS_request
@@ -150,7 +150,7 @@ namespace cn
   struct NOTIFY_RESPONSE_GET_OBJECTS
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 4;
-    typedef NOTIFY_RESPONSE_GET_OBJECTS_request request;
+    using request = NOTIFY_RESPONSE_GET_OBJECTS_request;
   };
 
   struct NOTIFY_REQUEST_CHAIN
@@ -183,7 +183,7 @@ namespace cn
   struct NOTIFY_RESPONSE_CHAIN_ENTRY
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 7;
-    typedef NOTIFY_RESPONSE_CHAIN_ENTRY_request request;
+    using request = NOTIFY_RESPONSE_CHAIN_ENTRY_request;
   };
 
   /************************************************************************/
@@ -199,7 +199,7 @@ namespace cn
 
   struct NOTIFY_REQUEST_TX_POOL {
     const static int ID = BC_COMMANDS_POOL_BASE + 8;
-    typedef NOTIFY_REQUEST_TX_POOL_request request;
+    using request = NOTIFY_REQUEST_TX_POOL_request;
   };
 
   /************************************************************************/
@@ -222,7 +222,7 @@ namespace cn
   struct NOTIFY_NEW_LITE_BLOCK
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 9;
-    typedef NOTIFY_NEW_LITE_BLOCK_request request;
+    using request = NOTIFY_NEW_LITE_BLOCK_request;
   };
 
   struct NOTIFY_MISSING_TXS_request
@@ -242,7 +242,7 @@ namespace cn
   struct NOTIFY_MISSING_TXS
   {
     const static int ID = BC_COMMANDS_POOL_BASE + 10;
-    typedef NOTIFY_MISSING_TXS_request request;
+    using request = NOTIFY_MISSING_TXS_request;
   };
 } // namespace cn
 

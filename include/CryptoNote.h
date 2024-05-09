@@ -40,9 +40,9 @@ struct MultisignatureOutput {
   uint32_t term;
 };
 
-typedef boost::variant<BaseInput, KeyInput, MultisignatureInput> TransactionInput;
+using TransactionInput = boost::variant<BaseInput, KeyInput, MultisignatureInput>;
 
-typedef boost::variant<KeyOutput, MultisignatureOutput> TransactionOutputTarget;
+using TransactionOutputTarget = boost::variant<KeyOutput, MultisignatureOutput>;
 
 struct TransactionOutput {
   uint64_t amount;

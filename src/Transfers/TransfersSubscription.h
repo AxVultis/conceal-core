@@ -29,8 +29,8 @@ public:
   void markTransactionConfirmed(const TransactionBlockInfo& block, const crypto::Hash& transactionHash, const std::vector<uint32_t>& globalIndices);
 
   // ITransfersSubscription
-  virtual AccountPublicAddress getAddress() override;
-  virtual ITransfersContainer& getContainer() override;
+  AccountPublicAddress getAddress() override;
+  ITransfersContainer& getContainer() override;
 
 private:
   TransfersContainer transfers;

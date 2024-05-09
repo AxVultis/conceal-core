@@ -22,12 +22,11 @@ public:
   static_assert(13 == sizeof(data_t), "Invalid structure size");
 
   bool init() {
-    size_t size;
-    if (!common::fromHex("63617665617420656d70746f72", &m_data, sizeof(m_data), size) || size != sizeof(m_data)) {
+    if (!common::podFromHex("63617665617420656d70746f72", m_data)) {
       return false;
     }
 
-    if (!common::fromHex("bbec2cacf69866a8e740380fe7b818fc78f8571221742d729d9d02d7f8989b87", &m_expected_hash, sizeof(m_expected_hash), size) || size != sizeof(m_expected_hash)) {
+    if (!common::podFromHex("bbec2cacf69866a8e740380fe7b818fc78f8571221742d729d9d02d7f8989b87", m_expected_hash)) {
       return false;
     }
 

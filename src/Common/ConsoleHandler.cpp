@@ -27,9 +27,6 @@ namespace common {
 /////////////////////////////////////////////////////////////////////////////
 // AsyncConsoleReader
 /////////////////////////////////////////////////////////////////////////////
-AsyncConsoleReader::AsyncConsoleReader() : m_stop(true) {
-}
-
 AsyncConsoleReader::~AsyncConsoleReader() {
   stop();
 }
@@ -94,7 +91,7 @@ bool AsyncConsoleReader::waitInput() {
     tv.tv_sec = 0;
     tv.tv_usec = 100 * 1000;
  
-    int retval = ::select(stdin_fileno + 1, &read_set, NULL, NULL, &tv);
+    int retval = ::select(stdin_fileno + 1, &read_set, nullptr, nullptr, &tv);
 
     if (retval == -1 && errno == EINTR) {
       continue;
@@ -160,11 +157,11 @@ std::string ConsoleHandler::getUsage() const {
   
   std::stringstream ss;
 
-  size_t maxlen = std::max_element(m_handlers.begin(), m_handlers.end(), [](
+  size_t maxlen = std::ranges::max_element(m_handlers, [](
     CommandHandlersMap::const_reference& a, CommandHandlersMap::const_reference& b) { 
       return a.first.size() < b.first.size(); })->first.size();
 
-  for (auto& x : m_handlers) {
+  for (const auto& x : m_handlers) {
     ss << std::left << std::setw(maxlen + 3) << x.first << x.second.second << std::endl;
   }
 
@@ -176,7 +173,7 @@ void ConsoleHandler::setHandler(const std::string& command, const ConsoleCommand
 }
 
 bool ConsoleHandler::runCommand(const std::vector<std::string>& cmdAndArgs) {
-  if (cmdAndArgs.size() == 0) {
+  if (cmdAndArgs.empty()) {
     return false;
   }
 

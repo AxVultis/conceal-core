@@ -13,16 +13,17 @@ namespace common {
 
   class MemoryInputStream : public IInputStream {
   public:
-    MemoryInputStream(const void* buffer, size_t bufferSize);
+    MemoryInputStream(const char* buffer, size_t bufferSize);
+    MemoryInputStream(const uint8_t* buffer, size_t bufferSize);
     size_t getPosition() const;
     bool endOfStream() const;
     
     // IInputStream
-    virtual size_t readSome(void* data, size_t size) override;
+    size_t readSome(uint8_t* data, size_t size) override;
 
   private:
     const char* buffer;
     size_t bufferSize;
-    size_t position;
+    size_t position = 0;
   };
 }

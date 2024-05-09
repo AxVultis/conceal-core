@@ -12,7 +12,7 @@
 namespace cn {
 class IBlock {
 public:
-  virtual ~IBlock();
+  virtual ~IBlock() = default;
 
   virtual const Block& getBlock() const = 0;
   virtual size_t getTransactionCount() const = 0;

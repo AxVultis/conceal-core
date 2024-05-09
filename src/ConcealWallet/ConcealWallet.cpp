@@ -606,12 +606,11 @@ bool conceal_wallet::init(const boost::program_options::variables_map& vm) {
     if (key_import) {
       crypto::Hash private_spend_key_hash;
       crypto::Hash private_view_key_hash;
-      size_t size;
 
-      if (!common::fromHex(private_spend_key_string, &private_spend_key_hash, sizeof(private_spend_key_hash), size) || size != sizeof(private_spend_key_hash)) {
+      if (!common::podFromHex(private_spend_key_string, private_spend_key_hash)) {
         return false;
       }
-      if (!common::fromHex(private_view_key_string, &private_view_key_hash, sizeof(private_view_key_hash), size) || size != sizeof(private_spend_key_hash)) {
+      if (!common::podFromHex(private_view_key_string, private_view_key_hash)) {
         return false;
       }
 
@@ -855,9 +854,7 @@ bool conceal_wallet::get_tx_proof(const std::vector<std::string> &args)
   if (args.size() == 3)
   {
     crypto::Hash tx_key_hash;
-    size_t size;
-    if (!common::fromHex(args[2], &tx_key_hash, sizeof(tx_key_hash), size) || size != sizeof(tx_key_hash))
-    {
+    if (!common::podFromHex(args[2], tx_key_hash)) {
       fail_msg_writer() << "failed to parse tx_key";
       return true;
     }

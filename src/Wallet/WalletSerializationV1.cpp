@@ -163,7 +163,7 @@ std::string serialize(Object& obj, const std::string& name) {
   StdOutputStream output(stream);
   cn::BinaryOutputStreamSerializer s(output);
 
-  s(obj, common::StringView(name));
+  s(obj, std::string_view(name));
 
   stream.flush();
   return stream.str();
@@ -211,7 +211,7 @@ template<typename Object>
 void deserialize(Object& obj, const std::string& name, const std::string& plain) {
   MemoryInputStream stream(plain.data(), plain.size());
   cn::BinaryInputStreamSerializer s(stream);
-  s(obj, common::StringView(name));
+  s(obj, std::string_view(name));
 }
 
 template<typename Object>
@@ -347,7 +347,7 @@ void WalletSerializer::saveVersion(common::IOutputStream& destination) {
 
 void WalletSerializer::saveIv(common::IOutputStream& destination, crypto::chacha8_iv& iv) {
   BinaryOutputStreamSerializer s(destination);
-  s.binary(reinterpret_cast<void *>(&iv.data), sizeof(iv.data), "chacha8_iv");
+  s.binary(reinterpret_cast<uint8_t*>(&iv.data), sizeof(iv.data), "chacha8_iv");
 }
 
 void WalletSerializer::saveKeys(common::IOutputStream& destination, CryptoContext& cryptoContext) {
@@ -624,7 +624,7 @@ uint32_t WalletSerializer::loadVersion(common::IInputStream& source) {
 void WalletSerializer::loadIv(common::IInputStream& source, crypto::chacha8_iv& iv) {
   cn::BinaryInputStreamSerializer s(source);
 
-  s.binary(static_cast<void *>(&iv.data), sizeof(iv.data), "chacha8_iv");
+  s.binary(reinterpret_cast<uint8_t*>(&iv.data), sizeof(iv.data), "chacha8_iv");
 }
 
 void WalletSerializer::generateKey(const std::string& password, crypto::chacha8_key& key) {
@@ -666,7 +666,7 @@ void WalletSerializer::loadWallets(common::IInputStream& source, CryptoContext& 
   deserializeEncrypted(count, "wallets_count", cryptoContext, source);
   cryptoContext.incIv();
 
-  bool isTrackingMode;
+  bool isTrackingMode = false;
 
   for (uint64_t i = 0; i < count; ++i) {
     WalletRecordDto dto;
@@ -721,6 +721,7 @@ void WalletSerializer::subscribeWallets() {
 
     auto& subscription = m_synchronizer.addSubscription(sub);
     bool r = index.modify(it, [&subscription] (WalletRecord& rec) { rec.container = &subscription.getContainer(); });
+    static_cast<void>(r);
     assert(r);
 
     subscription.addObserver(&m_transfersObserver);
@@ -761,7 +762,6 @@ void WalletSerializer::loadObsoleteSpentOutputs(common::IInputStream& source, Cr
 void WalletSerializer::loadUnlockTransactionsJobs(common::IInputStream& source, CryptoContext& cryptoContext) {
   auto& index = m_unlockTransactions.get<TransactionHashIndex>();
   auto& walletsIndex = m_walletsContainer.get<RandomAccessIndex>();
-  const uint64_t walletsSize = walletsIndex.size();
 
   uint64_t jobsCount = 0;
   deserializeEncrypted(jobsCount, "unlock_transactions_jobs_count", cryptoContext, source);

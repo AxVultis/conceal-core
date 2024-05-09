@@ -288,16 +288,6 @@ JsonValue& JsonValue::operator=(Array&& value) {
   return *this;
 }
 
-//JsonValue& JsonValue::operator=(Bool value) {
-//  if (type != BOOL) {
-//    destructValue();
-//    type = BOOL;
-//  }
-//
-//  valueBool = value;
-//  return *this;
-//}
-
 JsonValue& JsonValue::operator=(Integer value) {
   if (type != INTEGER) {
     destructValue();

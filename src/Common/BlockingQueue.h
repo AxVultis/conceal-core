@@ -17,10 +17,10 @@ template < typename T, typename Container = std::deque<T> >
 class BlockingQueue {
 public:
 
-  typedef BlockingQueue<T, Container> ThisType;
+  using ThisType = BlockingQueue<T, Container>;
 
-  BlockingQueue(size_t maxSize = 1) : 
-    m_maxSize(maxSize), m_closed(false) {}
+  explicit BlockingQueue(size_t maxSize = 1) : 
+    m_maxSize(maxSize) {}
 
   template <typename TT>
   bool push(TT&& v) {
@@ -88,7 +88,7 @@ private:
 
   const size_t m_maxSize;
   Container m_queue;
-  bool m_closed;
+  bool m_closed = false;
   
   std::mutex m_mutex;
   std::condition_variable m_haveData;

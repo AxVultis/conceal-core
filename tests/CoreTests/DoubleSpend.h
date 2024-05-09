@@ -21,10 +21,10 @@ public:
   bool check_tx_verification_context(const cn::tx_verification_context& tvc, bool tx_added, size_t event_idx, const cn::Transaction& tx);
   bool check_block_verification_context(const cn::block_verification_context& bvc, size_t event_idx, const cn::Block& block);
 
-  bool mark_last_valid_block(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool mark_invalid_tx(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool mark_invalid_block(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_double_spend(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_last_valid_block(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_invalid_tx(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_invalid_block(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_double_spend(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
 private:
   cn::Block m_last_valid_block;
@@ -116,7 +116,7 @@ public:
 
   bool generate(std::vector<test_event_entry>& events) const;
 
-  bool check_double_spend(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_double_spend(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 };
 
 
@@ -135,10 +135,10 @@ public:
   bool check_tx_verification_context(const cn::tx_verification_context& tvc, bool tx_added, size_t event_idx, const cn::Transaction& tx);
   bool check_block_verification_context(const cn::block_verification_context& bvc, size_t event_idx, const cn::Block& block);
 
-  bool mark_last_valid_block(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool mark_invalid_tx(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool mark_invalid_block(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
-  bool check_double_spend(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_last_valid_block(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_invalid_tx(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool mark_invalid_block(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
+  bool check_double_spend(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events);
 
   TestGenerator prepare(std::vector<test_event_entry>& events) const;
   TransactionBuilder createBobToAliceTx() const;

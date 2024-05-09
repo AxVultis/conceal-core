@@ -22,7 +22,7 @@ namespace command_line
   template<typename T>
   struct arg_descriptor<T, false>
   {
-    typedef T value_type;
+    using value_type = T;
 
     const char* name;
     const char* description;
@@ -33,7 +33,7 @@ namespace command_line
   template<typename T>
   struct arg_descriptor<std::vector<T>, false>
   {
-    typedef std::vector<T> value_type;
+    using value_type = std::vector<T>;
 
     const char* name;
     const char* description;
@@ -44,7 +44,7 @@ namespace command_line
   {
     static_assert(!std::is_same<T, bool>::value, "Boolean switch can't be required");
 
-    typedef T value_type;
+    using value_type = T;
 
     const char* name;
     const char* description;

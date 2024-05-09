@@ -15,9 +15,9 @@ namespace common {
 
 class VectorOutputStream : public IOutputStream {
 public:
-  VectorOutputStream(std::vector<uint8_t>& out);
+  explicit VectorOutputStream(std::vector<uint8_t>& out);
   VectorOutputStream& operator=(const VectorOutputStream&) = delete;
-  size_t writeSome(const void* data, size_t size) override;
+  size_t writeSome(const uint8_t* data, size_t size) override;
 
 private:
   std::vector<uint8_t>& out;

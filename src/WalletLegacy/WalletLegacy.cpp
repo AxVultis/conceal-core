@@ -1236,6 +1236,7 @@ std::vector<uint32_t> WalletLegacy::getTransactionHeights(const std::vector<Tran
 	  crypto::Hash hash = transfer.transactionHash;
 	  TransactionInformation info;
 	  bool ok = m_transferDetails->getTransactionInformation(hash, info, NULL, NULL);
+    static_cast<void>(ok);
 	  assert(ok);
 	  heights.push_back(info.blockHeight);
   }
@@ -1362,7 +1363,7 @@ bool WalletLegacy::getTxProof(crypto::Hash& txid, cn::AccountPublicAddress& addr
   try {
     crypto::generate_tx_proof(txid, R, address.viewPublicKey, rA, tx_key, sig);
   }
-  catch (std::runtime_error) {
+  catch (std::runtime_error&) {
     return false;
   }
 

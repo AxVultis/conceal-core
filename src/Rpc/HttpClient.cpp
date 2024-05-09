@@ -55,7 +55,7 @@ void HttpClient::connect() {
   try {
     auto ipAddr = platform_system::Ipv4Resolver(m_dispatcher).resolve(m_address);
     m_connection = platform_system::TcpConnector(m_dispatcher).connect(ipAddr, m_port);
-    m_streamBuf.reset(new platform_system::TcpStreambuf(m_connection));
+    m_streamBuf = std::make_unique<platform_system::TcpStreambuf>(m_connection);
     m_connected = true;
   } catch (const std::exception& e) {
     throw ConnectException(e.what());

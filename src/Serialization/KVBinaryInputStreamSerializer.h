@@ -15,10 +15,10 @@ namespace cn {
 
 class KVBinaryInputStreamSerializer : public JsonInputValueSerializer {
 public:
-  KVBinaryInputStreamSerializer(common::IInputStream& strm);
+  explicit KVBinaryInputStreamSerializer(common::IInputStream& strm);
 
-  virtual bool binary(void* value, size_t size, common::StringView name) override;
-  virtual bool binary(std::string& value, common::StringView name) override;
+  bool binary(uint8_t* value, size_t size, std::string_view name) override;
+  bool binary(std::string& value, std::string_view name) override;
 };
 
 }

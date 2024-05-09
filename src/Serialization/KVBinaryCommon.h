@@ -21,9 +21,7 @@ const uint8_t PORTABLE_RAW_SIZE_MARK_WORD = 1;
 const uint8_t PORTABLE_RAW_SIZE_MARK_DWORD = 2;
 const uint8_t PORTABLE_RAW_SIZE_MARK_INT64 = 3;
 
-#ifndef MAX_STRING_LEN_POSSIBLE       
-#define MAX_STRING_LEN_POSSIBLE       2000000000 //do not let string be so big
-#endif
+const int MAX_STRING_LEN_POSSIBLE = 2000000000; //do not let string be so big
 
 //data types 
 

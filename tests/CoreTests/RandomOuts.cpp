@@ -39,7 +39,7 @@ bool GetRandomOutputs::generate(std::vector<test_event_entry>& events) const {
   return true;
 }
 
-bool GetRandomOutputs::request(cn::core& c, uint64_t amount, size_t mixin, cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response& resp) {
+bool GetRandomOutputs::request(cn::Core& c, uint64_t amount, size_t mixin, cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response& resp) {
   cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_request req;
 
   req.amounts.push_back(amount);
@@ -52,7 +52,7 @@ bool GetRandomOutputs::request(cn::core& c, uint64_t amount, size_t mixin, cn::C
 
 #define CHECK(cond) if((cond) == false) { LOG_ERROR("Condition "#cond" failed"); return false; }
 
-bool GetRandomOutputs::checkHalfUnlocked(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
+bool GetRandomOutputs::checkHalfUnlocked(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
   cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response resp;
 
   auto amount = MK_COINS(1);
@@ -76,7 +76,7 @@ bool GetRandomOutputs::checkHalfUnlocked(cn::core& c, size_t ev_index, const std
   return true;
 }
 
-bool GetRandomOutputs::checkFullyUnlocked(cn::core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
+bool GetRandomOutputs::checkFullyUnlocked(cn::Core& c, size_t ev_index, const std::vector<test_event_entry>& events) {
   cn::COMMAND_RPC_GET_RANDOM_OUTPUTS_FOR_AMOUNTS_response resp;
 
   auto amount = MK_COINS(1);

@@ -49,7 +49,7 @@ namespace cn {
       os << "Host: " << "127.0.0.1" << "\r\n";
     }
 
-    for (auto pair : headers) {
+    for (const auto& pair : headers) {
       os << pair.first << ": " << pair.second << "\r\n";
     }
     

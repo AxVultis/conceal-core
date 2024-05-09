@@ -65,14 +65,12 @@ namespace cn
     void serialize(ISerializer& s);
 
   private:
-
-    typedef boost::multi_index_container <
-      crypto::Hash,
-      boost::multi_index::indexed_by<
-        boost::multi_index::random_access<>,
-        boost::multi_index::hashed_unique<boost::multi_index::identity<crypto::Hash>>
-      >
-    > ContainerT;
+    using ContainerT =
+        boost::multi_index_container<
+            crypto::Hash,
+            boost::multi_index::indexed_by<
+                boost::multi_index::random_access<>,
+                boost::multi_index::hashed_unique<boost::multi_index::identity<crypto::Hash>>>>;
 
     ContainerT m_container;
     ContainerT::nth_index<1>::type& m_index;

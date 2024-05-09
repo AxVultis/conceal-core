@@ -106,7 +106,7 @@ namespace cn
       TransferSpent
     };
 
-    virtual ~ITransfersContainer() = default;
+    ~ITransfersContainer() override = default;
 
     virtual size_t transfersCount() const = 0;
     virtual size_t transactionsCount() const = 0;

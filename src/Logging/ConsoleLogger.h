@@ -14,10 +14,10 @@ namespace logging {
 
 class ConsoleLogger : public CommonLogger {
 public:
-  ConsoleLogger(Level level = DEBUGGING);
+  explicit ConsoleLogger(Level level = DEBUGGING);
 
 protected:
-  virtual void doLogString(const std::string& message) override;
+  void doLogString(const std::string& message) override;
 
 private:
   std::mutex mutex;
