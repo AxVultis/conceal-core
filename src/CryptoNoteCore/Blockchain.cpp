@@ -1436,29 +1436,6 @@ namespace cn
     return true;
   }
 
-  bool Blockchain::is_alternative_block_allowed(uint32_t  blockchain_height, uint32_t  block_height) const {
-    if (0 == block_height)
-      return false;
-
-    uint32_t lowest_height = blockchain_height - cn::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
-
-    if (blockchain_height < cn::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
-    {
-      lowest_height = 0;
-    }
-
-    if (block_height < lowest_height && !m_checkpoints.is_in_checkpoint_zone(block_height))
-    {
-      logger(logging::DEBUGGING, logging::WHITE)
-          << "<< Checkpoints.cpp << "
-          << "Reorganization depth too deep : " << (blockchain_height - block_height) << ". Block Rejected";
-      return false;
-    }
-
-    uint32_t  checkpoint_height = m_checkpoints.get_greatest_target_height();
-    return checkpoint_height < block_height;
-  }
-
   bool Blockchain::handle_alternative_block(const Block &b, const crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage)
   {
     std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
@@ -1473,7 +1450,7 @@ namespace cn
     }
 
 
-    if (!is_alternative_block_allowed(getCurrentBlockchainHeight(), block_height))
+    if (!m_checkpoints.is_alternative_block_allowed(getCurrentBlockchainHeight(), block_height))
     {
       logger(DEBUGGING) << "Block with id: " << id << std::endl
                         << " can't be accepted for alternative chain, block height: " << block_height << std::endl

@@ -323,7 +323,6 @@ namespace cn
 
 
     bool switch_to_alternative_blockchain(const std::list<crypto::Hash> &alt_chain, bool discard_disconnected_chain);
-    bool is_alternative_block_allowed(uint32_t  blockchain_height, uint32_t  block_height) const;
     bool handle_alternative_block(const Block &b, const crypto::Hash &id, block_verification_context &bvc, bool sendNewAlternativeBlockMessage = true);
     difficulty_type get_next_difficulty_for_alternative_chain(const std::list<crypto::Hash> &alt_chain, const BlockEntry &bei);
     void pushToDepositIndex(const BlockEntry &block, uint64_t interest);

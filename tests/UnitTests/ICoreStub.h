@@ -12,6 +12,7 @@
 #include "CryptoNoteCore/ICore.h"
 #include "CryptoNoteCore/ICoreObserver.h"
 #include "CryptoNoteCore/Currency.h"
+#include "CryptoNoteCore/CheckpointList.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolDefinitions.h"
 #include "Logging/ConsoleLogger.h"
 #include "Rpc/CoreRpcServerCommandsDefinitions.h"
@@ -101,6 +102,15 @@ public:
 
   void setPoolTxVerificationResult(bool result);
   void setPoolChangesResult(bool result);
+  cn::CheckpointList &getCheckpointList() override
+  {
+    return m_checkpoints;
+  }
+
+  std::vector<crypto::Hash> getBlockIds(uint32_t start_height, uint32_t end_height) override
+  {
+    return std::vector<crypto::Hash>();
+  }
 
 private:
   logging::ConsoleLogger m_logger;
@@ -123,4 +133,6 @@ private:
   std::unordered_map<crypto::Hash, cn::Transaction> transactionPool;
   bool poolTxVerificationResult;
   bool poolChangesResult;
+
+  cn::CheckpointList m_checkpoints;
 };

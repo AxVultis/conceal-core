@@ -17,7 +17,8 @@ ICoreStub::ICoreStub() :
     globalIndicesResult(false),
     randomOutsResult(false),
     poolTxVerificationResult(true),
-    poolChangesResult(true) {
+    poolChangesResult(true),
+    m_checkpoints(m_logger) {
 }
 
 ICoreStub::ICoreStub(const cn::Block& genesisBlock) :
@@ -26,7 +27,8 @@ ICoreStub::ICoreStub(const cn::Block& genesisBlock) :
     globalIndicesResult(false),
     randomOutsResult(false),
     poolTxVerificationResult(true),
-    poolChangesResult(true) {
+    poolChangesResult(true),
+    m_checkpoints(m_logger) {
   addBlock(genesisBlock);
 }
 

@@ -5,7 +5,7 @@
 
 #include "gtest/gtest.h"
 
-#include "CryptoNoteCore/Checkpoints.h"
+#include "CryptoNoteCore/CheckpointList.h"
 #include <Logging/LoggerGroup.h>
 
 using namespace cn;
@@ -13,7 +13,7 @@ using namespace cn;
 TEST(checkpoints_is_alternative_block_allowed, handles_empty_checkpoins)
 {
   logging::LoggerGroup logger;
-  Checkpoints cp(logger);
+  CheckpointList cp(logger);
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(0, 0));
 
@@ -25,20 +25,20 @@ TEST(checkpoints_is_alternative_block_allowed, handles_empty_checkpoins)
 TEST(checkpoints_is_alternative_block_allowed, handles_one_checkpoint)
 {
   logging::LoggerGroup logger;
-  Checkpoints cp(logger);
-  cp.add_checkpoint(5, "0000000000000000000000000000000000000000000000000000000000000000");
+  CheckpointList cp(logger);
+  cp.add_checkpoint_target(5, "0000000000000000000000000000000000000000000000000000000000000000");
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(0, 0));
 
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 1));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 4));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 5));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 1));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 4));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 5));
   ASSERT_TRUE (cp.is_alternative_block_allowed(1, 6));
   ASSERT_TRUE (cp.is_alternative_block_allowed(1, 9));
 
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 1));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 4));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 5));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 1));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 4));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 5));
   ASSERT_TRUE (cp.is_alternative_block_allowed(4, 6));
   ASSERT_TRUE (cp.is_alternative_block_allowed(4, 9));
 
@@ -64,54 +64,54 @@ TEST(checkpoints_is_alternative_block_allowed, handles_one_checkpoint)
 TEST(checkpoints_is_alternative_block_allowed, handles_two_and_more_checkpoints)
 {
   logging::LoggerGroup logger;
-  Checkpoints cp(logger);
-  cp.add_checkpoint(5, "0000000000000000000000000000000000000000000000000000000000000000");
-  cp.add_checkpoint(9, "0000000000000000000000000000000000000000000000000000000000000000");
+  CheckpointList cp(logger);
+  cp.add_checkpoint_target(5, "0000000000000000000000000000000000000000000000000000000000000000");
+  cp.add_checkpoint_target(9, "0000000000000000000000000000000000000000000000000000000000000000");
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(0, 0));
 
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 1));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 4));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 5));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 6));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 8));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(1, 9));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 1));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 4));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 5));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 6));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 8));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(1, 9));
   ASSERT_TRUE (cp.is_alternative_block_allowed(1, 10));
   ASSERT_TRUE (cp.is_alternative_block_allowed(1, 11));
 
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 1));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 4));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 5));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 6));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 8));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(4, 9));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 1));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 4));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 5));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 6));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 8));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(4, 9));
   ASSERT_TRUE (cp.is_alternative_block_allowed(4, 10));
   ASSERT_TRUE (cp.is_alternative_block_allowed(4, 11));
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(5, 1));
   ASSERT_FALSE(cp.is_alternative_block_allowed(5, 4));
   ASSERT_FALSE(cp.is_alternative_block_allowed(5, 5));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(5, 6));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(5, 8));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(5, 9));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(5, 6));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(5, 8));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(5, 9));
   ASSERT_TRUE (cp.is_alternative_block_allowed(5, 10));
   ASSERT_TRUE (cp.is_alternative_block_allowed(5, 11));
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(6, 1));
   ASSERT_FALSE(cp.is_alternative_block_allowed(6, 4));
   ASSERT_FALSE(cp.is_alternative_block_allowed(6, 5));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(6, 6));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(6, 8));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(6, 9));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(6, 6));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(6, 8));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(6, 9));
   ASSERT_TRUE (cp.is_alternative_block_allowed(6, 10));
   ASSERT_TRUE (cp.is_alternative_block_allowed(6, 11));
 
   ASSERT_FALSE(cp.is_alternative_block_allowed(8, 1));
   ASSERT_FALSE(cp.is_alternative_block_allowed(8, 4));
   ASSERT_FALSE(cp.is_alternative_block_allowed(8, 5));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(8, 6));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(8, 8));
-  ASSERT_TRUE (cp.is_alternative_block_allowed(8, 9));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(8, 6));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(8, 8));
+  ASSERT_FALSE(cp.is_alternative_block_allowed(8, 9));
   ASSERT_TRUE (cp.is_alternative_block_allowed(8, 10));
   ASSERT_TRUE (cp.is_alternative_block_allowed(8, 11));
 

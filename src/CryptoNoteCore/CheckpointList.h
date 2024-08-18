@@ -24,6 +24,8 @@ namespace cn
     bool add_checkpoint_list(uint32_t start_height, std::vector<crypto::Hash>& points);
     bool set_checkpoint_list(std::vector<crypto::Hash>&& points);
     bool load_checkpoints_from_file();
+    bool is_alternative_block_allowed(uint32_t  blockchain_height, uint32_t  block_height) const;
+    bool add_checkpoint_target(uint32_t height, const std::string &hash_str);
 
     uint32_t get_points_size() const
     {
@@ -33,7 +35,7 @@ namespace cn
 
     uint32_t get_greatest_target_height() const
     {
-      return m_targets.rbegin()->first - 1;
+      return m_targets.empty() ? 0 : m_targets.rbegin()->first - 1;
     }
 
     bool is_ready() const
@@ -117,7 +119,6 @@ namespace cn
     std::vector<crypto::Hash> m_points;
 
     bool save_checkpoints();
-    bool add_checkpoint_target(uint32_t height, const std::string &hash_str);
     bool is_fsize_valid(uint32_t fsize)
     {
       if(fsize % sizeof(crypto::Hash) != 0)

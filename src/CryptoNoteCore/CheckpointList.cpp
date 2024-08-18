@@ -186,6 +186,30 @@ namespace cn {
     logger(logging::INFO) << "Loaded " << m_points.size() << " checkpoints from disk " << m_save_file;
     return true;
   }
+
+  bool CheckpointList::is_alternative_block_allowed(uint32_t  blockchain_height, uint32_t  block_height) const {
+    if (0 == block_height)
+      return false;
+
+    uint32_t lowest_height = blockchain_height - cn::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
+
+    if (blockchain_height < cn::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW)
+    {
+      lowest_height = 0;
+    }
+    std::cout << block_height << " " << lowest_height << " \n";
+    if (block_height < lowest_height && !is_in_checkpoint_zone(block_height))
+    {
+      logger(logging::DEBUGGING, logging::WHITE)
+          << "<< Checkpoints.cpp << "
+          << "Reorganization depth too deep : " << (blockchain_height - block_height) << ". Block Rejected";
+      return false;
+    }
+
+    uint32_t checkpoint_height = get_greatest_target_height();
+    std::cout << checkpoint_height << " " << block_height << " \n";
+    return checkpoint_height < block_height;
+  }
   
   bool CheckpointList::save_checkpoints()
   {
