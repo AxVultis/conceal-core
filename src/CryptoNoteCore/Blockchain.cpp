@@ -469,8 +469,11 @@ namespace cn
 
     m_config_folder = config_folder;
 
-    m_checkpoints.init_targets(testnet, appendPath(config_folder, m_currency.checkpointFileName()));
-    m_checkpoints.load_checkpoints_from_file();
+    if (load_existing)
+    {
+      m_checkpoints.init_targets(testnet, appendPath(config_folder, m_currency.checkpointFileName()));
+      m_checkpoints.load_checkpoints_from_file();
+    }
 
     if (!m_blocks.open(appendPath(config_folder, m_currency.blocksFileName()), appendPath(config_folder, m_currency.blockIndexesFileName()), 1024))
     {

@@ -47,7 +47,7 @@ namespace cn
     bool is_in_checkpoint_zone(uint32_t height) const
     {
       const std::lock_guard<std::mutex> lock(m_points_lock);
-      return m_points.size() < height;
+      return m_points.size() > height;
     }
 
     enum check_rt

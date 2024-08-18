@@ -197,7 +197,6 @@ namespace cn {
     {
       lowest_height = 0;
     }
-    std::cout << block_height << " " << lowest_height << " \n";
     if (block_height < lowest_height && !is_in_checkpoint_zone(block_height))
     {
       logger(logging::DEBUGGING, logging::WHITE)
@@ -207,7 +206,6 @@ namespace cn {
     }
 
     uint32_t checkpoint_height = get_greatest_target_height();
-    std::cout << checkpoint_height << " " << block_height << " \n";
     return checkpoint_height < block_height;
   }
   
