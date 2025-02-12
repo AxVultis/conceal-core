@@ -99,7 +99,12 @@ jobs:
   build-mingw:
     name: MinGW
     runs-on: windows-2022
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
+      - uses: actions/checkout@master
+
       - uses: msys2/setup-msys2@v2
         with:
           update: true
@@ -108,8 +113,6 @@ jobs:
             base-devel
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-cmake
-
-      - uses: actions/checkout@master
 
       - name: Install dependencies
         run: |
