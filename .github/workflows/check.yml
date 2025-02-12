@@ -107,10 +107,13 @@ jobs:
             git
             base-devel
             mingw-w64-x86_64-toolchain
-            https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-boost-1.85.0-4-any.pkg.tar.zst
             mingw-w64-x86_64-cmake
 
       - uses: actions/checkout@master
+
+      - name: Install dependencies
+        run: |
+          pacman -U https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-boost-1.85.0-4-any.pkg.tar.zst
 
       - name: Prepare version
         shell: powershell
